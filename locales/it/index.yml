@@ -70,6 +70,7 @@ global:
     documents: documenti
     profile: profilo
     services: servizi
+    ssi: SSI
   actions:
     retry: Si è verificato un errore, si prega di riprovare
     search: Testo da cercare
@@ -292,12 +293,15 @@ profile:
       contextualHelpContent: !include profile/profile_preferences_calendar.md
       local_calendar: Calendario locale
       birthday_calendar: Compleanni
+ssi:
+  title: SSI
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione
 navigation:
   messages: Messaggi
   profile: Profilo
+  ssi: SSI
   accessibility: "Sezione {{section}}, pannello, {{order}} di 4"
 cie:
   title: Appoggia la carta

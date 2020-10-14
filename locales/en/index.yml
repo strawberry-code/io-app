@@ -70,6 +70,7 @@ global:
     documents: documents
     profile: profile
     services: services
+    ssi: SSI
   actions:
     retry: An error occurred, please retry
     search: Text to search
@@ -290,12 +291,15 @@ profile:
       contextualHelpContent: !include profile/profile_preferences_calendar.md
       local_calendar: Local calendar
       birthday_calendar: Birthdays
+ssi:
+  title: SSI
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
 navigation:
   messages: Messages
   profile: Profile
+  ssi: SSI
   accessibility: "Section {{section}}, panel, {{order}} of 4"
 cie:
   title: Touch the card
