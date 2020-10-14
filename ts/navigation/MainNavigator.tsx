@@ -22,13 +22,14 @@ import IconFont from "../components/ui/IconFont";
 import WalletTabIcon from "../components/WalletTabIcon";
 import BONUSVACANZE_ROUTES from "../features/bonus/bonusVacanze/navigation/routes";
 import BPD_ROUTES from "../features/bonus/bpd/navigation/routes";
-import WALLET_ONBOARDING_BANCOMAT_ROUTES from "../features/wallet/onboarding/bancomat/navigation/routes";
 import variables from "../theme/variables";
 import MessageNavigator from "./MessagesNavigator";
 import ProfileNavigator from "./ProfileNavigator";
+import SsiNavigator from "./SsiNavigator";
 import ROUTES from "./routes";
 import ServicesNavigator from "./ServicesNavigator";
 import WalletNavigator from "./WalletNavigator";
+import SSITabIcon from "../components/SsiTabIcon";
 
 type Routes = keyof typeof ROUTES;
 
@@ -38,7 +39,8 @@ const ROUTE_ICON: RouteIconMap = {
   WALLET_HOME: "io-portafoglio",
   DOCUMENTS_HOME: "io-documenti",
   SERVICES_NAVIGATOR: "io-servizi",
-  PROFILE_NAVIGATOR: "io-profilo"
+  PROFILE_NAVIGATOR: "io-profilo",
+  SSI_NAVIGATOR: "io-test"
 };
 
 const getIcon = (routeName: string): string => {
@@ -91,10 +93,9 @@ const NoTabBarRoutes: ReadonlyArray<string> = [
   ROUTES.WALLET_TRANSACTION_DETAILS,
   BONUSVACANZE_ROUTES.MAIN,
   BPD_ROUTES.MAIN,
-  WALLET_ONBOARDING_BANCOMAT_ROUTES.MAIN,
   ROUTES.MARKDOWN_PLAYGROUND,
   ROUTES.WEB_PLAYGROUND,
-  ROUTES.SERVICE_WEBVIEW
+  ROUTES.SSI_NAVIGATOR
 ];
 
 const getTabBarVisibility = (
@@ -131,6 +132,9 @@ const navigation = createBottomTabNavigator(
     },
     [ROUTES.PROFILE_NAVIGATOR]: {
       screen: ProfileNavigator
+    },
+    [ROUTES.SSI_NAVIGATOR]: {
+      screen: SsiNavigator
     }
   },
   {
@@ -164,6 +168,14 @@ const navigation = createBottomTabNavigator(
         if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
           return (
             <ProfileTabIcon
+              size={variables.iconSize3}
+              color={options.tintColor === null ? undefined : options.tintColor}
+            />
+          );
+        }
+        if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
+          return (
+            <SSITabIcon
               size={variables.iconSize3}
               color={options.tintColor === null ? undefined : options.tintColor}
             />
