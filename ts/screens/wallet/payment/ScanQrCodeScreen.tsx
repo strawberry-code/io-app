@@ -132,6 +132,16 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   };
 
   /**
+   * Handles valid pagoPA QR codes
+   */
+  private onValidSsiQrCode = (data: string) => {
+    this.setState({
+      scanningState: "VALID"
+    });
+    this.props.navigateToScannedSsiQrCode();
+  };
+
+  /**
    * Handles invalid pagoPA QR codes
    */
   private onInvalidQrCode = () => {
@@ -157,8 +167,13 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    * Gets called by the QR code reader on new QR code reads
    */
   private onQrCodeData = (data: string) => {
-    const resultOrError = decodePagoPaQrCode(data);
-    resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
+    if(data.includes("SSI-QR-CODE")) {
+      //console.log("scansionato codice QR SSI");
+      this.onValidSsiQrCode(data);
+    } else {
+      const resultOrError = decodePagoPaQrCode(data);
+      resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
+    }
   };
 
   /**
@@ -341,6 +356,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToWalletHome: () => dispatch(navigateToWalletHome()),
+  navigateToScannedSsiQrCode: () => dispatch(navigateToWalletHome()),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (

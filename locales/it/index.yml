@@ -295,6 +295,7 @@ profile:
       birthday_calendar: Compleanni
 ssi:
   title: SSI
+  scanQr: Scansiona codice QR
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

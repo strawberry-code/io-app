@@ -9,6 +9,7 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
+import ethWallet from 'ethereumjs-wallet';
 import {TranslationKeys} from "../../../locales/locales";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {ContextualHelp} from "../../components/ContextualHelp";
@@ -52,6 +53,9 @@ import {setStatusBarColorAndBackground} from "../../utils/statusBar";
 import {bpdDeleteUserFromProgram} from "../../features/bonus/bpd/store/actions/onboarding";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import {ScreenContentHeader} from "../../components/screens/ScreenContentHeader";
+import IconFont from "../../components/ui/IconFont";
+import variables from "../../theme/variables";
+import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -70,6 +74,12 @@ const styles = StyleSheet.create({
   itemLeft: {
     flexDirection: "column",
     alignItems: "flex-start"
+  },
+  qrButton: {
+    margin: 20
+  },
+  white: {
+    color: variables.colorWhite
   },
   itemLeftText: {
     alignSelf: "flex-start"
@@ -376,7 +386,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
           })}
           {touchableMenuItem(true, false, false, true, "B", () => {
-            alert('clicked B!');
+           // const ethNewAddress = ethWallet.generate();
+           // alert(`Address = , ${ethNewAddress.getAddressString()}\nPrivate key = , ${ethNewAddress.getPrivateKeyString()}\nGenerated DID: did:ethr:${ethNewAddress.getAddressString()}`);
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
@@ -389,6 +400,16 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         </View>
       </View>);
 
+    const footerButton = () => (
+        <ButtonDefaultOpacity
+          block={true}
+          onPress={this.props.navigateToPaymentScanQrCode}
+          activeOpacity={1}>
+          <IconFont name="io-qr" style={styles.white} />
+          <Text>{I18n.t("ssi.scanQr")}</Text>
+        </ButtonDefaultOpacity>
+    );
+
 
     // eslint-disable
     const screenContent = () => (
@@ -397,6 +418,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         <View spacer={true}/>
 
         {crossMenu()}
+        <View style={styles.qrButton}>{footerButton()}</View>
+
 
         <List withContentLateralPadding={true}>
           {/* Preferences */}
@@ -619,6 +642,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   logout: () => dispatch(logoutRequest({keepUserData: false})),
   resetPin: () => dispatch(updatePin()),
   clearCache: () => dispatch(clearCache()),
+  navigateToPaymentScanQrCode: () => dispatch(navigateToPaymentScanQrCode()),
   setDebugModeEnabled: (enabled: boolean) =>
     dispatch(setDebugModeEnabled(enabled)),
   setPagoPATestEnabled: (isPagoPATestEnabled: boolean) =>

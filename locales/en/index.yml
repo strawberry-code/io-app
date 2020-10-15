@@ -266,8 +266,8 @@ profile:
       preferred_language:
         title: Favourite language
         subtitle: In which language do you want to use the application?
-        alert: 
-          title: Do you want to change the language to 
+        alert:
+          title: Do you want to change the language to
           subtitle: You'll need to restart the application to make this happen
         not_selected: Not selected
     empty:
@@ -293,6 +293,7 @@ profile:
       birthday_calendar: Birthdays
 ssi:
   title: SSI
+  scanQr: Scan a QR code
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
@@ -959,18 +960,18 @@ messages:
     payment:
       expired: Payment expired
       paid: This notice is paid. Show the receipt in your
-      addMemo: 
-          block1: Add a reminder for the 
+      addMemo:
+          block1: Add a reminder for the
           block2: at
       expiringAlert: This notice expire today at
-      expiredAlert: 
-        block1: The notice expired at 
+      expiredAlert:
+        block1: The notice expired at
         block2: "on"
-    presctiption:  
+    presctiption:
       addMemo: This prescription expires the
       expiringAlert: This prescription expires today
       expiredAlert:
-          block1: The prescription expired at 
+          block1: The prescription expired at
           block2: "on"
     pay: Pay € {{amount}}
     paid: Paid
