@@ -9,7 +9,6 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
-import ethWallet from 'ethereumjs-wallet';
 import {TranslationKeys} from "../../../locales/locales";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {ContextualHelp} from "../../components/ContextualHelp";
@@ -56,6 +55,7 @@ import {ScreenContentHeader} from "../../components/screens/ScreenContentHeader"
 import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
+import {ethers, utils} from "ethers";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -386,8 +386,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
           })}
           {touchableMenuItem(true, false, false, true, "B", () => {
-           // const ethNewAddress = ethWallet.generate();
-           // alert(`Address = , ${ethNewAddress.getAddressString()}\nPrivate key = , ${ethNewAddress.getPrivateKeyString()}\nGenerated DID: did:ethr:${ethNewAddress.getAddressString()}`);
+            let hdnode = ethers.utils.HDNode.fromSeed(ethers.utils.toUtf8Bytes("1234567891234567898765432"))
+            alert('clicked B: ' + hdnode.address + '\n' + utils.randomBytes(3))
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
