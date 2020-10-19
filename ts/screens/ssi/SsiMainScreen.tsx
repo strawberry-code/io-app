@@ -56,6 +56,7 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 import {ethers, utils} from "ethers";
+import { generateSecureRandom } from 'react-native-securerandom';
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -385,9 +386,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           {touchableMenuItem(false, true, false, true, "A", () => {
             navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
           })}
-          {touchableMenuItem(true, false, false, true, "B", () => {
-            let hdnode = ethers.utils.HDNode.fromSeed(ethers.utils.toUtf8Bytes("1234567891234567898765432"))
-            alert('clicked B: ' + hdnode.address + '\n' + utils.randomBytes(3))
+          {touchableMenuItem(true, false, false, true, "B", async () => {
+            let hdnode = ethers.utils.HDNode.fromSeed(await generateSecureRandom(64))
+            alert('clicked B: ' + hdnode.address )
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>

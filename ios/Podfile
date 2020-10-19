@@ -22,6 +22,8 @@ target 'ItaliaApp' do
   pod 'ReactNativeART', :podspec => '../node_modules/@react-native-community/art/ReactNativeART.podspec'
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'RNSecureRandom', :path => '../node_modules/react-native-securerandom'
+
   target 'ItaliaAppTests' do
     inherit! :complete
     # Pods for testing
