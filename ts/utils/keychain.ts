@@ -84,9 +84,15 @@ export async function deleteDid(): Promise<boolean> {
  *
  * The promise fails when there is no valid unlock code stored.
  */
-export async function getDidFromKeychain(): Promise<void> {
+export async function getDidFromKeychain(): Promise<boolean> {
   let credentials = await Keychain.getGenericPassword({service: DID_KEY});
   if (typeof credentials !== "boolean" && credentials.password.length > 0) {
-    DidSingleton.unmarshal(credentials.password)
+    try {
+      DidSingleton.unmarshal(credentials.password)
+    } catch(e) {
+      throw new Error(e)
+    }
+    return true
   }
+  return false
 }
