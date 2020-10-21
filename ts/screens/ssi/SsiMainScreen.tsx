@@ -56,7 +56,6 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
-import {deleteDid, getDidFromKeychain, getPin} from "../../utils/keychain";
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
 }>;
@@ -384,24 +383,19 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
           {touchableMenuItem(false, true, false, true, "A", async () => {
             //navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
-            DidSingleton.destroy()
-            await getDidFromKeychain()
-            alert(JSON.stringify('pin: ' + await getPin() + '\n' + 'did: ' + DidSingleton.getDidAddress()))
+            alert('clicked A')
           })}
           {touchableMenuItem(true, false, false, true, "B", async () => {
-            await DidSingleton.generateEthWallet()
-            console.log(DidSingleton.getDidAddress())
+            alert('clicked B')
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "marshal", async () => {
-            //await saveDidOnKeychain()
-            await deleteDid()
-            //alert(DidSingleton.marshal());
+          {touchableMenuItem(false, true, true, false, "get", async () => {
+            await DidSingleton.loadDidFromKeychain()
+            alert(DidSingleton.getDidAddress())
           })}
-          {touchableMenuItem(true, false, true, false, "unmarshal", async () => {
-            await getDidFromKeychain()
-            alert(DidSingleton.getDidAddress());
+          {touchableMenuItem(true, false, true, false, "D", async () => {
+            alert('clicked D')
           })}
         </View>
       </View>);

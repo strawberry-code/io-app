@@ -67,7 +67,7 @@ export async function getPin(): Promise<Option<PinString>> {
 /**
  * Save marshalled DID info in keychain
  */
-export async function saveDidOnKeychain(): Promise<boolean> {
+export async function setDidOnKeychain(): Promise<boolean> {
   return await setGenericPasswordWithDefaultAccessibleOption(DID_KEY, DidSingleton.marshal(), {service: DID_KEY});
 }
 

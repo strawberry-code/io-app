@@ -1,5 +1,6 @@
 import {ethers} from "ethers";
 import {generateSecureRandom} from "react-native-securerandom";
+import {getDidFromKeychain, setDidOnKeychain} from "../utils/keychain";
 
 /**
  * DID manager, built following singleton pattern
@@ -106,6 +107,14 @@ export class DID {
     this.setEthAddress(unmarshalled.ethAddress)
     this.setPublicKey(unmarshalled.publicKey)
     this.setPrivateKey(unmarshalled.privateKey)
+  }
+
+  public async loadDidFromKeychain(): Promise<boolean> {
+    await getDidFromKeychain()
+  }
+
+  public async saveDidOnKeychain(): Promise<void> {
+    await setDidOnKeychain()
   }
 }
 

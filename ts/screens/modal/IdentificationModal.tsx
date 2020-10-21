@@ -38,6 +38,7 @@ import customVariables from "../../theme/variables";
 import { setAccessibilityFocus } from "../../utils/accessibility";
 import { authenticateConfig } from "../../utils/biometric";
 import { maybeNotNullyString } from "../../utils/strings";
+import {DidSingleton} from "../../types/DID";
 
 type Props = ReturnType<typeof mapDispatchToProps> &
   ReturnType<typeof mapStateToProps>;
@@ -304,7 +305,7 @@ class IdentificationModal extends React.PureComponent<Props, State> {
     }
   }
 
-  private onIdentificationSuccessHandler = () => {
+  private onIdentificationSuccessHandler = async () => {
     const { identificationProgressState } = this.props;
 
     if (identificationProgressState.kind !== "started") {
@@ -316,6 +317,11 @@ class IdentificationModal extends React.PureComponent<Props, State> {
 
     if (identificationSuccessData) {
       identificationSuccessData.onSuccess();
+    }
+    console.log('🟢🟢🟢🟢 YYYYYY - mettere qui il recupero del DID dal portachiavi')
+    if(!(await DidSingleton.loadDidFromKeychain())) {
+      await DidSingleton.generateEthWallet()
+      await DidSingleton.saveDidOnKeychain()
     }
     this.props.onIdentificationSuccess();
   };
