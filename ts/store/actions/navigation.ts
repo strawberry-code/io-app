@@ -26,6 +26,7 @@ import TransactionDetailsScreen from "../../screens/wallet/TransactionDetailsScr
 import TransactionsScreen from "../../screens/wallet/TransactionsScreen";
 import WalletHomeScreen from "../../screens/wallet/WalletHomeScreen";
 import { InferNavigationParams } from "../../types/react";
+import SsiMainScreen from "../../screens/ssi/SsiMainScreen";
 
 export const navigationRestore = createStandardAction("NAVIGATION_RESTORE")<
   NavigationState
@@ -231,6 +232,14 @@ export const navigateToWalletHome = (
 ) =>
   NavigationActions.navigate({
     routeName: ROUTES.WALLET_HOME,
+    params
+  });
+
+export const navigateToSsiHome = (
+  params?: InferNavigationParams<typeof SsiMainScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_HOME,
     params
   });
 

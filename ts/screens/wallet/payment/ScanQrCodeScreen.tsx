@@ -22,7 +22,7 @@ import { CameraMarker } from "../../../components/wallet/CameraMarker";
 import I18n from "../../../i18n";
 import {
   navigateToPaymentManualDataInsertion,
-  navigateToPaymentTransactionSummaryScreen,
+  navigateToPaymentTransactionSummaryScreen, navigateToSsiHome,
   navigateToWalletHome
 } from "../../../store/actions/navigation";
 import { Dispatch } from "../../../store/actions/types";
@@ -138,6 +138,14 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     this.setState({
       scanningState: "VALID"
     });
+
+    let parsedSsiData = JSON.parse(data)
+    if(parsedSsiData.type === "signReq") {
+      // Fare la POST VC Issue verso SSI Server
+      // TODO
+      alert('success')
+    }
+
     this.props.navigateToScannedSsiQrCode();
   };
 
@@ -167,8 +175,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    * Gets called by the QR code reader on new QR code reads
    */
   private onQrCodeData = (data: string) => {
-    if(data.includes("SSI-QR-CODE")) {
-      //console.log("scansionato codice QR SSI");
+    console.log(data)
+    if(data.includes("signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
+      console.log("scansionato codice QR SSI");
       this.onValidSsiQrCode(data);
     } else {
       const resultOrError = decodePagoPaQrCode(data);
@@ -356,7 +365,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToWalletHome: () => dispatch(navigateToWalletHome()),
-  navigateToScannedSsiQrCode: () => dispatch(navigateToWalletHome()),
+  navigateToScannedSsiQrCode: () => dispatch(navigateToSsiHome()),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (
