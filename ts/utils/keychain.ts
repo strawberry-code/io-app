@@ -10,8 +10,10 @@ import { fromEither, none, Option } from "fp-ts/lib/Option";
 import * as Keychain from "react-native-keychain";
 
 import { PinString } from "../types/PinString";
+import {DidSingleton} from "../types/DID";
 
 const PIN_KEY = "PIN";
+const DID_KEY = "DID";
 
 /**
  * Wrapper that sets default accessible option.
@@ -38,14 +40,14 @@ export async function setGenericPasswordWithDefaultAccessibleOption(
  * Saves the provided unlock code in the Keychain
  */
 export async function setPin(pin: PinString): Promise<boolean> {
-  return await setGenericPasswordWithDefaultAccessibleOption(PIN_KEY, pin);
+  return await setGenericPasswordWithDefaultAccessibleOption(PIN_KEY, pin, {service: PIN_KEY});
 }
 
 /**
  * Removes the unlock code from the Keychain
  */
 export async function deletePin(): Promise<boolean> {
-  return await Keychain.resetGenericPassword();
+  return await Keychain.resetGenericPassword({service: PIN_KEY});
 }
 
 /**
@@ -54,10 +56,37 @@ export async function deletePin(): Promise<boolean> {
  * The promise fails when there is no valid unlock code stored.
  */
 export async function getPin(): Promise<Option<PinString>> {
-  const credentials = await Keychain.getGenericPassword();
+  const credentials = await Keychain.getGenericPassword({service: PIN_KEY});
   if (typeof credentials !== "boolean" && credentials.password.length > 0) {
     return fromEither(PinString.decode(credentials.password));
   } else {
     return none;
+  }
+}
+
+/**
+ * Save marshalled DID info in keychain
+ */
+export async function saveDidOnKeychain(): Promise<boolean> {
+  return await setGenericPasswordWithDefaultAccessibleOption(DID_KEY, DidSingleton.marshal(), {service: DID_KEY});
+}
+
+/**
+ * Removes the DID from the Keychain
+ */
+export async function deleteDid(): Promise<boolean> {
+  DidSingleton.destroy()
+  return await Keychain.resetGenericPassword({service: DID_KEY});
+}
+
+/**
+ * Returns the DID from the Keychain
+ *
+ * The promise fails when there is no valid unlock code stored.
+ */
+export async function getDidFromKeychain(): Promise<void> {
+  let credentials = await Keychain.getGenericPassword({service: DID_KEY});
+  if (typeof credentials !== "boolean" && credentials.password.length > 0) {
+    DidSingleton.unmarshal(credentials.password)
   }
 }

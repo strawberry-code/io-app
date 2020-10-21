@@ -55,9 +55,8 @@ import {ScreenContentHeader} from "../../components/screens/ScreenContentHeader"
 import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
-import {ethers, utils} from "ethers";
-import { generateSecureRandom } from 'react-native-securerandom';
-
+import {DidSingleton} from "../../types/DID";
+import {deleteDid, getDidFromKeychain, getPin, saveDid, saveDidOnKeychain} from "../../utils/keychain";
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
 }>;
@@ -383,20 +382,26 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     const crossMenu = () => (
       <View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, false, true, "A", () => {
-            navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
+          {touchableMenuItem(false, true, false, true, "A", async () => {
+            //navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
+            DidSingleton.destroy()
+            await getDidFromKeychain()
+            alert(JSON.stringify('pin: ' + await getPin() + '\n' + 'did: ' + DidSingleton.getDidAddress()))
           })}
           {touchableMenuItem(true, false, false, true, "B", async () => {
-            let hdnode = ethers.utils.HDNode.fromSeed(await generateSecureRandom(64))
-            alert('clicked B: ' + hdnode.address )
+            await DidSingleton.generateEthWallet()
+            console.log(DidSingleton.getDidAddress())
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "C", () => {
-            alert('clicked C!');
+          {touchableMenuItem(false, true, true, false, "marshal", async () => {
+            //await saveDidOnKeychain()
+            await deleteDid()
+            //alert(DidSingleton.marshal());
           })}
-          {touchableMenuItem(true, false, true, false, "D", () => {
-            alert('clicked D!');
+          {touchableMenuItem(true, false, true, false, "unmarshal", async () => {
+            await getDidFromKeychain()
+            alert(DidSingleton.getDidAddress());
           })}
         </View>
       </View>);
