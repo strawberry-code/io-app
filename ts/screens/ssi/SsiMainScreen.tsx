@@ -56,7 +56,7 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
-import {deleteDid, getDidFromKeychain, getPin, saveDid, saveDidOnKeychain} from "../../utils/keychain";
+import {deleteDid, getDidFromKeychain, getPin} from "../../utils/keychain";
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
 }>;
