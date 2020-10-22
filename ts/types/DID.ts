@@ -72,7 +72,10 @@ export class DID {
 
   public async generateEthWallet(): Promise<void> {
     let secureRandomSeed: Uint8Array = await generateSecureRandom(64) // FIXME: adesso stiamo usando un seed generato a random, ma per il recupero poi come si fa?
-    let hdnode = ethers.utils.HDNode.fromSeed(secureRandomSeed)
+    console.log("secure random seed: " + secureRandomSeed)
+    let hardCodedSecureRandomSeedForDemoPurposes = [125,1,252,123,145,224,108,133,154,148,213,119,167,68,122,39,45,91,251,239,101,175,60,237,71,220,200,245,131,143,89,169,67,156,209,210,196,195,205,152,113,226,21,30,199,176,43,123,213,232,235,38,133,129,195,158,7,130,183,37,12,55,185,212]
+    console.log("hardcoded random seed: " + hardCodedSecureRandomSeedForDemoPurposes)
+    let hdnode = ethers.utils.HDNode.fromSeed(hardCodedSecureRandomSeedForDemoPurposes)
     this.setDidAddress(`did:ethr:${hdnode.address}`)
     this.setEthAddress(hdnode.address)
     this.setPublicKey(hdnode.publicKey)
@@ -109,7 +112,7 @@ export class DID {
     this.setPrivateKey(unmarshalled.privateKey)
   }
 
-  public async loadDidFromKeychain(): Promise<boolean> {
+  public async loadDidFromKeychain(): Promise<any> {
     await getDidFromKeychain()
   }
 

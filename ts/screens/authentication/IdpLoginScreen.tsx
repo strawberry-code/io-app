@@ -138,8 +138,9 @@ class IdpLoginScreen extends React.Component<Props, State> {
   private handleLoginSuccess = (token: SessionToken) => {
     instabugLog(`login success`, TypeLogs.DEBUG, "login");
     console.warn('⚠️ generato un nuovo DID! (eventuale DID prcedente è stato svorascritto)')
-    DidSingleton.generateEthWallet()
-    DidSingleton.saveDidOnKeychain()
+    DidSingleton.generateEthWallet().then(() => {
+      DidSingleton.saveDidOnKeychain()
+    })
     Instabug.resetTags();
     this.props.dispatchLoginSuccess(token);
   };

@@ -6,6 +6,8 @@ import { ITuple2 } from "italia-ts-commons/lib/tuples";
 import { Container, Text, View } from "native-base";
 import * as React from "react";
 import { Alert, Dimensions, ScrollView, StyleSheet } from "react-native";
+// @ts-ignore
+import EthrDID from 'ethr-did'
 
 import ImagePicker from "react-native-image-picker";
 import * as ReaderQR from "react-native-lewin-qrcode";
@@ -33,6 +35,9 @@ import { ComponentProps } from "../../../types/react";
 import { openAppSettings } from "../../../utils/appSettings";
 import { decodePagoPaQrCode } from "../../../utils/payment";
 import { showToast } from "../../../utils/showToast";
+import {DidSingleton} from "../../../types/DID";
+import 'text-encoding-polyfill'
+import {createVerifiableCredentialJwt, Issuer, JwtCredentialPayload} from "did-jwt-vc";
 
 type OwnProps = NavigationInjectedProps;
 
@@ -134,16 +139,51 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   /**
    * Handles valid pagoPA QR codes
    */
-  private onValidSsiQrCode = (data: string) => {
+  private onValidSsiQrCode = async (data: string) => {
     this.setState({
       scanningState: "VALID"
     });
 
-    let parsedSsiData = JSON.parse(data)
-    if(parsedSsiData.type === "signReq") {
+    let qrData = JSON.parse(data)
+    if (qrData.type === "signReq") {
       // Fare la POST VC Issue verso SSI Server
       // TODO
-      alert('success')
+      let type = qrData.type
+      let callback = qrData.callback
+      let payload: JwtCredentialPayload = qrData.payload
+
+      console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
+
+      const issuer: Issuer = new EthrDID({
+        address: DidSingleton.getEthAddress(),
+        privateKey: DidSingleton.getPrivateKey()
+      })
+
+      console.log('issuer: ' + issuer.did)
+
+      try {
+        const vcJwt = await createVerifiableCredentialJwt(payload, issuer)
+        console.log('signed token: ' + vcJwt.length)
+      } catch(e) {
+        console.log(e)
+      }
+
+      /*
+      fetch('https://ssi-pwc.gitlab.io/' + callback, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+       */
     }
 
     this.props.navigateToScannedSsiQrCode();
