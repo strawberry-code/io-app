@@ -1,7 +1,7 @@
 import {Millisecond} from "italia-ts-commons/lib/units";
 import {List, ListItem, Text, Toast, View} from "native-base";
 import * as React from "react";
-import {Alert, ScrollView, StyleSheet, TouchableOpacity, Dimensions, Animated} from "react-native";
+import {Alert, ScrollView, StyleSheet, TouchableOpacity, Dimensions, Animated, TouchableHighlight} from "react-native";
 import {
   NavigationEvents,
   NavigationEventSubscription,
@@ -9,7 +9,7 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
-import {Locales, TranslationKeys} from "../../../locales/locales";
+import {TranslationKeys} from "../../../locales/locales";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {ContextualHelp} from "../../components/ContextualHelp";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
@@ -56,11 +56,11 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
-import {getVCfromJwt} from './VCs'
-import {getDidResolver} from './DidRevolver'
 import {VerifiedCredential} from "did-jwt-vc";
 import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
+import SsiModal from "./SsiModal";
+import {useRef} from "react";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -74,7 +74,10 @@ type Props = OwnProps &
 type State = {
   tapsOnAppVersion: number;
   isLoading: boolean;
+  isModalVisible: boolean;
 };
+
+
 
 const styles = StyleSheet.create({
   itemLeft: {
@@ -137,7 +140,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       tapsOnAppVersion: 0,
-      isLoading: true
+      isLoading: true,
+      isModalVisible: false,
     };
     this.handleClearCachePress = this.handleClearCachePress.bind(this);
   }
@@ -399,7 +403,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       <View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
           {touchableMenuItem(false, true, false, true, "Verified\nCredentials", async () => {
-            navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN, {verifiedCredentials: this.verifiedCredentials}); // devonly: navigator placeholder
+            navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
             //alert('clicked A')
           })}
           {touchableMenuItem(true, false, false, true, "B", async () => {
@@ -415,10 +419,10 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             await DidSingleton.loadDidFromKeychain()
             alert(DidSingleton.getDidAddress())
           })}
-          {touchableMenuItem(true, false, true, false, "DD", async () => {
+          {touchableMenuItem(true, false, true, false, "D", async () => {
             alert('ddd')
             // console.log(await VCstore.getVCs())
-             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
+             //const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
           })}
         </View>
       </View>);
@@ -433,16 +437,23 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         </ButtonDefaultOpacity>
     );
 
-
     // eslint-disable
-    const screenContent = () => (
+    const screenContent = () => {
+      const childRef = useRef();
+      return(
       <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
         <NavigationEvents onWillFocus={this.scrollToTop}/>
         <View spacer={true}/>
 
         {crossMenu()}
         <View style={styles.qrButton}>{footerButton()}</View>
+        <SsiModal ref={childRef} />
 
+        <TouchableHighlight
+          onPress={() => {childRef.current.changeText(true)}}
+        >
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
 
         <List withContentLateralPadding={true}>
           {/* Preferences */}
@@ -619,7 +630,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           <EdgeBorderComponent/>
         </List>
       </ScrollView>
-    );
+    )};
 
     const ContainerComponent = withLoadingSpinner(() => (
       <TopScreenComponent

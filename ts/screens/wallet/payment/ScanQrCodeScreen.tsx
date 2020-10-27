@@ -207,31 +207,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     let qrData = JSON.parse(data)
 
-    console.log('eseguento logica per shareReq')
-    let callback = qrData.callback
+    this.props.navigateToVCsList({action:"shareVCfromQR", data: qrData});
 
-    console.log(`\ncallback: ${callback}\n`)
 
-    //let VCs = HardcodedVCs
-
-    callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
-    console.log("making http fetch post")
-    fetch(callback, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"}),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        this.props.navigateToVCsList({action:"showModalSharedVC", sharedVC: data});
-
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
 
 
     //this.props.navigateToScannedSsiQrCode();
@@ -338,7 +316,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     }
   }
 
-  private handleDidFocus = () => this.setState({isFocused: true});
+  private handleDidFocus = () => this.setState({isFocused: true, scanningState: "SCANNING"})
 
   private handleWillBlur = () => this.setState({isFocused: false});
 

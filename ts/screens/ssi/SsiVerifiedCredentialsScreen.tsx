@@ -4,7 +4,17 @@
  */
 import {fromNullable} from "fp-ts/lib/Option";
 import * as React from "react";
-import {Text, FlatList, Platform, View, TouchableOpacity, ListRenderItemInfo} from "react-native";
+import {
+  Text,
+  FlatList,
+  Platform,
+  View,
+  TouchableOpacity,
+  ListRenderItemInfo,
+  TouchableHighlight,
+  StyleSheet,
+  ScrollView, ActivityIndicator, Modal
+} from "react-native";
 import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
 import {connect} from "react-redux";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
@@ -41,6 +51,10 @@ import {VerifiedCredential} from "did-jwt-vc";
 import variables from "../../theme/variables";
 import {getVCfromJwt} from "./VCs";
 import {HardcodedVCs} from "./VCsJson";
+import VCstore from "./VCstore";
+import SsiModal from "./SsiModal";
+import {useRef} from "react";
+import SsiShareVCModal from "./ShareVCModal";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -57,6 +71,9 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
+  data: [],
+  modalVisible: boolean;
+  modalStates: any;
 };
 
 
@@ -74,26 +91,77 @@ type State = {
 }
  */
 
-
-
 class PreferencesScreen extends React.Component<Props, State> {
-
 
   constructor(props: Props) {
     super(props);
     this.state = {
       isFingerprintAvailable: false,
-      isFirstLoad: Platform.OS === "ios"
+      isFirstLoad: Platform.OS === "ios",
+      data: [],
+      modalVisible: false,
+      modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}
     };
   }
 
+  public shareVCfromQrScan = async (qrData) => {
+    console.log('🟢 eseguento logica per shareReq')
+    console.log(`qrData: ${JSON.stringify(qrData)}`)
+    let callback = qrData.callback
+
+    console.log(`\ncallback: ${callback}\n`)
+
+    //let VCs = HardcodedVCs
+
+    callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
+    console.log("making http fetch post")
+
+    this.setState({modalVisible: true, modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}})
+    this.setState({shareTo: callback, VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})})
+  }
+
+  private shareVCnow = (VC, shareTo) => {
+    fetch(shareTo, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: VC
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.info('Success:', JSON.stringify(data))
+        this.setState({modalVisible: true, modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: false}})
+      })
+      .catch((error) => {
+        console.info('Error:', error);
+        this.setState({modalVisible: true, modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: true}})
+      });
+  }
+
   public componentDidMount() {
+    VCstore.getVCs().then((data) => {
+      this.setState({data: data})
+    })
+  }
+
+  public dispatchNavigationAction (action, data) {
+    if(action === "shareVCfromQR") {
+      this.shareVCfromQrScan(data)
+    } else {
+      console.error("navigation action non riconosciuta")
+    }
   }
 
   private checkParamsOnWillFocus = () => {
-    if(this.props.navigation.state.params.sharedVC) {
-      alert("hai condiviso una VC:" + JSON.stringify(this.props.navigation.state.params.sharedVC))
+    console.log(JSON.stringify(this.props.navigation.state.params))
+    if(this.props.navigation.state.params && this.props.navigation.state.params.action) {
+      this.dispatchNavigationAction(this.props.navigation.state.params.action, this.props.navigation.state.params.data)
     }
+    VCstore.getVCs().then((data) => {
+      this.setState({data: data})
+    })
+
   }
 
   private textHeader = (headerTitle: string) => {
@@ -134,52 +202,136 @@ class PreferencesScreen extends React.Component<Props, State> {
         >
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
-            data={this.props.navigation.getParam("verifiedCredentials") ? this.props.navigation.getParam("verifiedCredentials")  : HardcodedVCs}
+            data={this.state.data}
             renderItem={this.renderItem}
           />
         </ScreenContent>
         <NavigationEvents onWillFocus={this.checkParamsOnWillFocus} />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+
+              {this.state.modalStates.showPrompt && <>
+                <Text style={styles.modalText}>Do you want to share this credential?</Text>
+
+                <View style={{flexDirection: "row"}}>
+                  <TouchableHighlight
+                    style={{...styles.openButton, backgroundColor: variables.brandPrimary, marginHorizontal: 20}}
+                    onPress={() => {
+                      this.setState({modalStates: {showPrompt: false, sharing: true, sharedSuccess: false, sharedFail: false}});
+                      this.shareVCnow(this.state.VCtoBeShared, this.state.shareTo)
+                    }}
+                  >
+                    <Text style={styles.textStyle}>Yes</Text>
+                  </TouchableHighlight>
+
+                  <TouchableHighlight
+                    style={{...styles.openButton, backgroundColor: variables.brandDanger, marginHorizontal: 20}}
+                    onPress={() => {
+                      this.setState({modalVisible: false});
+                    }}
+                  >
+                    <Text style={styles.textStyle}>No</Text>
+                  </TouchableHighlight>
+                </View>
+              </>}
+
+              {this.state.modalStates.sharing && <>
+                <Text style={styles.modalText}>Sharing credential...</Text>
+                <ActivityIndicator/>
+              </>}
+
+              {this.state.modalStates.sharedSuccess && <>
+                <Text style={styles.modalText}>Credential shared!</Text>
+                <Text style={styles.modalText}>✅</Text>
+
+                <TouchableHighlight
+                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
+                  onPress={() => {
+                    this.setState({modalVisible: false})
+                    this.setState({modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}});
+                  }}
+                >
+                  <Text style={styles.textStyle}>Ok, thanks</Text>
+                </TouchableHighlight>
+              </>}
+
+              {this.state.modalStates.sharedFail && <>
+                <Text style={styles.modalText}>Failed to share the credential</Text>
+                <Text style={styles.modalText}>🚫</Text>
+                <TouchableHighlight
+                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
+                  onPress={() => {
+                    this.setState({modalVisible: false});
+                  }}
+                >
+                  <Text style={styles.textStyle}>Ok, thanks</Text>
+                </TouchableHighlight>
+              </>}
+            </View>
+          </View>
+        </Modal>
       </TopScreenComponent>
     );
   }
 
 }
 
+/*
+        <TouchableHighlight
+          onPress={() => {childRef.current.changeText(true)}}
+        >
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
+ */
+
 const ItemSeparator = () => <ItemSeparatorComponent noPadded={true}/>;
 
-/*
+
 const styles = StyleSheet.create({
-  itemLoadingContainer: {
-    height: 114,
-    paddingVertical: 16,
-    paddingHorizontal: customVariables.contentPadding,
-    flex: 1
-  },
-  itemLoadingHeaderWrapper: {
-    flexDirection: "row",
-    marginBottom: 4
-  },
-  itemLoadingHeaderCenter: {
+  centeredView: {
     flex: 1,
-    paddingRight: 55 // Includes right header space
-  },
-  itemLoadingContentWrapper: {
-    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    height: 42
+    marginTop: 22
   },
-  itemLoadingContentCenter: {
-    flex: 1,
-    paddingRight: 32
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
-  padded: {
-    paddingHorizontal: customVariables.contentPadding
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 5,
+    padding: 10,
+    elevation: 2,
+    height: 40
   },
-  activityIndicator: {
-    padding: 12
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
   }
 });
- */
+
 
 function mapStateToProps(state: GlobalState) {
   return {
