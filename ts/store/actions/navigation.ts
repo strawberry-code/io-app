@@ -27,6 +27,7 @@ import TransactionsScreen from "../../screens/wallet/TransactionsScreen";
 import WalletHomeScreen from "../../screens/wallet/WalletHomeScreen";
 import { InferNavigationParams } from "../../types/react";
 import SsiMainScreen from "../../screens/ssi/SsiMainScreen";
+import SsiVerifiedCredentialsScreen from "../../screens/ssi/SsiVerifiedCredentialsScreen";
 
 export const navigationRestore = createStandardAction("NAVIGATION_RESTORE")<
   NavigationState
@@ -240,6 +241,14 @@ export const navigateToSsiHome = (
 ) =>
   NavigationActions.navigate({
     routeName: ROUTES.SSI_HOME,
+    params
+  });
+
+export const navigateToVCsList = (
+  params?: InferNavigationParams<typeof SsiVerifiedCredentialsScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN,
     params
   });
 

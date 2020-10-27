@@ -9,7 +9,7 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
-import {TranslationKeys} from "../../../locales/locales";
+import {Locales, TranslationKeys} from "../../../locales/locales";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {ContextualHelp} from "../../components/ContextualHelp";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
@@ -56,6 +56,12 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
+import {getVCfromJwt} from './VCs'
+import {getDidResolver} from './DidRevolver'
+import {VerifiedCredential} from "did-jwt-vc";
+import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
+import VCstore from "./VCstore";
+
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
 }>;
@@ -67,6 +73,7 @@ type Props = OwnProps &
 
 type State = {
   tapsOnAppVersion: number;
+  isLoading: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -124,16 +131,25 @@ const RESET_COUNTER_TIMEOUT = 2000 as Millisecond;
  */
 class SsiMainScreen extends React.PureComponent<Props, State> {
   private navListener?: NavigationEventSubscription;
+  private verifiedCredentials: VerifiedCredential[] | undefined
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      tapsOnAppVersion: 0
+      tapsOnAppVersion: 0,
+      isLoading: true
     };
     this.handleClearCachePress = this.handleClearCachePress.bind(this);
   }
 
-  public componentDidMount() {
+  public async componentDidMount() {
+    let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"
+    await VCstore.clearStore()
+    await VCstore.storeVC(hardcodedJwt)
+    await VCstore.storeVC(hardcodedJwt)
+    this.verifiedCredentials = await VCstore.getVCs()
+    this.setState({isLoading: false})
+    console.log(`Verified credentials loaded (${this.verifiedCredentials.length}): ' + ${JSON.stringify(this.verifiedCredentials)}`)
     // eslint-disable-next-line functional/immutable-data
     this.navListener = this.props.navigation.addListener("didFocus", () => {
       setStatusBarColorAndBackground(
@@ -370,6 +386,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             textAlign: "center",
             justifyContent: "center",
             backgroundColor: inspectCss ? "yellow" : undefined,
+            fontSize: 13
           }}>
             {text}
           </Text>
@@ -381,21 +398,27 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     const crossMenu = () => (
       <View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, false, true, "A", async () => {
-            //navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
-            alert('clicked A')
+          {touchableMenuItem(false, true, false, true, "Verified\nCredentials", async () => {
+            navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN, {verifiedCredentials: this.verifiedCredentials}); // devonly: navigator placeholder
+            //alert('clicked A')
           })}
           {touchableMenuItem(true, false, false, true, "B", async () => {
-            alert('clicked B')
+            // console.log(DidSingleton.getDidAddress())
+            // alert(DidSingleton.getDidAddress())
+
+            VCstore.storeVC('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw')
+            //VCstore.clearStore()
           })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "get", async () => {
+          {touchableMenuItem(false, true, true, false, "Show DID\nAddress", async () => {
             await DidSingleton.loadDidFromKeychain()
             alert(DidSingleton.getDidAddress())
           })}
-          {touchableMenuItem(true, false, true, false, "D", async () => {
-            alert('clicked D')
+          {touchableMenuItem(true, false, true, false, "DD", async () => {
+            alert('ddd')
+            // console.log(await VCstore.getVCs())
+             const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
           })}
         </View>
       </View>);
@@ -598,7 +621,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       </ScrollView>
     );
 
-    return (
+    const ContainerComponent = withLoadingSpinner(() => (
       <TopScreenComponent
         headerTitle={I18n.t("messages.contentTitle")}
         isSearchAvailable={true}
@@ -617,7 +640,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         </React.Fragment>
         {screenContent()}
       </TopScreenComponent>
-    );
+      ))
+
+    return <ContainerComponent isLoading={this.state.isLoading} />;
   }
 }
 

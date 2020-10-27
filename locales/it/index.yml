@@ -297,6 +297,9 @@ profile:
 ssi:
   title: SSI
   scanQr: Scansiona codice QR
+  vcslist:
+    title: Credenziali Verificate
+    subtitle: Queste sono le tue Credenziali Verificate associate al tuo SPID
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

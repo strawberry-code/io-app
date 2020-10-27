@@ -4831,7 +4831,7 @@ did-resolver@0.0.6, did-resolver@^0.0.6:
   resolved "https://registry.yarnpkg.com/did-resolver/-/did-resolver-0.0.6.tgz#2d4638b8914871c19945fb3243f6f298c1cca9db"
   integrity sha512-PqxzaoomTbJG3IzEouUGgppu3xrsbGKHS75zS3vS/Hfm56XxLpwIe7yFLokgXUbMWmLa0dczFHOibmebO4wRLA==
 
-did-resolver@^2.1.1:
+did-resolver@2.1.1, did-resolver@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/did-resolver/-/did-resolver-2.1.1.tgz#43796f8a3e921644e5fb15a8147684ca87019cfd"
   integrity sha512-FYLTkNWofjYNDGV1HTQlyVu1OqZiFxR4I8KM+oxGVOkbXva15NfWzbzciqdXUDqOhe6so5aroAdrVip6gSAYSA==
@@ -5434,10 +5434,26 @@ ethjs-contract@^0.1.9:
     ethjs-util "0.1.3"
     js-sha3 "0.5.5"
 
+ethjs-contract@^0.2.0:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/ethjs-contract/-/ethjs-contract-0.2.3.tgz#f113ced8ed1c9c635b0b7ec71901340b64e8cded"
+  integrity sha512-fKsHm57wxwHrZhVlD8AHU2lC2G3c1fmvoEz15BpqIkuGWiTbjuvrQo2Avc+3EQpSsTFWNdyxC0h1WKRcn5kkyQ==
+  dependencies:
+    babel-runtime "^6.26.0"
+    ethjs-abi "0.2.0"
+    ethjs-filter "0.1.8"
+    ethjs-util "0.1.3"
+    js-sha3 "0.5.5"
+
 ethjs-filter@0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/ethjs-filter/-/ethjs-filter-0.1.5.tgz#0112af6017c24677e32b8fdeb20e6196019b7598"
   integrity sha1-ARKvYBfCRnfjK4/esg5hlgGbdZg=
+
+ethjs-filter@0.1.8:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/ethjs-filter/-/ethjs-filter-0.1.8.tgz#2b02726b820ed4dd3860614d185c0c0f7ed1747f"
+  integrity sha512-qTDPskDL2UadHwjvM8A+WG9HwM4/FoSY3p3rMJORkHltYcAuiQZd2otzOYKcL5w2Q3sbAkW/E3yt/FPFL/AVXA==
 
 ethjs-format@0.2.7:
   version "0.2.7"
@@ -5507,6 +5523,21 @@ ethr-did-resolver@^0.2.0:
     ethjs-provider-http "^0.1.6"
     ethjs-query "^0.3.5"
     ethr-did-registry "^0.0.3"
+
+ethr-did-resolver@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ethr-did-resolver/-/ethr-did-resolver-3.0.0.tgz#a7a3b8b4407d651007266b3a76463796bb79c0ce"
+  integrity sha512-o400l9p8ee6W09fZLMX2BERcyFRrebE7DCjb46Rzgypb7QzX1rBOzHJ0PorWRINXFqoPMoxR7OeIrD17obIbng==
+  dependencies:
+    buffer "^5.1.0"
+    did-resolver "2.1.1"
+    elliptic "^6.5.3"
+    ethjs-abi "^0.2.1"
+    ethjs-contract "^0.2.0"
+    ethjs-provider-http "^0.1.6"
+    ethjs-query "^0.3.5"
+    ethr-did-registry "^0.0.3"
+    js-sha3 "^0.8.0"
 
 ethr-did@^1.1.0:
   version "1.1.0"
@@ -10450,6 +10481,11 @@ react-native-barcode-builder@^2.0.0:
   dependencies:
     "@react-native-community/art" "^1.2.0"
     jsbarcode "^3.8.0"
+
+react-native-base64@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-base64/-/react-native-base64-0.1.0.tgz#8e0c9df9d7d455e32921279c4378fc90557ed13b"
+  integrity sha512-in7EtB6eWn0KO5n4qknyqtbLHiiFGSQ7X7m3bYnoHafhARTaomxq+Rpuyhv3xj6WEP18Z7gW0EaujiSyMzQQOA==
 
 react-native-calendar-events@1.7.1:
   version "1.7.1"

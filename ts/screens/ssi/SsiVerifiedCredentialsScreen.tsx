@@ -5,7 +5,7 @@
 import {fromNullable} from "fp-ts/lib/Option";
 import * as React from "react";
 import {Text, FlatList, Platform, View, TouchableOpacity, ListRenderItemInfo} from "react-native";
-import {NavigationScreenProp, NavigationState} from "react-navigation";
+import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
 import {connect} from "react-redux";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import ScreenContent from "../../components/screens/ScreenContent";
@@ -37,6 +37,10 @@ import {
 import {GlobalState} from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
 import {VCitem} from "../../types/SSI";
+import {VerifiedCredential} from "did-jwt-vc";
+import variables from "../../theme/variables";
+import {getVCfromJwt} from "./VCs";
+import {HardcodedVCs} from "./VCsJson";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -74,6 +78,7 @@ type State = {
 
 class PreferencesScreen extends React.Component<Props, State> {
 
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -85,18 +90,30 @@ class PreferencesScreen extends React.Component<Props, State> {
   public componentDidMount() {
   }
 
+  private checkParamsOnWillFocus = () => {
+    if(this.props.navigation.state.params.sharedVC) {
+      alert("hai condiviso una VC:" + JSON.stringify(this.props.navigation.state.params.sharedVC))
+    }
+  }
 
+  private textHeader = (headerTitle: string) => {
+    return (<Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{headerTitle}</Text>)
+  }
 
-  private renderItem = (info: ListRenderItemInfo<VCitem>) => {
-    const { title, key } = info.item;
+  private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
+    const VC = info.item;
+    console.log(JSON.stringify(VC))
     return (
       <TouchableOpacity
         onPress={() => {
-          alert(JSON.stringify(title))
+          alert(JSON.stringify(VC.issuer))
         }}>
-        <View style={{backgroundColor: 'white'}}>
-          <Text>{title}</Text>
-          <Text>{key}</Text>
+        <View style={{backgroundColor: variables.brandPrimary, borderColor: '#333333', borderWidth: 0.5, margin: 10, padding: 5, borderRadius: 8}}>
+          {this.textHeader("Identity Card")}
+          <Text style={{color: variables.colorWhite}}>First Name: {VC.vc.credentialSubject.identityCard.firstName}</Text>
+          <Text style={{color: variables.colorWhite}}>Last Name: {VC.vc.credentialSubject.identityCard.lastName}</Text>
+          <Text style={{color: variables.colorWhite, fontSize: 10}}>sub: {VC.sub}</Text>
+          <Text style={{color: variables.colorWhite, fontSize: 10}}>iss: {VC.iss}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -107,20 +124,21 @@ class PreferencesScreen extends React.Component<Props, State> {
     return (
       <TopScreenComponent
         faqCategories={["profile", "privacy", "authentication_SPID"]}
-        headerTitle={I18n.t("profile.preferences.title")}
+        headerTitle={I18n.t("ssi.title")}
         goBack={true}
       >
         <ScreenContent
-          title={I18n.t("profile.preferences.title")}
-          subtitle={I18n.t("profile.preferences.subtitle")}
+          title={I18n.t("ssi.vcslist.title")}
+          subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
-            data={[{ title: 'Title Text 1', key: 0 }, { title: 'Title Text 2', key: 1 }, { title: 'Title Text 3', key: 2 }]}
+            data={this.props.navigation.getParam("verifiedCredentials") ? this.props.navigation.getParam("verifiedCredentials")  : HardcodedVCs}
             renderItem={this.renderItem}
           />
         </ScreenContent>
+        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus} />
       </TopScreenComponent>
     );
   }

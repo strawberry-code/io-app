@@ -1,43 +1,43 @@
 /**
  * The screen allows to identify a transaction by the QR code on the analogic notice
  */
-import { AmountInEuroCents, RptId } from "italia-pagopa-commons/lib/pagopa";
-import { ITuple2 } from "italia-ts-commons/lib/tuples";
-import { Container, Text, View } from "native-base";
+import {AmountInEuroCents, RptId} from "italia-pagopa-commons/lib/pagopa";
+import {ITuple2} from "italia-ts-commons/lib/tuples";
+import {Container, Text, View} from "native-base";
 import * as React from "react";
-import { Alert, Dimensions, ScrollView, StyleSheet } from "react-native";
+import {Alert, Dimensions, ScrollView, StyleSheet} from "react-native";
 // @ts-ignore
 import EthrDID from 'ethr-did'
 
 import ImagePicker from "react-native-image-picker";
 import * as ReaderQR from "react-native-lewin-qrcode";
 import QRCodeScanner from "react-native-qrcode-scanner";
-import { NavigationEvents, NavigationInjectedProps } from "react-navigation";
-import { connect } from "react-redux";
+import {NavigationEvents, NavigationInjectedProps} from "react-navigation";
+import {connect} from "react-redux";
 import ButtonDefaultOpacity from "../../../components/ButtonDefaultOpacity";
-import BaseScreenComponent, {
-  ContextualHelpPropsMarkdown
-} from "../../../components/screens/BaseScreenComponent";
+import BaseScreenComponent, {ContextualHelpPropsMarkdown} from "../../../components/screens/BaseScreenComponent";
 import FooterWithButtons from "../../../components/ui/FooterWithButtons";
-import { CameraMarker } from "../../../components/wallet/CameraMarker";
+import {CameraMarker} from "../../../components/wallet/CameraMarker";
 
 import I18n from "../../../i18n";
 import {
   navigateToPaymentManualDataInsertion,
-  navigateToPaymentTransactionSummaryScreen, navigateToSsiHome,
+  navigateToPaymentTransactionSummaryScreen,
+  navigateToSsiHome, navigateToVCsList,
   navigateToWalletHome
 } from "../../../store/actions/navigation";
-import { Dispatch } from "../../../store/actions/types";
-import { paymentInitializeState } from "../../../store/actions/wallet/payment";
+import {Dispatch} from "../../../store/actions/types";
+import {paymentInitializeState} from "../../../store/actions/wallet/payment";
 import variables from "../../../theme/variables";
 import customVariables from "../../../theme/variables";
-import { ComponentProps } from "../../../types/react";
-import { openAppSettings } from "../../../utils/appSettings";
-import { decodePagoPaQrCode } from "../../../utils/payment";
-import { showToast } from "../../../utils/showToast";
+import {ComponentProps} from "../../../types/react";
+import {openAppSettings} from "../../../utils/appSettings";
+import {decodePagoPaQrCode} from "../../../utils/payment";
+import {showToast} from "../../../utils/showToast";
 import {DidSingleton} from "../../../types/DID";
 import 'text-encoding-polyfill'
 import {createVerifiableCredentialJwt, Issuer, JwtCredentialPayload} from "did-jwt-vc";
+import {HardcodedVCs} from "../../ssi/VCsJson";
 
 type OwnProps = NavigationInjectedProps;
 
@@ -121,6 +121,7 @@ const contextualHelpMarkdown: ContextualHelpPropsMarkdown = {
   title: "wallet.QRtoPay.contextualHelpTitle",
   body: "wallet.QRtoPay.contextualHelpContent"
 };
+
 class ScanQrCodeScreen extends React.Component<Props, State> {
   private scannerReactivateTimeoutHandler?: number;
   private goBack = () => this.props.navigation.goBack();
@@ -137,56 +138,103 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   };
 
   /**
-   * Handles valid pagoPA QR codes
+   * Handles SSI QR to make signature request
    */
-  private onValidSsiQrCode = async (data: string) => {
+  private onSsiSignReq = async (data: string) => {
+    console.log("scansionato codice QR SSI per creazione VC");
+
     this.setState({
       scanningState: "VALID"
     });
 
     let qrData = JSON.parse(data)
-    if (qrData.type === "signReq") {
-      // Fare la POST VC Issue verso SSI Server
-      // TODO
-      let type = qrData.type
-      let callback = qrData.callback
-      let payload: JwtCredentialPayload = qrData.payload
+    console.log('eseguento logica per signReq')
+    // Fare la POST VC Issue verso SSI Server
+    // TODO
+    let type = qrData.type
+    let callback = qrData.callback
+    let payload: JwtCredentialPayload = qrData.payload
 
-      console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
+    console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
 
-      const issuer: Issuer = new EthrDID({
-        address: DidSingleton.getEthAddress(),
-        privateKey: DidSingleton.getPrivateKey()
-      })
+    const issuer: Issuer = new EthrDID({
+      address: DidSingleton.getEthAddress(),
+      privateKey: DidSingleton.getPrivateKey()
+    })
 
-      console.log('issuer: ' + issuer.did)
+    console.log('issuer: ' + issuer.did)
 
-      try {
-        const vcJwt = await createVerifiableCredentialJwt(payload, issuer)
-        console.log('signed token: ' + vcJwt.length)
-      } catch(e) {
-        console.log(e)
-      }
-
-      /*
-      fetch('https://ssi-pwc.gitlab.io/' + callback, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-       */
+    let vcJwt
+    try {
+      vcJwt = await createVerifiableCredentialJwt(payload, issuer)
+      console.log('signed token: ' + vcJwt)
+      alert('signed token:\n' + vcJwt)
+    } catch (e) {
+      console.log(e)
+      alert('codice type QR è sbagliato')
     }
 
+/*
+    fetch(callback, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({verifiableCredential: vcJwt}),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+*/
+
+
     this.props.navigateToScannedSsiQrCode();
+  };
+
+  /**
+   * Handles SSI QR to share verified credential
+   */
+  private onSsiShareReq = async (data: string) => {
+    console.log("scansionato codice QR SSI per condividere VC");
+
+    this.setState({
+      scanningState: "VALID"
+    });
+
+    let qrData = JSON.parse(data)
+
+    console.log('eseguento logica per shareReq')
+    let callback = qrData.callback
+
+    console.log(`\ncallback: ${callback}\n`)
+
+    //let VCs = HardcodedVCs
+
+    callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
+    console.log("making http fetch post")
+    fetch(callback, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"}),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        this.props.navigateToVCsList({action:"showModalSharedVC", sharedVC: data});
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+
+    //this.props.navigateToScannedSsiQrCode();
   };
 
   /**
@@ -216,9 +264,10 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    */
   private onQrCodeData = (data: string) => {
     console.log(data)
-    if(data.includes("signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
-      console.log("scansionato codice QR SSI");
-      this.onValidSsiQrCode(data);
+    if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
+      this.onSsiShareReq(data);
+    } else if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
+      this.onSsiSignReq(data); // ⚠️
     } else {
       const resultOrError = decodePagoPaQrCode(data);
       resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
@@ -268,7 +317,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
               onPress: openAppSettings
             }
           ],
-          { cancelable: false }
+          {cancelable: false}
         );
       } // else if the user has not selected a file, do nothing
     });
@@ -289,9 +338,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     }
   }
 
-  private handleDidFocus = () => this.setState({ isFocused: true });
+  private handleDidFocus = () => this.setState({isFocused: true});
 
-  private handleWillBlur = () => this.setState({ isFocused: false });
+  private handleWillBlur = () => this.setState({isFocused: false});
 
   public render(): React.ReactNode {
     const primaryButtonProps = {
@@ -348,16 +397,16 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
                       <Text>{I18n.t("wallet.QRtoPay.chooser")}</Text>
                     </ButtonDefaultOpacity>
                     <View style={styles.content}>
-                      <View spacer={true} />
+                      <View spacer={true}/>
                       <Text style={[styles.padded, styles.bottomText]}>
                         {I18n.t("wallet.QRtoPay.cameraUsageInfo")}
                       </Text>
-                      <View spacer={true} extralarge={true} />
+                      <View spacer={true} extralarge={true}/>
                     </View>
                   </View>
                 }
                 // "captureAudio" enable/disable microphone permission
-                cameraProps={{ captureAudio: false }}
+                cameraProps={{captureAudio: false}}
                 // "checkAndroid6Permissions" property enables permission checking for
                 // Android versions greater than 6.0 (23+).
                 checkAndroid6Permissions={true}
@@ -406,6 +455,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToWalletHome: () => dispatch(navigateToWalletHome()),
   navigateToScannedSsiQrCode: () => dispatch(navigateToSsiHome()),
+  navigateToVCsList: (params: any) => dispatch(navigateToVCsList(params)),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (

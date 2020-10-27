@@ -1,6 +1,6 @@
 interface VCitem {
-  title: string;
-  key: number;
+  issuer: string;
+  nbf: number;
 }
 
 export type {VCitem};

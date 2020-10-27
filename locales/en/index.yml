@@ -295,6 +295,9 @@ profile:
 ssi:
   title: SSI
   scanQr: Scan a QR code
+  vcslist:
+    title: Verified Credentials
+    subtitle: These are your Verified Credentials related to your SPID
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
