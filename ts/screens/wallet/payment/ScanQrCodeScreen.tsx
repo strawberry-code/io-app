@@ -264,9 +264,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    */
   private onQrCodeData = (data: string) => {
     console.log(data)
-    if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
+    if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiShareReq(data);
-    } else if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
+    } else if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiSignReq(data); // ⚠️
     } else {
       const resultOrError = decodePagoPaQrCode(data);
