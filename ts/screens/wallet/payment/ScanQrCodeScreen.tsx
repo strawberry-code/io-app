@@ -199,6 +199,17 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
 
     this.props.navigateToScannedSsiQrCode();
+
+    this.scannerReactivateTimeoutHandler = setTimeout(() => {
+      // eslint-disable-next-line
+      this.scannerReactivateTimeoutHandler = undefined;
+      if (this.qrCodeScanner.current) {
+        this.qrCodeScanner.current.reactivate();
+        this.setState({
+          scanningState: "SCANNING"
+        });
+      }
+    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
   };
 
   /**
@@ -206,7 +217,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    */
   private onSsiShareReq = async (data: string) => {
     console.log("scansionato codice QR SSI per condividere VC");
-
+    
     this.setState({
       scanningState: "VALID"
     });
@@ -216,7 +227,16 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     this.props.navigateToVCsList({action:"shareVCfromQR", data: qrData});
 
 
-
+    this.scannerReactivateTimeoutHandler = setTimeout(() => {
+      // eslint-disable-next-line
+      this.scannerReactivateTimeoutHandler = undefined;
+      if (this.qrCodeScanner.current) {
+        this.qrCodeScanner.current.reactivate();
+        this.setState({
+          scanningState: "SCANNING"
+        });
+      }
+    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
 
     //this.props.navigateToScannedSsiQrCode();
   };
@@ -236,7 +256,16 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     this.props.navigateToVCsList({action:"saveVCinTheStore", data: jwt});
 
-
+    this.scannerReactivateTimeoutHandler = setTimeout(() => {
+      // eslint-disable-next-line
+      this.scannerReactivateTimeoutHandler = undefined;
+      if (this.qrCodeScanner.current) {
+        this.qrCodeScanner.current.reactivate();
+        this.setState({
+          scanningState: "SCANNING"
+        });
+      }
+    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
     //this.props.navigateToScannedSsiQrCode();
   };
 
