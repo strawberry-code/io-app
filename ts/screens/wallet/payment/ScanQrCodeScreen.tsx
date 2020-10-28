@@ -264,6 +264,14 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    */
   private onQrCodeData = (data: string) => {
     console.log(data)
+
+    // On-the-fly fix for badly-read QRs
+    if(data === null || data === undefined) {
+      const resultOrError = decodePagoPaQrCode(data);
+      resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
+      return
+    }
+
     if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiShareReq(data); // Condividi una VC (qr piccolo)
     } else if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
