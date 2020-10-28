@@ -126,6 +126,10 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   private goBack = () => this.props.navigation.goBack();
   private qrCodeScanner = React.createRef<QRCodeScanner>();
 
+  componentDidMount() {
+    this.handleDidFocus()
+  }
+
   /**
    * Handles valid pagoPA QR codes
    */
