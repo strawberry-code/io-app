@@ -5,15 +5,16 @@
 import {fromNullable} from "fp-ts/lib/Option";
 import * as React from "react";
 import {
-  Text,
+  ActivityIndicator,
   FlatList,
-  Platform,
-  View,
-  TouchableOpacity,
   ListRenderItemInfo,
-  TouchableHighlight,
+  Modal,
+  Platform,
   StyleSheet,
-  ScrollView, ActivityIndicator, Modal
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View
 } from "react-native";
 import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
 import {connect} from "react-redux";
@@ -46,15 +47,9 @@ import {
 } from "../../store/reducers/profile";
 import {GlobalState} from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
-import {VCitem} from "../../types/SSI";
 import {VerifiedCredential} from "did-jwt-vc";
 import variables from "../../theme/variables";
-import {getVCfromJwt} from "./VCs";
-import {HardcodedVCs} from "./VCsJson";
 import VCstore from "./VCstore";
-import SsiModal from "./SsiModal";
-import {useRef} from "react";
-import SsiShareVCModal from "./ShareVCModal";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -113,11 +108,17 @@ class PreferencesScreen extends React.Component<Props, State> {
 
     //let VCs = HardcodedVCs
 
-    callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
+    //callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
     console.log("making http fetch post")
 
-    this.setState({modalVisible: true, modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}})
-    this.setState({shareTo: callback, VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})})
+    this.setState({
+      modalVisible: true,
+      modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}
+    })
+    this.setState({
+      shareTo: callback,
+      VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})
+    })
   }
 
   private shareVCnow = (VC, shareTo) => {
@@ -131,11 +132,17 @@ class PreferencesScreen extends React.Component<Props, State> {
       .then(response => response.json())
       .then(data => {
         console.info('Success:', JSON.stringify(data))
-        this.setState({modalVisible: true, modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: false}})
+        this.setState({
+          modalVisible: true,
+          modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: false}
+        })
       })
       .catch((error) => {
         console.info('Error:', error);
-        this.setState({modalVisible: true, modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: true}})
+        this.setState({
+          modalVisible: true,
+          modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: true}
+        })
       });
   }
 
@@ -145,17 +152,28 @@ class PreferencesScreen extends React.Component<Props, State> {
     })
   }
 
-  public dispatchNavigationAction (action, data) {
-    if(action === "shareVCfromQR") {
+  public dispatchNavigationAction(action, data) {
+    if (action === "shareVCfromQR") {
       this.shareVCfromQrScan(data)
+    } else if (action === "saveVCinTheStore") {
+      this.saveVCinTheStore(data)
     } else {
       console.error("navigation action non riconosciuta")
     }
   }
 
+  private saveVCinTheStore = (jwt) => {
+    console.log('saving new jwt in the store: ' + jwt)
+    VCstore.storeVC(jwt).then(() => {
+      VCstore.getVCs().then((data) => {
+        this.setState({data: data})
+      })
+    })
+  }
+
   private checkParamsOnWillFocus = () => {
     console.log(JSON.stringify(this.props.navigation.state.params))
-    if(this.props.navigation.state.params && this.props.navigation.state.params.action) {
+    if (this.props.navigation.state.params && this.props.navigation.state.params.action) {
       this.dispatchNavigationAction(this.props.navigation.state.params.action, this.props.navigation.state.params.data)
     }
     VCstore.getVCs().then((data) => {
@@ -171,17 +189,43 @@ class PreferencesScreen extends React.Component<Props, State> {
   private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
     const VC = info.item;
     console.log(JSON.stringify(VC))
+    let vcName
+    let firstName
+    let lastName
+    let number
+    let iss
+    try {
+      vcName = VC.vc.credentialSubject.name
+      firstName = VC.vc.credentialSubject.firstName
+      lastName = VC.vc.credentialSubject.lastName
+      number = VC.vc.credentialSubject.number
+      iss = VC.vc.credentialSubject.iss
+    } catch (e) {
+      vcName = "uncompliant credential format"
+      firstName = "uncompliant credential format"
+      lastName =  "uncompliant credential format"
+      number = "uncompliant credential format"
+      iss = "uncompliant credential format"
+    }
     return (
       <TouchableOpacity
         onPress={() => {
           alert(JSON.stringify(VC.issuer))
         }}>
-        <View style={{backgroundColor: variables.brandPrimary, borderColor: '#333333', borderWidth: 0.5, margin: 10, padding: 5, borderRadius: 8}}>
-          {this.textHeader("Identity Card")}
-          <Text style={{color: variables.colorWhite}}>First Name: {VC.vc.credentialSubject.identityCard.firstName}</Text>
-          <Text style={{color: variables.colorWhite}}>Last Name: {VC.vc.credentialSubject.identityCard.lastName}</Text>
-          <Text style={{color: variables.colorWhite, fontSize: 10}}>sub: {VC.sub}</Text>
-          <Text style={{color: variables.colorWhite, fontSize: 10}}>iss: {VC.iss}</Text>
+        <View style={{
+          backgroundColor: variables.brandPrimary,
+          borderColor: '#333333',
+          borderWidth: 0.5,
+          margin: 10,
+          padding: 5,
+          borderRadius: 8
+        }}>
+          {this.textHeader(vcName)}
+          <Text style={{color: variables.colorWhite}}>First
+            Name: {firstName}</Text>
+          <Text style={{color: variables.colorWhite}}>Last Name: {lastName}</Text>
+          <Text style={{color: variables.colorWhite, fontSize: 10}}>ID: {number}</Text>
+          <Text style={{color: variables.colorWhite, fontSize: 10}}>iss: {iss}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -206,7 +250,7 @@ class PreferencesScreen extends React.Component<Props, State> {
             renderItem={this.renderItem}
           />
         </ScreenContent>
-        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus} />
+        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
         <Modal
           animationType="slide"
           transparent={true}
@@ -222,7 +266,14 @@ class PreferencesScreen extends React.Component<Props, State> {
                   <TouchableHighlight
                     style={{...styles.openButton, backgroundColor: variables.brandPrimary, marginHorizontal: 20}}
                     onPress={() => {
-                      this.setState({modalStates: {showPrompt: false, sharing: true, sharedSuccess: false, sharedFail: false}});
+                      this.setState({
+                        modalStates: {
+                          showPrompt: false,
+                          sharing: true,
+                          sharedSuccess: false,
+                          sharedFail: false
+                        }
+                      });
                       this.shareVCnow(this.state.VCtoBeShared, this.state.shareTo)
                     }}
                   >
@@ -253,7 +304,14 @@ class PreferencesScreen extends React.Component<Props, State> {
                   style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
                   onPress={() => {
                     this.setState({modalVisible: false})
-                    this.setState({modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}});
+                    this.setState({
+                      modalStates: {
+                        showPrompt: true,
+                        sharing: false,
+                        sharedSuccess: false,
+                        sharedFail: false
+                      }
+                    });
                   }}
                 >
                   <Text style={styles.textStyle}>Ok, thanks</Text>

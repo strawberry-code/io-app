@@ -12,7 +12,8 @@ let storeVC = async (VC: string) => {
       if (result !== null) {
         console.log('Data Found', result);
         let newVCs = JSON.parse(<string>result).concat(newVC);
-        AsyncStorage.setItem(AS_SSI_KEY, JSON.stringify(newVCs));
+        let newVC2withoutDuplicates = [...new Set([...newVCs])]
+        AsyncStorage.setItem(AS_SSI_KEY, JSON.stringify(newVC2withoutDuplicates));
       } else {
         console.log('Data Not Found');
         AsyncStorage.setItem(AS_SSI_KEY, JSON.stringify(newVC));
@@ -29,6 +30,7 @@ let getJwts = async (): Promise<string[]> => {
 
 let getVCs = async (): Promise<VerifiedCredential[]> => {
   let Jwts: string[] = await getJwts()
+  if(!Jwts) return
   let VCs: VerifiedCredential[] = []
   Jwts.forEach((jwt) => {
     VCs.push(decodeJwt(jwt))

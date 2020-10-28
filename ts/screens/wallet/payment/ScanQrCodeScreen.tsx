@@ -174,22 +174,25 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       alert('codice type QR è sbagliato')
     }
 
-/*
+    let body = JSON.stringify({"verifiableCredential": vcJwt})
+    console.log(`making POST\nurl: ${callback}\nbody: ${body}`)
+
+
     fetch(callback, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({verifiableCredential: vcJwt}),
+      body: body,
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(data => {
         console.log('Success:', data);
       })
       .catch((error) => {
         console.error('Error:', error);
       });
-*/
+
 
 
     this.props.navigateToScannedSsiQrCode();
@@ -210,6 +213,25 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     this.props.navigateToVCsList({action:"shareVCfromQR", data: qrData});
 
 
+
+
+    //this.props.navigateToScannedSsiQrCode();
+  };
+
+  /**
+   * Handles SSI QR to save a verified credential in the device store
+   */
+  private onSsiIssuedVc = async (data: string) => {
+    console.log("scansionato codice QR SSI per salvare VC nello store");
+
+    this.setState({
+      scanningState: "VALID"
+    });
+
+    let qrData = JSON.parse(data)
+    let jwt = qrData.payload
+
+    this.props.navigateToVCsList({action:"saveVCinTheStore", data: jwt});
 
 
     //this.props.navigateToScannedSsiQrCode();
@@ -243,9 +265,11 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   private onQrCodeData = (data: string) => {
     console.log(data)
     if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
-      this.onSsiShareReq(data);
+      this.onSsiShareReq(data); // Condividi una VC (qr piccolo)
     } else if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
-      this.onSsiSignReq(data); // ⚠️
+      this.onSsiSignReq(data); // Firma una VC (qr grande, step 2)
+    } else if(data.includes("ssi-issuedVC")) {
+      this.onSsiIssuedVc(data); // Salva una VC (qr grande, step 3)
     } else {
       const resultOrError = decodePagoPaQrCode(data);
       resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
