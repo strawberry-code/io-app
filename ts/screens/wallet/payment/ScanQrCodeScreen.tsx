@@ -37,7 +37,6 @@ import {showToast} from "../../../utils/showToast";
 import {DidSingleton} from "../../../types/DID";
 import 'text-encoding-polyfill'
 import {createVerifiableCredentialJwt, Issuer, JwtCredentialPayload} from "did-jwt-vc";
-import {HardcodedVCs} from "../../ssi/VCsJson";
 
 type OwnProps = NavigationInjectedProps;
 
