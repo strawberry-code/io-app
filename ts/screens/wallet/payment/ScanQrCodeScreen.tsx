@@ -191,9 +191,6 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       });
 */
 
-    this.setState({
-      scanningState: "SCANNING"
-    });
 
     this.props.navigateToScannedSsiQrCode();
   };
@@ -212,9 +209,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     this.props.navigateToVCsList({action:"shareVCfromQR", data: qrData});
 
-    this.setState({
-      scanningState: "SCANNING"
-    });
+
 
 
     //this.props.navigateToScannedSsiQrCode();
@@ -276,10 +271,6 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     };
     // Open Image Library
     ImagePicker.launchImageLibrary(options, response => {
-      this.setState({
-        scanningState: "SCANNING",
-        isFocused:true
-      });
       const path = response.path ? response.path : response.uri;
       if (path != null) {
         ReaderQR.readerQR(path)
@@ -314,7 +305,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     super(props);
     this.state = {
       scanningState: "SCANNING",
-      isFocused: true
+      isFocused: false
     };
   }
 
