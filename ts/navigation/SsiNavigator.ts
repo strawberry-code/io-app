@@ -4,6 +4,7 @@ import SsiVerifiedCredentials from "../screens/ssi/SsiVerifiedCredentialsScreen"
 import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlayground";
 import WebPlayground from "../screens/profile/WebPlayground";
 import ROUTES from "./routes";
+import ShareVcsWithRequesterScreen from "../screens/ssi/ShareVerifiedCredentialsWithRequester";
 
 /**
  * A navigator for all the screens of the SSI section
@@ -16,6 +17,9 @@ const ProfileNavigator = createStackNavigator(
     },
     [ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN]: {
       screen: SsiVerifiedCredentials
+    },
+    [ROUTES.SSI_SHARE_VERIFIED_CREDENTIALS_SCREEN]: {
+      screen: ShareVcsWithRequesterScreen
     },
     [ROUTES.MARKDOWN_PLAYGROUND]: {
       screen: MarkdownPlayground

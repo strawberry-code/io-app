@@ -40,7 +40,7 @@ const ROUTE_ICON: RouteIconMap = {
   DOCUMENTS_HOME: "io-documenti",
   SERVICES_NAVIGATOR: "io-servizi",
   PROFILE_NAVIGATOR: "io-profilo",
-  SSI_NAVIGATOR: "io-test"
+  SSI_NAVIGATOR: "io-cie-card"
 };
 
 const getIcon = (routeName: string): string => {

@@ -22,7 +22,7 @@ import {CameraMarker} from "../../../components/wallet/CameraMarker";
 import I18n from "../../../i18n";
 import {
   navigateToPaymentManualDataInsertion,
-  navigateToPaymentTransactionSummaryScreen,
+  navigateToPaymentTransactionSummaryScreen, navigateToShareVCsList,
   navigateToSsiHome, navigateToVCsList,
   navigateToWalletHome
 } from "../../../store/actions/navigation";
@@ -217,15 +217,14 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
    */
   private onSsiShareReq = async (data: string) => {
     console.log("scansionato codice QR SSI per condividere VC");
-    
+
     this.setState({
       scanningState: "VALID"
     });
 
     let qrData = JSON.parse(data)
 
-    this.props.navigateToVCsList({action:"shareVCfromQR", data: qrData});
-
+    this.props.navigateToShareVCsList({action:"shareVCfromQR", data: qrData});
 
     this.scannerReactivateTimeoutHandler = setTimeout(() => {
       // eslint-disable-next-line
@@ -498,6 +497,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToWalletHome: () => dispatch(navigateToWalletHome()),
   navigateToScannedSsiQrCode: () => dispatch(navigateToSsiHome()),
   navigateToVCsList: (params: any) => dispatch(navigateToVCsList(params)),
+  navigateToShareVCsList: (params: any) => dispatch(navigateToShareVCsList(params)),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (

@@ -244,6 +244,14 @@ export const navigateToSsiHome = (
     params
   });
 
+export const navigateToShareVCsList = (
+  params?: InferNavigationParams<typeof SsiVerifiedCredentialsScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_SHARE_VERIFIED_CREDENTIALS_SCREEN,
+    params
+  });
+
 export const navigateToVCsList = (
   params?: InferNavigationParams<typeof SsiVerifiedCredentialsScreen>
 ) =>

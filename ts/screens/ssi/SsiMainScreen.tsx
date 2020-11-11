@@ -149,6 +149,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
   public async componentDidMount() {
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJleHAiOjEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsiMCI6IkoiLCIxIjoidyIsIjIiOiJ0IiwiMyI6IkMiLCI0IjoiciIsIjUiOiJlIiwiNiI6ImQiLCI3IjoiZSIsIjgiOiJuIiwiOSI6InQiLCIxMCI6ImkiLCIxMSI6ImEiLCIxMiI6ImwiLCIxMyI6IlMiLCIxNCI6InUiLCIxNSI6ImIiLCIxNiI6ImoiLCIxNyI6ImUiLCIxOCI6ImMiLCIxOSI6InQifX0sImlzcyI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsInN1YiI6ImRpZDpldGhyOjB4NDUiLCJuYmYiOjE2MDM4ODg4OTMsImF1ZCI6IiIsImp0aSI6IiJ9.u_f-dxW2_mZU0YqlZ0EY6c2wTGJczMqs6Kkh8lD3RVCuD2VXMVVQ3ulWiC4GtxEJpp3hwjxyoUoUrGucUBajcQ"
+    //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJleHAiOjEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6IklkZW50aXR5IGNhcmQiLCJudW1iZXIiOiJBQjEyMzQ1NjciLCJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImlzcyI6ImRpZDpldGhyOjB4OWZlMTQ2Y2Q5NWI0ZmY2YWEwMzliZjA3NWM4ODllNmU0N2Y4YmQxOCJ9fSwiaXNzIjoiZGlkOmV0aHI6MHhFNkNFNDk4OTgxYjRiYTllODNlMjA5ZjhFMDI2Mjk0OTRGQzMxYmM5Iiwic3ViIjoiZGlkOmV0aHI6MHg0NSIsIm5iZiI6MTYwMzk2ODIyMSwiYXVkIjoiIiwianRpIjoiIn0.qF5QFn6o2opxdrpZ8Ue0-dKABK28fU58pqBgv-BGxoTfGhRZkg6EH2rrkcxwoqGWg1YmuOdtHz4gPcp6cpm4VA"
     //await VCstore.clearStore()
     //await VCstore.storeVC(hardcodedJwt)
     //await VCstore.storeVC(hardcodedJwt)
@@ -367,26 +368,42 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     const inspectCss = false;
 
     // define a widely customisable functional component used to draw a touchable item in the cross menu
-    const touchableMenuItem = (left: boolean, right: boolean, top: boolean, bottom: boolean, text: string, callback: () => void) => (
+    const touchableMenuItem = (left: boolean, right: boolean, top: boolean, bottom: boolean, icon: string, text: string, callback: () => void) => (
       <TouchableOpacity
         onPress={callback}
         style={{
           width: crossMenuSizeFactor,
           height: crossMenuSizeFactor,
           borderColor: inspectCss ? "red" : "#AAAAAA",
-          borderLeftWidth: left ? crossBorderWidth : 0,
-          borderRightWidth: right ? crossBorderWidth : 0,
-          borderBottomWidth: bottom ? crossBorderWidth : 0,
-          borderTopWidth: top ? crossBorderWidth : 0,
+          borderLeftWidth: inspectCss && left ? crossBorderWidth : 0,
+          borderRightWidth: inspectCss && right ? crossBorderWidth : 0,
+          borderBottomWidth: inspectCss && bottom ? crossBorderWidth : 0,
+          borderTopWidth: inspectCss && top ? crossBorderWidth : 0,
           backgroundColor: inspectCss ? "cyan" : undefined
         }}>
         <View style={{
           flex: 1,
-          backgroundColor: inspectCss ? "pink" : "#EEEEEE",
+          //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
           justifyContent: "center",
           borderRadius: 100,
+          borderWidth: 0.6,
+          borderColor: customVariables.brandPrimary,
+          backgroundColor: 'white',
+          shadowColor: 'black',
+          shadowOpacity: 0.2,
+          shadowOffset: {
+            width: 0,
+            height: 2
+          },
+          elevation: 3,
           margin: 15
         }}>
+          <IconFont
+            style={{textAlign: "center",
+              justifyContent: "center",}}
+            name={icon}
+            size={50}
+          />
           <Text style={{
             textAlign: "center",
             justifyContent: "center",
@@ -403,24 +420,21 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     const crossMenu = () => (
       <View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, false, true, "Verified\nCredentials", async () => {
+          {touchableMenuItem(false, true, false, true, "io-service-list", "Verified\nCredentials", async () => {
             navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
             //alert('clicked A')
           })}
-          {touchableMenuItem(true, false, false, true, "B", async () => {
-            // console.log(DidSingleton.getDidAddress())
-            // alert(DidSingleton.getDidAddress())
-
-            //VCstore.storeVC('eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw')
-            VCstore.clearStore()
-          })}
+          {touchableMenuItem(true, false, false, true, "io-qr","Scan QR", this.props.navigateToPaymentScanQrCode)}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "Show DID\nAddress", async () => {
-            await DidSingleton.loadDidFromKeychain()
-            alert(DidSingleton.getDidAddress())
+          {touchableMenuItem(false, true, true, false, "io-home-servizi","todo", async () => {
+            // await DidSingleton.loadDidFromKeychain()
+            // alert(DidSingleton.getDidAddress())
+            console.log((await VCstore.getJwts()).forEach(item => {
+              console.log(item)
+            }))
           })}
-          {touchableMenuItem(true, false, true, false, "D", async () => {
+          {touchableMenuItem(true, false, true, false, "io-home-servizi","todo", async () => {
             alert('ddd')
             // console.log(await VCstore.getVCs())
              //const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
@@ -646,7 +660,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         <React.Fragment>
           <AnimatedScreenContentHeader
             title={I18n.t("ssi.title")}
-            iconFont={{ name: "io-home-servizi" }} // FIXME: cambiare icona
+            iconFont={{ name: "io-cie-card" }} // FIXME: cambiare icona
             dynamicHeight={100}
           />
         </React.Fragment>

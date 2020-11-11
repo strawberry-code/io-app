@@ -51,11 +51,12 @@ setNativeExceptionHandler(exceptionString => {
   }
 });
 
-// YellowBox.ignoreWarnings(["Warning: componentWillReceiveProps is deprecated"]);
-// import { YellowBox } from "react-native";
-// YellowBox.ignoreWarnings([""]);
+import { YellowBox } from "react-native";
+ YellowBox.ignoreWarnings(["Warning: componentWillReceiveProps is deprecated"]);
+ YellowBox.ignoreWarnings([""]);
 //TODO: temp only, to complete the porting to 0.63.x
 LogBox.ignoreLogs(["componentWillReceiveProps", "Animated", "Virtualized"]);
+LogBox.ignoreAllLogs(true)
 
 //Disable allowFontScaling for Text/TextInput component
 Text.defaultProps = Text.defaultProps || {};
