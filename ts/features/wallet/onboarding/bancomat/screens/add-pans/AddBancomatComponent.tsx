@@ -16,7 +16,7 @@ import { H4 } from "../../../../../../components/core/typography/H4";
 import { InitializedProfile } from "../../../../../../../definitions/backend/InitializedProfile";
 import { GlobalState } from "../../../../../../store/reducers/types";
 import { abiListSelector } from "../../../store/abi";
-import { Card } from "../../../../../../../definitions/pagopa/bancomat/Card";
+import { Card } from "../../../../../../../definitions/pagopa/walletv2/Card";
 import PanCardComponent from "./PanCardComponent";
 
 type Props = {
@@ -39,7 +39,7 @@ const AddBancomatComponent: React.FunctionComponent<Props> = (props: Props) => {
   return (
     <BaseScreenComponent
       customGoBack={<View hspacer={true} spacer={true} />}
-      headerTitle={I18n.t("wallet.addBancomat.title", {
+      headerTitle={I18n.t("wallet.onboarding.bancomat.add.title", {
         current: props.currentIndex + 1,
         length: props.pansNumber
       })}
@@ -58,7 +58,7 @@ const AddBancomatComponent: React.FunctionComponent<Props> = (props: Props) => {
             paddingHorizontal: customVariables.contentPadding
           }}
         >
-          <H1>{I18n.t("wallet.addBancomat.screenTitle")}</H1>
+          <H1>{I18n.t("wallet.onboarding.bancomat.add.screenTitle")}</H1>
           <View spacer={true} large={true} />
           <PanCardComponent
             pan={props.pan}
@@ -72,21 +72,21 @@ const AddBancomatComponent: React.FunctionComponent<Props> = (props: Props) => {
           <View spacer={true} large={true} />
           <H4 color={"bluegrey"} weight={"Regular"}>
             {props.pansNumber > 1
-              ? I18n.t("wallet.addBancomat.bodyPlural", {
+              ? I18n.t("wallet.onboarding.bancomat.add.bodyPlural", {
                   number: props.pansNumber
                 })
-              : I18n.t("wallet.addBancomat.bodySingular")}
+              : I18n.t("wallet.onboarding.bancomat.add.bodySingular")}
           </H4>
         </View>
         <FooterWithButtons
           type={"TwoButtonsInlineThird"}
           leftButton={cancelButtonProps(
             props.handleSkip,
-            I18n.t("wallet.addBancomat.skip")
+            I18n.t("global.buttons.skip")
           )}
           rightButton={confirmButtonProps(
             props.handleContinue,
-            I18n.t("wallet.addBancomat.add")
+            I18n.t("global.buttons.add")
           )}
         />
       </SafeAreaView>

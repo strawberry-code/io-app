@@ -23,7 +23,7 @@ import { RotatedCards } from "../../components/wallet/card/RotatedCards";
 import SectionCardComponent from "../../components/wallet/card/SectionCardComponent";
 import TransactionsList from "../../components/wallet/TransactionsList";
 import WalletLayout from "../../components/wallet/WalletLayout";
-import { bonusVacanzeEnabled } from "../../config";
+import { bonusVacanzeEnabled, bpdEnabled } from "../../config";
 import RequestBonus from "../../features/bonus/bonusVacanze/components/RequestBonus";
 import {
   navigateToAvailableBonusScreen,
@@ -35,6 +35,7 @@ import {
 } from "../../features/bonus/bonusVacanze/store/actions/bonusVacanze";
 import { allBonusActiveSelector } from "../../features/bonus/bonusVacanze/store/reducers/allActive";
 import { availableBonusTypesSelector } from "../../features/bonus/bonusVacanze/store/reducers/availableBonusesTypes";
+import BpdCardsInWalletContainer from "../../features/bonus/bpd/components/walletCardContainer/BpdCardsInWalletComponent";
 import I18n from "../../i18n";
 import {
   navigateBack,
@@ -270,6 +271,7 @@ class WalletHomeScreen extends React.PureComponent<Props> {
           </React.Fragment>
         )}
         {this.cardHeader(false, noMethod)}
+
         {validWallets.length > 0 ? (
           <RotatedCards
             wallets={validWallets}
@@ -277,6 +279,7 @@ class WalletHomeScreen extends React.PureComponent<Props> {
           />
         ) : null}
         {/* Display this item only if the flag is enabled */}
+
         {bonusVacanzeEnabled && (
           <RequestBonus
             onButtonPress={this.props.navigateToBonusList}
@@ -286,6 +289,7 @@ class WalletHomeScreen extends React.PureComponent<Props> {
             onBonusPress={this.props.navigateToBonusDetail}
           />
         )}
+        {bpdEnabled && <BpdCardsInWalletContainer />}
       </View>
     );
   }

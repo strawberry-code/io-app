@@ -100,6 +100,8 @@ const NoTabBarRoutes: ReadonlyArray<string> = [
   ROUTES.WEB_PLAYGROUND,
   ROUTES.SSI_NAVIGATOR,
   ROUTES.ERCWALLET_NAVIGATOR
+  ROUTES.SHOWROOM,
+  ROUTES.SERVICE_WEBVIEW
 ];
 
 const getTabBarVisibility = (

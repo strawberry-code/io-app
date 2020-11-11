@@ -65,9 +65,11 @@ global:
     saveSelection: Save the selection
     search: Search
     skip: "Skip"
+    add: Add
+    edit: "Edit"
   navigator:
     messages: messages
-    wallet: payments
+    wallet: wallet
     documents: documents
     profile: profile
     services: services
@@ -245,6 +247,7 @@ profile:
     appVersion: App Version
     backendVersion: Backend Version
     debugMode: Debug mode
+    showroom: UI Showroom
   preferences:
     title: Preferences
     subtitle: This settings will be used by all services of the Public Amministration.
@@ -635,7 +638,7 @@ payment:
       title: Payment attempts
       iuv: IUV payment {{iuv}}
 wallet:
-  wallet: Payments
+  wallet: Wallet
   searchAbi:
     title: Add Bancomat card
     description:
@@ -645,13 +648,6 @@ wallet:
     bankName: Name of the bank
     noName: Name unavailable
     loading: Loading bank list...
-  addBancomat:
-    title: "Add bancomat {{current}} of {{length}}"
-    screenTitle: "Do you want to add this card?"
-    bodySingular: "We found 1 card headed to you. Proceed with the addition of this card by clicking Add or click Skip to cancel the operation."
-    bodyPlural: "We found {{number}} cards headed to you. Proceed with the addition of this card by clicking Add or click Skip to cancel the operation."
-    skip: Skip
-    add: Add
   accessibility:
     cardsPreview: Payment methods' preview. Activate to navigate to the the list of payment methods.
     transactionListItem:
@@ -671,6 +667,25 @@ wallet:
         chooseAnother: "Choose another bank"
       loadingSearch:
         title: "We are asking Bancomat for the list of your cards\n\nPlease wait"
+      add:
+        title: "Add bancomat {{current}} of {{length}}"
+        screenTitle: "Do you want to add this card?"
+        bodySingular: "We found 1 card headed to you. Proceed with the addition of this card by clicking Add or click Skip to cancel the operation."
+        bodyPlural: "We found {{number}} cards headed to you. Proceed with the addition of this card by clicking Add or click Skip to cancel the operation."
+        loading: "We are adding your PagoBANCOMAT card\n\nPlease wait a few seconds"
+      bpd:
+        suggestActivation:
+          title: "Do you want to activate Digital Payments Cashback?"
+          body: "You have added payment methods compatible with Cashback Digital Payments, the initiative promoted by the Presidency of the Council of Ministers to promote the use of electronic money.\n\n
+                 Each time you pay with one of the compatible electronic payment methods (cards, debit cards, apps, etc.), you will receive a partial refund based on your expense.\n\n
+                 Based on how many transnations you have accumulated, in each period, you can receive a cash prize of up to XXXX euros. "
+          skip: "No, thanks"
+          confirm: "Info and activation"
+        activateNew:
+          title: "Do you want to activate Digital Payments Cashback?"
+          body1: "Payments you make with these methods will receive cashback and compete for your ranking."
+          body2: "If you prefer, you can activate cashback on these methods at a later time as well."
+          skip: "Not now, thanks"
   alert:
     msgErrorUpdateApp: "An error occurred while opening the app store"
     titlePagoPaUpdateApp: Update required
@@ -876,11 +891,13 @@ wallet:
       pan: Card number
       expirationDate: Expiration date
       securityCode: Card security code
+      securityCode4D: CIN (4 digits)
     values:
       holder: John Doe
       pan: 0000 0000 0000 0000
       expirationDate: mm/yy
       securityCode: "•••"
+      securityCode4D: "••••"
   acceptedCards: Accepted cards
   chooseMethod: Select the desired method
   QRtoPay:
@@ -982,17 +999,23 @@ messages:
       addMemo:
           block1: Add a reminder for the
           block2: at
-      expiringAlert: This notice expire today at
+      expiringAlert:
+        block1: This notice will expire on
+        block2: at
       expiredAlert:
-        block1: The notice expired at
-        block2: "on"
-    presctiption:
+        expirable:
+          block1: The notice expired at 
+          block2: "on"
+        unexpirable:
+          block: The payment is overdue. You can still pay; IO app will update the amount if needed.
+    presctiption:  
       addMemo: This prescription expires the
       expiringAlert: This prescription expires today
       expiredAlert:
           block1: The prescription expired at
           block2: "on"
     pay: Pay € {{amount}}
+    onlyPay: Pay
     paid: Paid
     reminder: Reminder
     reminderShort: Memo
@@ -1018,6 +1041,9 @@ messages:
     errors:
       fetchCalendars: Error fetching calendars
     helper: "IO will remember this choice, you can change it from the preference pane."
+  badge:
+    expired: Expired
+    paid: Paid
   unknownSender: Unknown sender
   noContent: Content not available
   archive:
@@ -1204,6 +1230,9 @@ titleUpdateApp: Update IO!
 msgErrorUpdateApp: "An error occurred while opening the app store"
 messageUpdateApp: "IO often introduces small improvements and new features: to continue using the app you need
   to update it to the latest version."
+titleUpdateAppAlert: To continue, update IO
+messageUpdateAppAlert: A new release of IO is now available on {{storeName}}. To start using this new feature, please download the update.
+openStore: Open {{storeName}}
 btnUpdateApp: Update the IO app
 systemsOff:
   title: Unable to start IO
@@ -1534,7 +1563,7 @@ bonus:
         description: We will send you a message in the app when your bonus is ready.
       alreadyRedeemed:
         title: The bonus for your family is already active!
-        body: You can view the details in the Payments section.
+        body: You can view the details in the Wallet section.
         cta: Show available Bonuses
       eligibilityExpired:
         title: Time expired.
@@ -1565,7 +1594,7 @@ bonus:
     contentTitle: Select one of the available bonus
     contextualHelp:
       title: Add a bonus or discount card
-      body: Here you can select the bonus or discount card you want to add. Once activated, they will then be displayed in the Payments section. You will always be able to see the details of the bonus or discount, entering the Payments section, and selecting the item in the list.
+      body: Here you can select the bonus or discount card you want to add. Once activated, they will then be displayed in the Wallet section. You will always be able to see the details of the bonus or discount, entering the Wallet section, and selecting the item in the list.
   bonusInformation:
     contextualHelp:
       title: The Bonus Vacanze
@@ -1585,6 +1614,9 @@ bonus:
     content: !include bonus/bonusVacanze/bonus_tos.md
   bpd:
     title: Cashback Digital Payments
+    name: Cashback
+    unsubscribe: "Disable cashback"
+    earned: Earned Cashback
     onboarding:
       loadingActivationStatus:
         title: Loading activation status
@@ -1631,6 +1663,42 @@ bonus:
         text2: "identify a current account that is not registered in your tax code: are you sure you want to use this IBAN?"
       loading:
         "We are verifying your IBAN\n\nPlease wait."
+    details:
+      components:
+        iban:
+          title: "IBAN for accreditation"
+          noIbanBody: "Set your IBAN in order to receive the accumulated cashback"
+          button: "Set IBAN"
+        transactionsCountOverview:
+          title: "Valid transactions"
+          of: "out of"
+          closedPeriodKOBody: "You have not reached the {{transactions}} transactions necessary to obtain a refund: you would have received € {{amount}}. Try it in the next period!"
+          currentPeriodKOBody: "You must have done at least {{transactions}} transactions to unlock the cashback you have accumulated!"
+          gracePeriodBody: "This cashback period ended on {{date}}. We are waiting to receive the latest transactions from the banks. A little more patience. We will notify you with a message on IO!"
+          closedPeriodOKBody: "Congratulations {{name}}! \nYou are entitled to € {{amount}} of Cashback"
+          closedPeriodMaxAmount: "it's the maximum possible refund!"
+          inactivePeriodBody: "You will be able to start accumulating valid transactions starting from {{date}}"
+      transaction:
+        title: "Your transactions"
+        goToButton: "Transactions detail"
+        detail:
+          title: "Detail of the transaction"
+          paymentCircuit: "Payment circuit"
+          transactionAmount: "Transaction amount"
+          cashbackAmount: "Cashback amount"
+          acquirerId: "Acquirer transaction ID"
+          issuerId: "Issuer transaction ID"
+          maxCashbackWarning: "For each transaction you can get a maximum cashback of € {{amount}}."
+          maxCashbackForPeriodWarning: "You have already reached the maximum refund for this period."
+          canceledOperationWarning: "This transaction is a refund, so the related cashback has been deducted."
+          canceled: "Refund"
+      paymentMethods:
+        noPaymentMethods: "You must add at least one payment method to start collecting the necessary transactions"
+      card:
+        status:
+          active: Active
+          closed: Closed
+          inactive: Incoming
 webView:
   error:
     missingParams: Not all information necessary to access this page are available

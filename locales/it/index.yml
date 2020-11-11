@@ -65,9 +65,11 @@ global:
     saveSelection: Salva la selezione
     search: Ricerca
     skip: "Salta"
+    add: Aggiungi
+    edit: "Modifica"
   navigator:
     messages: messaggi
-    wallet: pagamenti
+    wallet: portafoglio
     documents: documenti
     profile: profilo
     services: servizi
@@ -245,6 +247,7 @@ profile:
     appVersion: Versione App
     backendVersion: Versione Backend
     debugMode: Modalità debug
+    showroom: UI Showroom
   preferences:
     title: Preferenze
     subtitle:
@@ -656,7 +659,7 @@ payment:
       title: Tentativi di pagamento
       iuv: Codice IUV {{iuv}}
 wallet:
-  wallet: Pagamenti
+  wallet: Portafoglio
   searchAbi:
     title: Aggiungi carta Bancomat
     description:
@@ -666,20 +669,13 @@ wallet:
     bankName: Denominazione della banca
     noName: Nome non disponibile
     loading: Carico la lista delle banche...
-  addBancomat:
-    title: "Aggiungi bancomat {{current}} di {{length}}"
-    screenTitle: "Vuoi aggiungere questa carta?"
-    bodySingular: "Abbiamo trovato 1 carta a te intestata. Procedi con l'aggiunta di questa carta cliccando Aggiungi o clicca Salta per annullare l'operazione."
-    bodyPlural: "Abbiamo trovato {{number}} carte a te intestate. Procedi con l'aggiunta di questa carta cliccando Aggiungi o clicca Salta per passare alla carta successiva."
-    skip: Salta
-    add: Aggiungi
   accessibility:
     cardsPreview: Anteprima dei metodi di pagamento. Attiva per accedere alla lista dei tuoi metodi
     transactionListItem:
       payment:
         read: Transazione
         unread: Transazione da leggere
-      label: "{{payment}} verso {{merchant}} di {{amount}} euro, del {{datetime}} alle ore {{hours}} con causale {{reason}}. Attiva per il dettaglio completo"
+      label: "{{payment}} verso {{merchant}} di {{amount}} euro, del {{datetime}} alle ore {{hours}} con causale {{reason}}. Attiva per il dettaglio completo"
   onboarding:
     bancomat:
       headerTitle: "Aggiungi carta Bancomat"
@@ -692,6 +688,25 @@ wallet:
         chooseAnother: "Scegli un'altra banca"
       loadingSearch:
         title: "Stiamo chiedendo a Bancomat la lista delle tue carte\n\nAttendi qualche secondo"
+      add:
+        title: "Aggiungi bancomat {{current}} di {{length}}"
+        screenTitle: "Vuoi aggiungere questa carta?"
+        bodySingular: "Abbiamo trovato 1 carta a te intestata. Procedi con l'aggiunta di questa carta cliccando Aggiungi o clicca Salta per annullare l'operazione."
+        bodyPlural: "Abbiamo trovato {{number}} carte a te intestate. Procedi con l'aggiunta di questa carta cliccando Aggiungi o clicca Salta per passare alla carta successiva."
+        loading: "Stiamo aggiungendo la tua carta PagoBANCOMAT\n\nAttendi qualche secondo"
+      bpd:
+        suggestActivation:
+          title: "Vuoi attivare il Cashback Pagamenti Digitali?"
+          body: "Hai aggiunto dei metodi di pagamento compatibili con il Cashback Pagamenti Digitali, l’iniziativa promossa dalla Presidenza del Consiglio dei Ministri per promuovere l’uso della moneta elettronica.\n\n
+                 Ogni volta che pagherai con uno dei metodi di pagamento elettronico compatibili (carte, bancomat, app, etc..), riceverai un riborso parziale in base alla tua spesa.\n\n
+                 In base a quante trasnazioni avrai accumulato, in ciascuno periodo, potrai ricevere un premio in denaro fino a XXXX euro."
+          skip: "No, grazie"
+          confirm: "Info e attivazione"
+        activateNew:
+          title: "Vuoi attivare il Cashback Pagamenti Digitali?"
+          body1: "I pagamenti che farai con questi metodi riceveranno il cashback e concorreranno alla tua posizione in classifica."
+          body2: "Se preferisci, puoi attivare il cashback su questi metodi anche in un secondo momento."
+          skip: "Non ora, grazie"
   alert:
     msgErrorUpdateApp: "Si è verificato un errore durante l'apertura dello store delle app"
     titlePagoPaUpdateApp: Aggiornamento richiesto
@@ -902,11 +917,13 @@ wallet:
       pan: Numero della carta
       expirationDate: Data di scadenza
       securityCode: Codice di sicurezza
+      securityCode4D: CID (4 cifre)
     values:
       holder: Mario Rossi
       pan: 0000 0000 0000 0000
       expirationDate: mm/aa
       securityCode: "•••"
+      securityCode4D: "••••"
   acceptedCards: Carte accettate
   chooseMethod: Scegli il metodo che preferisci
   QRtoPay:
@@ -1007,14 +1024,19 @@ messages:
     deselectAll: Nessuno
     payment:
       expired: Pagamento scaduto
-      paid: Questo avviso è stato pagato. Visualizza la ricevuta nei tuoi
+      paid: Questo avviso è stato pagato. Visualizza la ricevuta nel tuo
       addMemo:
         block1: Aggiungi un promemoria per il
         block2: alle
-      expiringAlert: Questo avviso scade oggi alle
+      expiringAlert:
+        block1: Questo avviso scade il giorno
+        block2: alle ore
       expiredAlert:
-        block1: Il pagamento è scaduto alle ore
-        block2: del
+        expirable:
+          block1: Il pagamento è scaduto alle ore
+          block2: del
+        unexpirable:
+          block: Il pagamento è scaduto. Puoi ancora pagare; se previsto, l'app IO provvederà ad attualizzare l'importo.
     presctiption:
       addMemo: Questa ricetta scade il
       expiringAlert: Questa ricetta scade oggi
@@ -1023,6 +1045,7 @@ messages:
         block2: del
 
     pay: Paga € {{amount}}
+    onlyPay: Paga
     paid: Pagato
     reminder: Promemoria
     reminderShort: Memo
@@ -1048,6 +1071,9 @@ messages:
     errors:
       fetchCalendars: Errore durante il recupero dei calendari
     helper: "IO ricorderà d'ora in poi questa scelta: potrai modificarla dalle preferenze dell'app."
+  badge:
+    expired: Scaduto
+    paid: Pagato
   unknownSender: Mittente sconosciuto
   noContent: Contenuto non disponibile
   archive:
@@ -1235,6 +1261,9 @@ genericError: Si è verificato un errore
 titleUpdateApp: Aggiorna IO!
 msgErrorUpdateApp: "Si è verificato un errore durante l'apertura dello store delle app"
 messageUpdateApp: "IO introduce spesso piccole migliorie e nuove funzioni: per continuare ad usare l'app è necessario aggiornarla all'ultima versione."
+titleUpdateAppAlert: Per continuare, aggiorna IO
+messageUpdateAppAlert: È disponibile una nuova versione di IO su {{storeName}}, scaricala subito per utilizzare questa funzionalità.
+openStore: Apri {{storeName}}
 btnUpdateApp: Aggiorna l'app IO
 systemsOff:
   title: Impossibile usare IO
@@ -1566,7 +1595,7 @@ bonus:
         description: Ti invieremo un messaggio in app quando il tuo bonus sarà pronto.
       alreadyRedeemed:
         title: Il bonus per il tuo nucleo familiare è già attivo!
-        body: Puoi visualizzarne i dettagli nella sezione Pagamenti.
+        body: Puoi visualizzarne i dettagli nella sezione Portafoglio.
         cta: Visualizza Bonus disponibili
       eligibilityExpired:
         title: Tempo scaduto.
@@ -1597,7 +1626,7 @@ bonus:
     contentTitle: Seleziona uno dei bonus disponibili
     contextualHelp:
       title: Aggiungere un bonus o una carta sconto
-      body: Qui puoi selezionare il bonus o la carta sconto che vuoi aggiungere. Una volta attivati, verranno poi visualizzati nella sezione Pagamenti. Potrai sempre visualizzare i dettagli del Bonus o dello sconto, entrando nella sezione Pagamenti, e selezionando l'elemento interessato all'interno della lista.
+      body: "Qui puoi selezionare il bonus o la carta sconto che vuoi aggiungere. Una volta attivati, verranno poi visualizzati nella sezione Portafoglio. Potrai sempre visualizzare i dettagli del Bonus o dello sconto, entrando nella sezione Portafoglio, e selezionando l'elemento interessato all'interno della lista."
   bonusInformation:
     contextualHelp:
       title: Il bonus vacanze
@@ -1617,6 +1646,9 @@ bonus:
     content: !include bonus/bonusVacanze/bonus_tos.md
   bpd:
     title: Cashback Pagamenti Digitali
+    name: Cashback
+    earned: Cashback accumulato
+    unsubscribe: "Cancella la tua iscrizione al cashback"
     onboarding:
       loadingActivationStatus:
         title: Verifico lo stato di attivazione
@@ -1663,6 +1695,42 @@ bonus:
         text2: "identifica un conto corrente che non risulta intestato al tuo codice fiscale: sei sicuro di voler usare questo IBAN?"
       loading:
         "Stiamo verificando il tuo IBAN\n\nTi preghiamo di attendere."
+    details:
+      components:
+        iban:
+          title: "IBAN per l’accredito"
+          noIbanBody: "Imposta il tuo IBAN per poter ricevere il cashback accumulato"
+          button: "Imposta IBAN"
+        transactionsCountOverview:
+          title: "Transazioni valide"
+          of: "su"
+          closedPeriodKOBody: "Non hai raggiunto le {{transactions}} transazioni necessarie per ottenere un rimborso: avresti ricevuto € {{amount}}. Provaci nel prossimo periodo!"
+          currentPeriodKOBody: "Devi aver fatto almeno {{transactions}} transazioni per sbloccare il cashback che hai accumulato!"
+          gracePeriodBody: "Questo periodo del cashback si è chiuso il {{date}}. Stiamo aspettando di ricevere dalle banche le ultime transazioni. Ancora un po’ di pazienza. TI avviseremo con un messaggio su IO!"
+          closedPeriodOKBody: "Complimenti {{name}}! \nHai diritto a € {{amount}} di Cashback"
+          closedPeriodMaxAmount: "è il massimo del rimborso possibile!"
+          inactivePeriodBody: "Potrai iniziare ad accumulare transazioni valide a partire dal {{date}}"
+      transaction:
+        title: "Le tue transazioni"
+        goToButton: "Dettaglio transazioni"
+        detail:
+          title: "Dettaglio della transazione"
+          paymentCircuit: "Circuito di pagamento"
+          transactionAmount: "Importo transazione"
+          cashbackAmount: "Importo cashback"
+          acquirerId: "ID transazione Acquirer"
+          issuerId: "ID transazione Issuer"
+          maxCashbackWarning: "Per ogni transazione puoi ottenere un cashback massimo di € {{amount}}."
+          maxCashbackForPeriodWarning: "Hai già raggiunto il rimborso massimo previsto per questo periodo."
+          canceledOperationWarning: "Questa transazione è un rimborso, perciò è stato decurtato il relativo cashback."
+          canceled: "Storno"
+      paymentMethods:
+        noPaymentMethods: "Devi aggiungere almeno un metodo di pagamento per iniziare a collezionare le transazioni necessarie"
+      card:
+        status:
+          active: Attivo
+          closed: Concluso
+          inactive: In arrivo
 webView:
   error:
     missingParams: Non sono presenti le informazioni necessarie per accedere a questa pagina
