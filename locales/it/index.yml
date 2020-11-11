@@ -72,6 +72,7 @@ global:
     profile: profilo
     services: servizi
     ssi: SSI
+    ercWallet: Wallet
   actions:
     retry: Si è verificato un errore, si prega di riprovare
     search: Testo da cercare

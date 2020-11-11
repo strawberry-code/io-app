@@ -26,10 +26,12 @@ import variables from "../theme/variables";
 import MessageNavigator from "./MessagesNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import SsiNavigator from "./SsiNavigator";
+import ErcWalletNavigator from "./ErcWalletNavigator";
 import ROUTES from "./routes";
 import ServicesNavigator from "./ServicesNavigator";
 import WalletNavigator from "./WalletNavigator";
 import SSITabIcon from "../components/SsiTabIcon";
+import ErcWalletTabIcon from "../components/ErcWalletTabIcon";
 
 type Routes = keyof typeof ROUTES;
 
@@ -40,7 +42,8 @@ const ROUTE_ICON: RouteIconMap = {
   DOCUMENTS_HOME: "io-documenti",
   SERVICES_NAVIGATOR: "io-servizi",
   PROFILE_NAVIGATOR: "io-profilo",
-  SSI_NAVIGATOR: "io-cie-card"
+  SSI_NAVIGATOR: "io-cie-card",
+  ERCWALLET_NAVIGATOR: "io-test"
 };
 
 const getIcon = (routeName: string): string => {
@@ -95,7 +98,8 @@ const NoTabBarRoutes: ReadonlyArray<string> = [
   BPD_ROUTES.MAIN,
   ROUTES.MARKDOWN_PLAYGROUND,
   ROUTES.WEB_PLAYGROUND,
-  ROUTES.SSI_NAVIGATOR
+  ROUTES.SSI_NAVIGATOR,
+  ROUTES.ERCWALLET_NAVIGATOR
 ];
 
 const getTabBarVisibility = (
@@ -135,6 +139,9 @@ const navigation = createBottomTabNavigator(
     },
     [ROUTES.SSI_NAVIGATOR]: {
       screen: SsiNavigator
+    },
+    [ROUTES.ERCWALLET_NAVIGATOR]: {
+      screen: ErcWalletNavigator
     }
   },
   {
@@ -173,6 +180,13 @@ const navigation = createBottomTabNavigator(
             />
           );
         }
+        if (iconName === ROUTE_ICON.SERVICES_NAVIGATOR) {
+          return (
+            <ServiceTabIcon
+              color={options.tintColor === null ? undefined : options.tintColor}
+            />
+          );
+        }
         if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
           return (
             <SSITabIcon
@@ -181,9 +195,10 @@ const navigation = createBottomTabNavigator(
             />
           );
         }
-        if (iconName === ROUTE_ICON.SERVICES_NAVIGATOR) {
+        if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
           return (
-            <ServiceTabIcon
+            <ErcWalletTabIcon
+              size={variables.iconSize3}
               color={options.tintColor === null ? undefined : options.tintColor}
             />
           );

@@ -28,7 +28,8 @@ const ROUTE_LABEL: RouteLabelMap = {
   DOCUMENTS_HOME: "global.navigator.documents",
   SERVICES_NAVIGATOR: "global.navigator.services",
   PROFILE_NAVIGATOR: "global.navigator.profile",
-  SSI_NAVIGATOR: "global.navigator.ssi"
+  SSI_NAVIGATOR: "global.navigator.ssi",
+  ERCWALLET_NAVIGATOR: "global.navigator.ercWallet",
 };
 const fallbackLabel = "unknown"; // fallback label
 
@@ -37,7 +38,8 @@ const routeOrder = new Map<Routes, number>([
   ["WALLET_HOME", 2],
   ["SERVICES_NAVIGATOR", 3],
   ["PROFILE_NAVIGATOR", 4],
-  ["SSI_NAVIGATOR", 5]
+  ["SSI_NAVIGATOR", 5],
+  ["ERCWALLET_NAVIGATOR", 6]
 ]);
 
 const getLabel = (routeName: string, locale: Locales): string =>
