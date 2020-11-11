@@ -18,8 +18,8 @@ export type BpdPmActivationStatus = "active" | "inactive" | "notActivable";
 export type BpdPaymentMethodActivation = {
   hPan: HPan;
   activationStatus: BpdPmActivationStatus;
-  activationDate?: Date;
-  deactivationDate?: Date;
+  activationDate?: string;
+  deactivationDate?: string;
 };
 
 /**
@@ -60,6 +60,6 @@ export const bpdUpdatePaymentMethodActivation = createAsyncAction(
   BpdPaymentMethodFailure
 >();
 
-export type BpdPaymentMethod =
+export type BpdPaymentMethodActions =
   | ActionType<typeof bpdPaymentMethodActivation>
   | ActionType<typeof bpdUpdatePaymentMethodActivation>;

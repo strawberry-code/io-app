@@ -3,6 +3,7 @@
  * to call the different API available
  */
 import { flip } from "fp-ts/lib/function";
+import { fromNullable } from "fp-ts/lib/Option";
 
 import * as t from "io-ts";
 import * as r from "italia-ts-commons/lib/requests";
@@ -21,7 +22,15 @@ import {
   TypeofApiParams
 } from "italia-ts-commons/lib/requests";
 import { Omit } from "italia-ts-commons/lib/types";
-import { fromNullable } from "fp-ts/lib/Option";
+import { BancomatCardsRequest } from "../../definitions/pagopa/walletv2/BancomatCardsRequest";
+import {
+  addWalletsBancomatCardUsingPOSTDecoder,
+  getAbiListUsingGETDefaultDecoder,
+  GetAbiListUsingGETT,
+  getPansUsingGETDefaultDecoder,
+  GetPansUsingGETT,
+  getWalletsV2UsingGETDecoder
+} from "../../definitions/pagopa/walletv2/requestTypes";
 import {
   addWalletCreditCardUsingPOSTDecoder,
   AddWalletCreditCardUsingPOSTT,
@@ -42,8 +51,8 @@ import {
   GetWalletsUsingGETT,
   payCreditCardVerificationUsingPOSTDecoder,
   PayCreditCardVerificationUsingPOSTT,
-  payUsingPOSTDecoder,
-  PayUsingPOSTT,
+  paySslUsingPOSTDecoder,
+  PaySslUsingPOSTT,
   startSessionUsingGETDecoder,
   StartSessionUsingGETT,
   updateWalletUsingPUTDecoder,
@@ -64,16 +73,6 @@ import {
 } from "../types/pagopa";
 import { getLocalePrimaryWithFallback } from "../utils/locale";
 import { fixWalletPspTagsValues } from "../utils/wallet";
-import {
-  addWalletsBancomatCardUsingPOSTDecoder,
-  AddWalletsBancomatCardUsingPOSTT,
-  getAbiListUsingGETDefaultDecoder,
-  GetAbiListUsingGETT,
-  getPansUsingGETDefaultDecoder,
-  GetPansUsingGETT,
-  getWalletsV2UsingGETDecoder
-} from "../../definitions/pagopa/bancomat/requestTypes";
-import { BancomatCardsRequest } from "../../definitions/pagopa/bancomat/BancomatCardsRequest";
 
 /**
  * A decoder that ignores the content of the payload and only decodes the status
@@ -346,7 +345,7 @@ const addWalletCreditCard: AddWalletCreditCardUsingPOSTTExtra = {
 };
 
 type PayUsingPOSTTExtra = MapResponseType<
-  PayUsingPOSTT,
+  PaySslUsingPOSTT,
   200,
   TransactionResponse
 >;
@@ -357,7 +356,7 @@ const postPayment: PayUsingPOSTTExtra = {
   query: () => ({}),
   body: ({ payRequest }) => JSON.stringify(payRequest),
   headers: composeHeaderProducers(tokenHeaderProducer, ApiHeaderJson),
-  response_decoder: payUsingPOSTDecoder(TransactionResponse)
+  response_decoder: paySslUsingPOSTDecoder(TransactionResponse)
 };
 
 const deletePayment: DeleteBySessionCookieExpiredUsingDELETET = {
@@ -414,7 +413,21 @@ const getPans: GetPansUsingGETT = {
   response_decoder: getPansUsingGETDefaultDecoder()
 };
 
-const addPans: AddWalletsBancomatCardUsingPOSTT = {
+export type AddWalletsBancomatCardUsingPOSTTExtra = r.IPostApiRequestType<
+  {
+    readonly Bearer: string;
+    readonly bancomatCardsRequest: BancomatCardsRequest;
+  },
+  "Content-Type" | "Authorization",
+  never,
+  | r.IResponseType<200, PatchedWalletV2ListResponse>
+  | r.IResponseType<201, undefined>
+  | r.IResponseType<401, undefined>
+  | r.IResponseType<403, undefined>
+  | r.IResponseType<404, undefined>
+>;
+
+const addPans: AddWalletsBancomatCardUsingPOSTTExtra = {
   method: "post",
   url: () => `/v1/bancomat/add-wallets`,
   query: () => ({}),
@@ -531,8 +544,8 @@ export function PaymentManagerClient(
         id
       }),
     postPayment: (
-      id: TypeofApiParams<PayUsingPOSTT>["id"],
-      payRequest: TypeofApiParams<PayUsingPOSTT>["payRequest"]
+      id: TypeofApiParams<PaySslUsingPOSTT>["id"],
+      payRequest: TypeofApiParams<PaySslUsingPOSTT>["payRequest"]
     ) =>
       flip(
         withPaymentManagerToken(
