@@ -1,16 +1,16 @@
 {
   "name": "italia-app",
   "version": "1.9.0-rc.2",
-  "io_backend_api": "https://raw.githubusercontent.com/pagopa/io-backend/v7.0.0/api_backend.yaml",
-  "io_public_api": "https://raw.githubusercontent.com/pagopa/io-backend/v7.0.0/api_public.yaml",
-  "io_content_specs": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/definitions.yml",
-  "io_bonus_vacanze_specs": "https://raw.githubusercontent.com/pagopa/io-backend/master/api_bonus.yaml",
-  "io_bpd_citizen": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/citizen.json",
-  "io_bpd_payment": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/payment.json",
-  "io_bpd_award_periods": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/award.json",
-  "io_bpd_winning_transactions": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/winning_transactions.json",
-  "pagopa_api": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/pagopa/pm/spec.json",
-  "pagopa_api_walletv2": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/pm/walletv2.json",
+  "io_backend_api": "https://raw.githubusercontent.com/strawberry-code/io-backend/v7.0.0/api_backend.yaml",
+  "io_public_api": "https://raw.githubusercontent.com/strawberry-code/io-backend/v7.0.0/api_public.yaml",
+  "io_content_specs": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/definitions.yml",
+  "io_bonus_vacanze_specs": "https://raw.githubusercontent.com/strawberry-code/io-backend/master/api_bonus.yaml",
+  "io_bpd_citizen": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/bonus/specs/bpd/citizen.json",
+  "io_bpd_payment": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/bonus/specs/bpd/payment.json",
+  "io_bpd_award_periods": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/bonus/specs/bpd/award.json",
+  "io_bpd_winning_transactions": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/bonus/specs/bpd/winning_transactions.json",
+  "pagopa_api": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/pagopa/pm/spec.json",
+  "pagopa_api_walletv2": "https://raw.githubusercontent.com/strawberry-code/io-services-metadata/master/bonus/specs/bpd/pm/walletv2.json",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -255,7 +255,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pagopa/io-app.git"
+    "url": "git+https://github.com/strawberry-code/io-app.git"
   },
   "standard-version": {
     "scripts": {
