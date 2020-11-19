@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 const AS_SSI_KEY = "AS_SSI_KEY";
 
-// typeguard helper function
+// Typeguard helper function for checking for a string
 const isString = (text: any): text is string =>
   typeof text === "string" || text instanceof String;
 
@@ -30,12 +30,12 @@ const storeVC = async (VC: string) => {
   }
 };
 
-const getJwts = async (): Promise<Array<string>> => {
+const getJwts = async (): Promise<Array<JWT>> => {
   return JSON.parse((await AsyncStorage.getItem(AS_SSI_KEY)) as string);
 };
 
 const getVCs = async (): Promise<Array<VerifiedCredential> | undefined> => {
-  const Jwts: Array<string> = await getJwts();
+  const Jwts: Array<JWT> = await getJwts();
   if (!Jwts) {
     return;
   }
@@ -64,10 +64,7 @@ const decodeJwt = (jwt: string) => {
 };
 
 const clearStore = async () => {
-  const VCs: Array<VerifiedCredential> = await AsyncStorage.removeItem(
-    AS_SSI_KEY
-  );
-  // console.log(VCs)
+  await AsyncStorage.removeItem(AS_SSI_KEY);
 };
 
 export default { storeVC, getVCs, clearStore, getJwts };
