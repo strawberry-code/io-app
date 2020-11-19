@@ -1,103 +1,184 @@
 import React from "react";
-import {ActivityIndicator, Alert, Modal, StyleSheet, Text, TouchableHighlight, View} from "react-native";
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  Modal,
+  StyleSheet,
+  StyleSheetProperties,
+  Text,
+  TouchableHighlight,
+  View
+} from "react-native";
 import variables from "../../theme/variables";
 
 type State = {
   modalVisible: boolean;
-  modalStates: any;
+  modalStates: {
+    showPrompt: boolean;
+    sharing: boolean;
+    sharedSuccess: boolean;
+    sharedFail: boolean | any;
+  };
 };
-
-class SsiSahreVCModal extends React.Component<State> {
-
-  constructor(props) {
+class SsiShareVCModal extends React.Component<any, State> {
+  constructor(props: any) {
     super(props);
     this.state = {
       modalVisible: true,
-      modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}
+      modalStates: {
+        showPrompt: true,
+        sharing: false,
+        sharedSuccess: false,
+        sharedFail: false
+      }
     };
-    this.props.sharedSuccess = this.sharedSuccess
+    // this.props.sharedSuccees = this.sharedSuccess;
   }
+
+  public setModalVisible = (visible: boolean): void => {
+    this.setState({ modalVisible: visible });
+  };
+
+  public shareLoading = () => {
+    this.setState({
+      modalStates: {
+        showPrompt: false,
+        sharing: true,
+        sharedSuccess: false,
+        sharedFail: false
+      }
+    });
+  };
 
   public sharedSuccess = () => {
-    this.setState({modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: fail}});
-  }
+    this.setState({
+      modalStates: {
+        showPrompt: false,
+        sharing: false,
+        sharedSuccess: true,
+        sharedFail: fail
+      }
+    });
+  };
 
   public render() {
+    const { modalVisible, modalStates } = this.state;
+
     return (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.modalVisible}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            {modalStates.showPrompt && (
+              <>
+                <Text style={styles.modalText}>
+                  Do you want to share this credential?
+                </Text>
 
-              {this.state.modalStates.showPrompt && <>
-                <Text style={styles.modalText}>Do you want to share this credential?</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Button
+                    style={{
+                      ...styles.openButton,
+                      backgroundColor: variables.brandPrimary,
+                      marginHorizontal: 20
+                    }}
+                    onPress={() => {
+                      this.shareLoading();
+                      setTimeout(this.sharedSuccess, 2500);
+                    }}
+                    text="Yes"
+                    textStyle={styles.textStyle}
+                  />
 
-                <View style={{flexDirection: "row"}}>
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary, marginHorizontal: 20}}
-                  onPress={() => {
-                    this.setState({modalStates: {showPrompt: false, sharing: true, sharedSuccess: false, sharedFail: false}});
-                    setTimeout(() => {
-                      this.setState({modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: fail}});
-                    }, 2500)
-                  }}
-                >
-                  <Text style={styles.textStyle}>Yes</Text>
-                </TouchableHighlight>
-
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandDanger, marginHorizontal: 20}}
-                  onPress={() => {
-                    this.setState({modalVisible: false});
-                  }}
-                >
-                  <Text style={styles.textStyle}>No</Text>
-                </TouchableHighlight>
+                  <Button
+                    style={{
+                      ...styles.openButton,
+                      backgroundColor: variables.brandDanger,
+                      marginHorizontal: 20
+                    }}
+                    onPress={() => {
+                      this.setModalVisible(false);
+                    }}
+                    text="No"
+                    textStyle={styles.textStyle}
+                  />
                 </View>
-              </>}
+              </>
+            )}
 
-              {this.state.modalStates.sharing && <>
+            {modalStates.sharing && (
+              <>
                 <Text style={styles.modalText}>Sharing credential...</Text>
-                <ActivityIndicator/>
-              </>}
+                <ActivityIndicator />
+              </>
+            )}
 
-              {this.state.modalStates.sharedSuccess && <>
+            {modalStates.sharedSuccess && (
+              <>
                 <Text style={styles.modalText}>Credential shared!</Text>
                 <Text style={styles.modalText}>✅</Text>
 
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false})
-                    this.setState({modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}});
+                <Button
+                  text="Ok, thanks"
+                  textStyle={styles.textStyle}
+                  style={{
+                    ...styles.openButton,
+                    backgroundColor: variables.brandPrimary
                   }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
+                  onPress={() => {
+                    this.setModalVisible(false);
+                    this.setState({
+                      modalStates: {
+                        showPrompt: true,
+                        sharing: false,
+                        sharedSuccess: false,
+                        sharedFail: false
+                      }
+                    });
+                  }}
+                />
+              </>
+            )}
 
-              {this.state.modalStates.sharedFail && <>
-                <Text style={styles.modalText}>Failed to share the credential</Text>
+            {modalStates.sharedFail && (
+              <>
+                <Text style={styles.modalText}>
+                  Failed to share the credential
+                </Text>
                 <Text style={styles.modalText}>🚫</Text>
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false});
+
+                <Button
+                  text="Ok, thanks"
+                  style={{
+                    ...styles.openButton,
+                    backgroundColor: variables.brandPrimary
                   }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
-            </View>
+                  onPress={() => this.setModalVisible(false)}
+                  textStyle={styles.textStyle}
+                />
+              </>
+            )}
           </View>
-        </Modal>
+        </View>
+      </Modal>
     );
   }
 }
 
+interface ButtonProps {
+  style?: StyleSheetProperties | any;
+  onPress: (event: GestureResponderEvent) => void;
+  text: string;
+  textStyle?: StyleSheetProperties | any;
+}
+
+// eslint-disable-next-line arrow-body-style
+const Button: React.FC<ButtonProps> = ({ style, onPress, text, textStyle }) => {
+  return (
+    <TouchableHighlight style={{ ...style }} onPress={onPress}>
+      <Text style={textStyle}>{text}</Text>
+    </TouchableHighlight>
+  );
+};
 
 /*
       <TouchableHighlight
@@ -110,7 +191,7 @@ class SsiSahreVCModal extends React.Component<State> {
       </TouchableHighlight>
  */
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<StyleSheetProperties | any>({
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -142,7 +223,7 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "center"
   },
   modalText: {
     marginBottom: 15,
@@ -150,4 +231,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SsiSahreVCModal;
+export default SsiShareVCModal;
