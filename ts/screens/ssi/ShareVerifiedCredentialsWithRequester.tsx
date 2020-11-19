@@ -1,7 +1,7 @@
 /**
  * Implementazione della vista che compare dopo la scansione di un QR di tipo Share Req. L'utente potrà selezionare quali VCs convidivdere.
  */
-import {fromNullable} from "fp-ts/lib/Option";
+import { fromNullable } from "fp-ts/lib/Option";
 import * as React from "react";
 import {
   ActivityIndicator,
@@ -10,17 +10,23 @@ import {
   Modal,
   Platform,
   StyleSheet,
+  ViewStyle,
+  TextStyle,
   Text,
   TouchableHighlight,
   TouchableOpacity,
   View
 } from "react-native";
-import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
-import {connect} from "react-redux";
-import {withLightModalContext} from "../../components/helpers/withLightModalContext";
+import {
+  NavigationEvents,
+  NavigationScreenProp,
+  NavigationState
+} from "react-navigation";
+import { connect } from "react-redux";
+import { withLightModalContext } from "../../components/helpers/withLightModalContext";
 import ScreenContent from "../../components/screens/ScreenContent";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
-import {LightModalContextInterface} from "../../components/ui/LightModal";
+import { LightModalContextInterface } from "../../components/ui/LightModal";
 import I18n from "../../i18n";
 import {
   navigateToCalendarPreferenceScreen,
@@ -31,7 +37,7 @@ import {
   navigateToLanguagePreferenceScreen,
   navigateToSsiHome
 } from "../../store/actions/navigation";
-import {Dispatch, ReduxProps} from "../../store/actions/types";
+import { Dispatch, ReduxProps } from "../../store/actions/types";
 import {
   isCustomEmailChannelEnabledSelector,
   preferredLanguageSelector
@@ -45,19 +51,19 @@ import {
   profileMobilePhoneSelector,
   profileSpidEmailSelector
 } from "../../store/reducers/profile";
-import {GlobalState} from "../../store/reducers/types";
+import { GlobalState } from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
-import {VerifiedCredential} from "did-jwt-vc";
+import { JwtCredentialPayload, VerifiedCredential } from "did-jwt-vc";
 import variables from "../../theme/variables";
 import VCstore from "./VCstore";
 import IconFont from "../../components/ui/IconFont";
-import {showToast} from "../../utils/showToast";
+import { showToast } from "../../utils/showToast";
+import { strings } from "instabug-reactnative";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
   onRefresh: () => void;
 }>;
-
 
 type Props = OwnProps &
   ReturnType<typeof mapStateToProps> &
@@ -68,12 +74,13 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
-  data: [],
+  data: Array<VerifiedCredential>;
   modalVisible: boolean;
   modalStates: any;
   shareable: boolean;
+  shareTo?: string;
+  VCtoBeShared?: string | undefined;
 };
-
 
 /**
  * Translates the primary languages of the provided locales.
@@ -90,7 +97,6 @@ type State = {
  */
 
 class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -98,7 +104,12 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       isFirstLoad: Platform.OS === "ios",
       data: [],
       modalVisible: false,
-      modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: false},
+      modalStates: {
+        showPrompt: false,
+        sharing: false,
+        sharedSuccess: false,
+        sharedFail: false
+      },
       shareable: false
     };
   }
@@ -112,124 +123,152 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
    * Gestisce la logica dopo che la navigation ha portato la vista da QR Scan a qui
    * @param data Contiene i dati del QR scansionato
    */
-  public handleQrDataAfterNavigation(qrData) {
-
-    console.log('🟢 eseguendo logica per shareReq')
-    console.log(`qrData: ${JSON.stringify(qrData)}`)
+  public handleQrDataAfterNavigation(qrData): void {
+    console.log("🟢 eseguendo logica per shareReq");
+    console.log(`qrData: ${JSON.stringify(qrData)}`);
 
     // Callback è l'API URL server COMPLETA da invocare quando l'utente decide di codnividere le VCs
-    let callback = qrData.callback
+    let callback = qrData.callback;
 
     // TODO: questi sarebbero i campi che vengono presi dal QR, quindi cambiare quando lato server hanno finito
     // Devo mostrare SOLO le VC che hanno uno o più di questi campi
-    let requestedTypes = ['VerifiableCredential']
+    let requestedTypes = ["VerifiableCredential"];
 
-    console.log(`\nAPI URL che verrà chiamata: ${callback}\n`)
+    console.log(`\nAPI URL che verrà chiamata: ${callback}\n`);
 
     //let VCs = HardcodedVCs
 
     //callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
-    console.log("making http fetch post")
+    console.log("making http fetch post");
 
     // Carica le VCs da store
-    VCstore.getVCs().then((data) => {
-
-      let i = data.length
+    void VCstore.getVCs().then((data): void => {
+      if (!data) {
+        return;
+      }
+      // eslint-disable-next-line functional/no-let
+      let i = data.length;
       while (i--) {
-        console.log('VC type in the list #'+i+': ' + JSON.stringify(data[i].vc.type))
-        let isVcValid = false
+        console.log(
+          "VC type in the list #" + i + ": " + JSON.stringify(data[i].vc.type)
+        );
+        let isVcValid = false;
         requestedTypes.forEach(requestedType => {
           data[i].vc.type.forEach(vcType => {
             if (vcType === requestedType) {
-              isVcValid = true
+              isVcValid = true;
             }
-          })
-
-        })
+          });
+        });
 
         if (!isVcValid) {
           data.splice(i, 1);
         } else {
-          data[i].selected = true
+          data[i].selected = true;
         }
       }
 
       // Aggiorna stato della vista
       // shareable: aggiorna il flag del button blu "YES" (switcha se cliccabile o meno), siccome carico tutte come checkate, ora è su true
       this.setState({
-        data: data,
+        data,
         shareable: true,
         modalVisible: false,
-        modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: false},
+        modalStates: {
+          showPrompt: false,
+          sharing: false,
+          sharedSuccess: false,
+          sharedFail: false
+        },
         shareTo: callback,
 
         // TODO: che passare come JSON qui?
-        VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})
-      })
-    })
+        VCtoBeShared: JSON.stringify({
+          verifiableCredential:
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"
+        })
+      });
+    });
   }
 
-
   private shareVCnow = () => {
-
-    let shareTo = this.state.shareTo
-    let VCsToBeShared = []
+    const shareTo = this.state.shareTo;
+    let VCsToBeShared = [];
 
     this.state.data.forEach(VCinState => {
-      if(VCinState.selected === true) VCsToBeShared.push(VCinState)
-    })
+      if (VCinState.selected === true) VCsToBeShared.push(VCinState);
+    });
 
     fetch(shareTo, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(VCsToBeShared)
     })
       .then(response => response.json())
       .then(data => {
-        console.info('Success:', JSON.stringify(data))
+        console.info("Success:", JSON.stringify(data));
         this.setState({
           modalVisible: true,
-          modalStates: {showPrompt: false, sharing: false, sharedSuccess: true, sharedFail: false}
-        })
+          modalStates: {
+            showPrompt: false,
+            sharing: false,
+            sharedSuccess: true,
+            sharedFail: false
+          }
+        });
       })
-      .catch((error) => {
-        console.info('Error:', error);
+      .catch(error => {
+        console.info("Error:", error);
         this.setState({
           modalVisible: true,
-          modalStates: {showPrompt: false, sharing: false, sharedSuccess: false, sharedFail: true}
-        })
+          modalStates: {
+            showPrompt: false,
+            sharing: false,
+            sharedSuccess: false,
+            sharedFail: true
+          }
+        });
       });
-  }
-
-
-
-
+  };
 
   // FIXME: metodo non più usato, valutare se toglierlo
-  private saveVCinTheStore = (jwt) => {
-    console.log('saving new jwt in the store: ' + jwt)
+  private saveVCinTheStore = jwt => {
+    console.log("saving new jwt in the store: " + jwt);
     VCstore.storeVC(jwt).then(() => {
-      VCstore.getVCs().then((data) => {
-        this.setState({data: data})
-      })
-    })
-  }
+      VCstore.getVCs().then(data => {
+        this.setState({ data: data });
+      });
+    });
+  };
 
   /**
    * Metodo che viene chiamato quando si apre questa vista.
    */
   private checkParamsOnWillFocus = () => {
-    console.log(JSON.stringify(this.props.navigation.state.params))
-    if (this.props.navigation.state.params && this.props.navigation.state.params.action) {
-      this.handleQrDataAfterNavigation(this.props.navigation.state.params.data)
+    console.log(JSON.stringify(this.props.navigation.state.params));
+    if (
+      this.props.navigation.state.params &&
+      this.props.navigation.state.params.action
+    ) {
+      this.handleQrDataAfterNavigation(this.props.navigation.state.params.data);
     }
-  }
+  };
 
   private textHeader = (headerTitle: string) => {
-    return (<Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{headerTitle}</Text>)
-  }
+    return (
+      <Text
+        style={{
+          color: variables.colorWhite,
+          fontWeight: "bold",
+          textAlign: "center"
+        }}
+      >
+        {headerTitle}
+      </Text>
+    );
+  };
 
   /**
    * Genera la vista di una singola VC (functional component passata alla FlatList)
@@ -238,77 +277,85 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
   private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
     const VC = info.item;
     //console.log(JSON.stringify(VC))
-    let vcName
-    let firstName
-    let lastName
-    let number
-    let iss
+    let vcName;
+    let firstName;
+    let lastName;
+    let number;
+    let iss;
     try {
-      vcName = VC.vc.credentialSubject.name
-      firstName = VC.vc.credentialSubject.firstName
-      lastName = VC.vc.credentialSubject.lastName
-      number = VC.vc.credentialSubject.number
-      iss = VC.vc.credentialSubject.iss
+      vcName = VC.vc.credentialSubject.name;
+      firstName = VC.vc.credentialSubject.firstName;
+      lastName = VC.vc.credentialSubject.lastName;
+      number = VC.vc.credentialSubject.number;
+      iss = VC.vc.credentialSubject.iss;
     } catch (e) {
-      vcName = "uncompliant credential format"
-      firstName = "uncompliant credential format"
-      lastName = "uncompliant credential format"
-      number = "uncompliant credential format"
-      iss = "uncompliant credential format"
+      vcName = "uncompliant credential format";
+      firstName = "uncompliant credential format";
+      lastName = "uncompliant credential format";
+      number = "uncompliant credential format";
+      iss = "uncompliant credential format";
     }
     return (
       <TouchableOpacity
         onPress={() => {
           // Azione lanciata quando si clicca su una VC
-          let data = [...this.state.data] // Bisogna copiare il vettore, perchè this.state.data è ReadOnly
-          data[info.index].selected = !data[info.index].selected // Inverte il flag selected (switcha lo chekcbox)
+          let data = [...this.state.data]; // Bisogna copiare il vettore, perchè this.state.data è ReadOnly
+          data[info.index].selected = !data[info.index].selected; // Inverte il flag selected (switcha lo chekcbox)
 
           // Aggiorna il button blu "YES" cliccabile o meno
-          let shareable = false
+          let shareable = false;
           data.forEach(item => {
             if (item.selected === true) {
-              shareable = true
+              shareable = true;
             }
-          })
+          });
 
           // Aggiorna la vista della componente
-          this.setState({data: data, shareable: shareable})
-        }}>
-        <View style={{
-          backgroundColor: variables.brandPrimary,
-          borderColor: '#333333',
-          borderWidth: 0.5,
-          margin: 10,
-          padding: 5,
-          borderRadius: 8
-        }}>
+          this.setState({ data, shareable });
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: variables.brandPrimary,
+            borderColor: "#333333",
+            borderWidth: 0.5,
+            margin: 10,
+            padding: 5,
+            borderRadius: 8
+          }}
+        >
           {this.textHeader(vcName)}
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: "row" }}>
             <View>
-              <Text style={{color: variables.colorWhite}}>First
-                Name: {firstName}</Text>
-              <Text style={{color: variables.colorWhite}}>Last Name: {lastName}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>ID: {number}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>iss: {iss}</Text>
+              <Text style={{ color: variables.colorWhite }}>
+                First Name: {firstName}
+              </Text>
+              <Text style={{ color: variables.colorWhite }}>
+                Last Name: {lastName}
+              </Text>
+              <Text style={{ color: variables.colorWhite, fontSize: 10 }}>
+                ID: {number}
+              </Text>
+              <Text style={{ color: variables.colorWhite, fontSize: 10 }}>
+                iss: {iss}
+              </Text>
             </View>
             <View>
               <IconFont
                 style={{
                   textAlign: "center",
-                  justifyContent: "center",
+                  justifyContent: "center"
                 }}
-                name={VC.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                color={'white'}
+                name={VC.selected ? "io-checkbox-on" : "io-checkbox-off"}
+                color={"white"}
                 size={25}
               />
             </View>
           </View>
-
         </View>
       </TouchableOpacity>
     );
-  }
-
+  };
 
   public render() {
     return (
@@ -322,21 +369,24 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
+          <Text style={{ fontFamily: variables.fontFamily, padding: 20 }}>
+            Do you want to share this credentials?
+          </Text>
 
-          <Text style={{fontFamily: variables.fontFamily, padding: 20}}>Do you want to share this credentials?</Text>
-
-          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
             <TouchableHighlight
               style={{
                 ...styles.openButton,
-                backgroundColor: this.state.shareable ? variables.brandPrimary : variables.brandMildGray,
+                backgroundColor: this.state.shareable
+                  ? variables.brandPrimary
+                  : variables.brandMildGray,
                 marginHorizontal: 20,
-                width: '35%'
+                width: "35%"
               }}
               disabled={!this.state.shareable}
               onPress={() => {
-                console.log(this.state.shareable)
-                if (!this.state.shareable) return
+                console.log(this.state.shareable);
+                if (!this.state.shareable) return;
                 this.setState({
                   modalStates: {
                     showPrompt: false,
@@ -345,14 +395,19 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                     sharedFail: false
                   }
                 });
-                this.shareVCnow()
+                this.shareVCnow();
               }}
             >
               <Text style={styles.textStyle}>Yes</Text>
             </TouchableHighlight>
 
             <TouchableHighlight
-              style={{...styles.openButton, backgroundColor: variables.brandDanger, marginHorizontal: 20, width: '35%'}}
+              style={{
+                ...styles.openButton,
+                backgroundColor: variables.brandDanger,
+                marginHorizontal: 20,
+                width: "35%"
+              }}
               onPress={() => {
                 this.props.navigateToSsiHome();
               }}
@@ -361,16 +416,21 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
             </TouchableHighlight>
           </View>
 
-          <View style={{borderBottomColor: variables.brandGray, borderTopWidth: 0.5, margin: 15}}></View>
+          <View
+            style={{
+              borderBottomColor: variables.brandGray,
+              borderTopWidth: 0.5,
+              margin: 15
+            }}
+          ></View>
 
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             data={this.state.data}
             renderItem={this.renderItem}
           />
-
         </ScreenContent>
-        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
+        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus} />
         <Modal
           animationType="slide"
           transparent={true}
@@ -378,53 +438,65 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
+              {this.state.modalStates.sharing && (
+                <>
+                  <Text style={styles.modalText}>Sharing credential...</Text>
+                  <ActivityIndicator />
+                </>
+              )}
 
-              {this.state.modalStates.sharing && <>
-                <Text style={styles.modalText}>Sharing credential...</Text>
-                <ActivityIndicator/>
-              </>}
+              {this.state.modalStates.sharedSuccess && (
+                <>
+                  <Text style={styles.modalText}>Credential shared!</Text>
+                  <Text style={styles.modalText}>✅</Text>
 
-              {this.state.modalStates.sharedSuccess && <>
-                <Text style={styles.modalText}>Credential shared!</Text>
-                <Text style={styles.modalText}>✅</Text>
+                  <TouchableHighlight
+                    style={{
+                      ...styles.openButton,
+                      backgroundColor: variables.brandPrimary
+                    }}
+                    onPress={() => {
+                      this.setState({ modalVisible: false });
+                      this.setState({
+                        modalStates: {
+                          showPrompt: true,
+                          sharing: false,
+                          sharedSuccess: false,
+                          sharedFail: false
+                        }
+                      });
+                    }}
+                  >
+                    <Text style={styles.textStyle}>Ok, thanks</Text>
+                  </TouchableHighlight>
+                </>
+              )}
 
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false})
-                    this.setState({
-                      modalStates: {
-                        showPrompt: true,
-                        sharing: false,
-                        sharedSuccess: false,
-                        sharedFail: false
-                      }
-                    });
-                  }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
-
-              {this.state.modalStates.sharedFail && <>
-                <Text style={styles.modalText}>Failed to share the credential</Text>
-                <Text style={styles.modalText}>🚫</Text>
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false});
-                  }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
+              {this.state.modalStates.sharedFail && (
+                <>
+                  <Text style={styles.modalText}>
+                    Failed to share the credential
+                  </Text>
+                  <Text style={styles.modalText}>🚫</Text>
+                  <TouchableHighlight
+                    style={{
+                      ...styles.openButton,
+                      backgroundColor: variables.brandPrimary
+                    }}
+                    onPress={() => {
+                      this.setState({ modalVisible: false });
+                    }}
+                  >
+                    <Text style={styles.textStyle}>Ok, thanks</Text>
+                  </TouchableHighlight>
+                </>
+              )}
             </View>
           </View>
         </Modal>
       </TopScreenComponent>
     );
   }
-
 }
 
 /*
@@ -434,11 +506,17 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           <Text>Show Modal</Text>
         </TouchableHighlight>
  */
+interface Style {
+  centeredView: ViewStyle;
+  modalView: ViewStyle;
+  openButton: ViewStyle;
+  textStyle: TextStyle;
+  modalText: TextStyle;
+}
 
-const ItemSeparator = () => <ItemSeparatorComponent noPadded={true}/>;
+const ItemSeparator = () => <ItemSeparatorComponent noPadded={true} />;
 
-
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Style>({
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -470,14 +548,13 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "center"
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center"
   }
 });
-
 
 function mapStateToProps(state: GlobalState) {
   return {
