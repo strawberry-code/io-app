@@ -1,66 +1,77 @@
-import {Millisecond} from "italia-ts-commons/lib/units";
-import {List, ListItem, Text, Toast, View} from "native-base";
+import { Millisecond } from "italia-ts-commons/lib/units";
+import { List, ListItem, Text, Toast, View } from "native-base";
 import * as React from "react";
-import {Alert, ScrollView, StyleSheet, TouchableOpacity, Dimensions, Animated, TouchableHighlight} from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Animated,
+  TouchableHighlight,
+  ViewStyle,
+  TextStyle
+} from "react-native";
 import {
   NavigationEvents,
   NavigationEventSubscription,
   NavigationScreenProp,
   NavigationState
 } from "react-navigation";
-import {connect} from "react-redux";
-import {TranslationKeys} from "../../../locales/locales";
+import { connect } from "react-redux";
+import { TranslationKeys } from "../../../locales/locales";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
-import {ContextualHelp} from "../../components/ContextualHelp";
-import {withLightModalContext} from "../../components/helpers/withLightModalContext";
-import {ContextualHelpPropsMarkdown} from "../../components/screens/BaseScreenComponent";
-import {EdgeBorderComponent} from "../../components/screens/EdgeBorderComponent";
+import { ContextualHelp } from "../../components/ContextualHelp";
+import { withLightModalContext } from "../../components/helpers/withLightModalContext";
+import { ContextualHelpPropsMarkdown } from "../../components/screens/BaseScreenComponent";
+import { EdgeBorderComponent } from "../../components/screens/EdgeBorderComponent";
 import ListItemComponent from "../../components/screens/ListItemComponent";
 import SectionHeaderComponent from "../../components/screens/SectionHeaderComponent";
-import {AlertModal} from "../../components/ui/AlertModal";
-import {LightModalContextInterface} from "../../components/ui/LightModal";
+import { AlertModal } from "../../components/ui/AlertModal";
+import { LightModalContextInterface } from "../../components/ui/LightModal";
 import Markdown from "../../components/ui/Markdown";
 import Switch from "../../components/ui/Switch";
-import {bpdEnabled, isPlaygroundsEnabled} from "../../config";
+import { bpdEnabled, isPlaygroundsEnabled } from "../../config";
 import I18n from "../../i18n";
 import ROUTES from "../../navigation/routes";
 import {
   logoutRequest,
   sessionExpired
 } from "../../store/actions/authentication";
-import {setDebugModeEnabled} from "../../store/actions/debug";
+import { setDebugModeEnabled } from "../../store/actions/debug";
 import {
   preferencesExperimentalFeaturesSetEnabled,
   preferencesPagoPaTestEnvironmentSetEnabled
 } from "../../store/actions/persistedPreferences";
-import {updatePin} from "../../store/actions/pinset";
-import {clearCache} from "../../store/actions/profile";
-import {Dispatch} from "../../store/actions/types";
+import { updatePin } from "../../store/actions/pinset";
+import { clearCache } from "../../store/actions/profile";
+import { Dispatch } from "../../store/actions/types";
 import {
   isLoggedIn,
   isLoggedInWithSessionInfo
 } from "../../store/reducers/authentication";
-import {isDebugModeEnabledSelector} from "../../store/reducers/debug";
-import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
-import {isPagoPATestEnabledSelector} from "../../store/reducers/persistedPreferences";
-import {GlobalState} from "../../store/reducers/types";
+import { isDebugModeEnabledSelector } from "../../store/reducers/debug";
+import { notificationsInstallationSelector } from "../../store/reducers/notifications/installation";
+import { isPagoPATestEnabledSelector } from "../../store/reducers/persistedPreferences";
+import { GlobalState } from "../../store/reducers/types";
 import customVariables from "../../theme/variables";
-import {getAppVersion} from "../../utils/appVersion";
-import {clipboardSetStringWithFeedback} from "../../utils/clipboard";
-import {isDevEnv} from "../../utils/environment";
-import {setStatusBarColorAndBackground} from "../../utils/statusBar";
-import {bpdDeleteUserFromProgram} from "../../features/bonus/bpd/store/actions/onboarding";
+import { getAppVersion } from "../../utils/appVersion";
+import { clipboardSetStringWithFeedback } from "../../utils/clipboard";
+import { isDevEnv } from "../../utils/environment";
+import { setStatusBarColorAndBackground } from "../../utils/statusBar";
+import { bpdDeleteUserFromProgram } from "../../features/bonus/bpd/store/actions/onboarding";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
-import {ScreenContentHeader} from "../../components/screens/ScreenContentHeader";
+import { ScreenContentHeader } from "../../components/screens/ScreenContentHeader";
 import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
-import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
-import {DidSingleton} from "../../types/DID";
-import {VerifiedCredential} from "did-jwt-vc";
-import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
+import { navigateToPaymentScanQrCode } from "../../store/actions/navigation";
+import { DidSingleton } from "../../types/DID";
+import { VerifiedCredential } from "did-jwt-vc";
+import { withLoadingSpinner } from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
 import SsiModal from "./SsiModal";
-import {useRef} from "react";
+import { useRef } from "react";
+import AnimatedScreenContent from "../../components/screens/AnimatedScreenContent";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -77,9 +88,20 @@ type State = {
   isModalVisible: boolean;
 };
 
+interface Style {
+  itemLeft: ViewStyle;
+  qrButton: ViewStyle;
+  white: TextStyle;
+  itemLeftText: TextStyle;
+  developerSectionItem: ViewStyle;
+  developerSectionItemLeft: ViewStyle;
+  developerSectionItemRight: ViewStyle;
+  modalHeader: TextStyle;
+  whiteBg: ViewStyle;
+  noRightPadding: ViewStyle;
+}
 
-
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Style>({
   itemLeft: {
     flexDirection: "column",
     alignItems: "flex-start"
@@ -134,14 +156,14 @@ const RESET_COUNTER_TIMEOUT = 2000 as Millisecond;
  */
 class SsiMainScreen extends React.PureComponent<Props, State> {
   private navListener?: NavigationEventSubscription;
-  private verifiedCredentials: VerifiedCredential[] | undefined
+  private verifiedCredentials: Array<VerifiedCredential> | undefined;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       tapsOnAppVersion: 0,
       isLoading: true,
-      isModalVisible: false,
+      isModalVisible: false
     };
     this.handleClearCachePress = this.handleClearCachePress.bind(this);
   }
@@ -153,9 +175,13 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     //await VCstore.clearStore()
     //await VCstore.storeVC(hardcodedJwt)
     //await VCstore.storeVC(hardcodedJwt)
-    this.verifiedCredentials = await VCstore.getVCs()
-    this.setState({isLoading: false})
-    console.log(`Verified credentials loaded (${this.verifiedCredentials.length}): ' + ${JSON.stringify(this.verifiedCredentials)}`)
+    this.verifiedCredentials = await VCstore.getVCs();
+    this.setState({ isLoading: false });
+    console.log(
+      `Verified credentials loaded (${
+        this.verifiedCredentials.length
+      }): ' + ${JSON.stringify(this.verifiedCredentials)}`
+    );
     // eslint-disable-next-line functional/immutable-data
     this.navListener = this.props.navigation.addListener("didFocus", () => {
       setStatusBarColorAndBackground(
@@ -190,11 +216,11 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           style: "destructive",
           onPress: () => {
             this.props.clearCache();
-            Toast.show({text: I18n.t("profile.main.cache.cleared")});
+            Toast.show({ text: I18n.t("profile.main.cache.cleared") });
           }
         }
       ],
-      {cancelable: false}
+      { cancelable: false }
     );
   }
 
@@ -213,7 +239,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             <Text style={styles.itemLeftText}>{description}</Text>
           </View>
           <View style={styles.developerSectionItemRight}>
-            <Switch value={switchValue} onValueChange={onSwitchValueChange}/>
+            <Switch value={switchValue} onValueChange={onSwitchValueChange} />
           </View>
         </View>
       </ListItem>
@@ -258,7 +284,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           onPress: this.props.logout
         }
       ],
-      {cancelable: true}
+      { cancelable: true }
     );
   };
 
@@ -289,7 +315,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             }
           }
         ],
-        {cancelable: false}
+        { cancelable: false }
       );
     } else {
       this.props.setPagoPATestEnabled(enabled);
@@ -311,8 +337,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     }
     if (this.state.tapsOnAppVersion === consecutiveTapRequired) {
       this.props.setDebugModeEnabled(true);
-      this.setState({tapsOnAppVersion: 0});
-      Toast.show({text: I18n.t("profile.main.developerModeOn")});
+      this.setState({ tapsOnAppVersion: 0 });
+      Toast.show({ text: I18n.t("profile.main.developerModeOn") });
     } else {
       // eslint-disable-next-line
       this.idResetTap = setInterval(
@@ -327,14 +353,14 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
   };
 
   private resetAppTapCounter = () => {
-    this.setState({tapsOnAppVersion: 0});
+    this.setState({ tapsOnAppVersion: 0 });
     clearInterval(this.idResetTap);
   };
 
   private ServiceListRef = React.createRef<ScrollView>();
   private scrollToTop = () => {
     if (this.ServiceListRef.current) {
-      this.ServiceListRef.current.scrollTo({x: 0, y: 0, animated: false});
+      this.ServiceListRef.current.scrollTo({ x: 0, y: 0, animated: false });
     }
   };
 
@@ -362,13 +388,21 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       );
     };
 
-    const windowWidth = Dimensions.get('window').width;
+    const windowWidth = Dimensions.get("window").width;
     const crossMenuSizeFactor = windowWidth * 0.4;
     const crossBorderWidth = 0.5;
     const inspectCss = false;
 
     // define a widely customisable functional component used to draw a touchable item in the cross menu
-    const touchableMenuItem = (left: boolean, right: boolean, top: boolean, bottom: boolean, icon: string, text: string, callback: () => void) => (
+    const touchableMenuItem = (
+      left: boolean,
+      right: boolean,
+      top: boolean,
+      bottom: boolean,
+      icon: string,
+      text: string,
+      callback: () => void
+    ) => (
       <TouchableOpacity
         onPress={callback}
         style={{
@@ -380,36 +414,40 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           borderBottomWidth: inspectCss && bottom ? crossBorderWidth : 0,
           borderTopWidth: inspectCss && top ? crossBorderWidth : 0,
           backgroundColor: inspectCss ? "cyan" : undefined
-        }}>
-        <View style={{
-          flex: 1,
-          //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
-          justifyContent: "center",
-          borderRadius: 100,
-          borderWidth: 0.6,
-          borderColor: customVariables.brandPrimary,
-          backgroundColor: 'white',
-          shadowColor: 'black',
-          shadowOpacity: 0.2,
-          shadowOffset: {
-            width: 0,
-            height: 2
-          },
-          elevation: 3,
-          margin: 15
-        }}>
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
+            justifyContent: "center",
+            borderRadius: 100,
+            borderWidth: 0.6,
+            borderColor: customVariables.brandPrimary,
+            backgroundColor: "white",
+            shadowColor: "black",
+            shadowOpacity: 0.2,
+            shadowOffset: {
+              width: 0,
+              height: 2
+            },
+            elevation: 3,
+            margin: 15
+          }}
+        >
           <IconFont
-            style={{textAlign: "center",
-              justifyContent: "center",}}
+            style={{ textAlign: "center", justifyContent: "center" }}
             name={icon}
             size={50}
           />
-          <Text style={{
-            textAlign: "center",
-            justifyContent: "center",
-            backgroundColor: inspectCss ? "yellow" : undefined,
-            fontSize: 13
-          }}>
+          <Text
+            style={{
+              textAlign: "center",
+              justifyContent: "center",
+              backgroundColor: inspectCss ? "yellow" : undefined,
+              fontSize: 13
+            }}
+          >
             {text}
           </Text>
         </View>
@@ -419,12 +457,30 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     // Define a cross menu functional component with four touchable items
     const crossMenu = () => (
       <View>
-        <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, false, true, "io-service-list", "Verified\nCredentials", async () => {
-            navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
-            //alert('clicked A')
-          })}
-          {touchableMenuItem(true, false, false, true, "io-qr","Scan QR", this.props.navigateToPaymentScanQrCode)}
+        <View
+          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
+        >
+          {touchableMenuItem(
+            false,
+            true,
+            false,
+            true,
+            "io-service-list",
+            "Verified\nCredentials",
+            async () => {
+              navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
+              //alert('clicked A')
+            }
+          )}
+          {touchableMenuItem(
+            true,
+            false,
+            false,
+            true,
+            "io-qr",
+            "Scan QR",
+            this.props.navigateToPaymentScanQrCode
+          )}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
           {touchableMenuItem(false, true, true, false, "io-home-servizi","todo", async () => {
@@ -440,212 +496,222 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
              //const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
           })}
         </View>
-      </View>);
+      </View>
+    );
 
     const footerButton = () => (
-        <ButtonDefaultOpacity
-          block={true}
-          onPress={this.props.navigateToPaymentScanQrCode}
-          activeOpacity={1}>
-          <IconFont name="io-qr" style={styles.white} />
-          <Text>{I18n.t("ssi.scanQr")}</Text>
-        </ButtonDefaultOpacity>
+      <ButtonDefaultOpacity
+        block={true}
+        onPress={this.props.navigateToPaymentScanQrCode}
+        activeOpacity={1}
+      >
+        <IconFont name="io-qr" style={styles.white} />
+        <Text>{I18n.t("ssi.scanQr")}</Text>
+      </ButtonDefaultOpacity>
     );
 
     // eslint-disable
     const screenContent = () => {
       const childRef = useRef();
-      return(
-      <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
-        <NavigationEvents onWillFocus={this.scrollToTop}/>
-        <View spacer={true}/>
+      return (
+        <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
+          <NavigationEvents onWillFocus={this.scrollToTop} />
+          <View spacer={true} />
 
-        {crossMenu()}
-        <View style={styles.qrButton}>{footerButton()}</View>
-        <SsiModal ref={childRef} />
+          {crossMenu()}
+          <View style={styles.qrButton}>{footerButton()}</View>
+          <SsiModal ref={childRef} />
 
-        <TouchableHighlight
-          onPress={() => {childRef.current.changeText(true)}}
-        >
-          <Text>Show Modal</Text>
-        </TouchableHighlight>
+          <TouchableHighlight
+            onPress={() => {
+              childRef.current.changeText(true);
+            }}
+          >
+            <Text>Show Modal</Text>
+          </TouchableHighlight>
 
-        <List withContentLateralPadding={true}>
-          {/* Preferences */}
-          <ListItemComponent
-            title={I18n.t("profile.main.preferences.title")}
-            subTitle={I18n.t("profile.main.preferences.description")}
-            onPress={() => navigation.navigate(ROUTES.PROFILE_PREFERENCES_HOME)}
-            isFirstItem={true}
-          />
+          <List withContentLateralPadding={true}>
+            {/* Preferences */}
+            <ListItemComponent
+              title={I18n.t("profile.main.preferences.title")}
+              subTitle={I18n.t("profile.main.preferences.description")}
+              onPress={() =>
+                navigation.navigate(ROUTES.PROFILE_PREFERENCES_HOME)
+              }
+              isFirstItem={true}
+            />
 
-          {/* Privacy */}
-          <ListItemComponent
-            title={I18n.t("profile.main.privacy.title")}
-            subTitle={I18n.t("profile.main.privacy.description")}
-            onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
-          />
+            {/* Privacy */}
+            <ListItemComponent
+              title={I18n.t("profile.main.privacy.title")}
+              subTitle={I18n.t("profile.main.privacy.description")}
+              onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
+            />
 
-          {/* Privacy */}
-          <ListItemComponent
-            title={I18n.t("profile.main.privacy.title")}
-            subTitle={I18n.t("profile.main.privacy.description")}
-            onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
-          />
+            {/* Privacy */}
+            <ListItemComponent
+              title={I18n.t("profile.main.privacy.title")}
+              subTitle={I18n.t("profile.main.privacy.description")}
+              onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
+            />
 
-          {/* APP IO */}
-          <ListItemComponent
-            title={I18n.t("profile.main.appInfo.title")}
-            subTitle={I18n.t("profile.main.appInfo.description")}
-            onPress={() =>
-              showInformationModal(
-                "profile.main.appInfo.title",
-                "profile.main.appInfo.contextualHelpContent"
-              )
-            }
-            isLastItem={true}
-          />
+            {/* APP IO */}
+            <ListItemComponent
+              title={I18n.t("profile.main.appInfo.title")}
+              subTitle={I18n.t("profile.main.appInfo.description")}
+              onPress={() =>
+                showInformationModal(
+                  "profile.main.appInfo.title",
+                  "profile.main.appInfo.contextualHelpContent"
+                )
+              }
+              isLastItem={true}
+            />
 
-          <SectionHeaderComponent
-            sectionHeader={I18n.t("profile.main.accountSectionHeader")}
-          />
+            <SectionHeaderComponent
+              sectionHeader={I18n.t("profile.main.accountSectionHeader")}
+            />
 
-          {/* Reset unlock code */}
-          <ListItemComponent
-            title={I18n.t("identification.unlockCode.reset.button_short")}
-            subTitle={I18n.t("identification.unlockCode.reset.subtitle")}
-            onPress={this.props.resetPin}
-            hideIcon={true}
-          />
+            {/* Reset unlock code */}
+            <ListItemComponent
+              title={I18n.t("identification.unlockCode.reset.button_short")}
+              subTitle={I18n.t("identification.unlockCode.reset.subtitle")}
+              onPress={this.props.resetPin}
+              hideIcon={true}
+            />
 
-          {/* Logout/Exit */}
-          <ListItemComponent
-            title={I18n.t("profile.main.logout")}
-            subTitle={I18n.t("profile.logout.menulabel")}
-            onPress={this.onLogoutPress}
-            hideIcon={true}
-            isLastItem={true}
-          />
+            {/* Logout/Exit */}
+            <ListItemComponent
+              title={I18n.t("profile.main.logout")}
+              subTitle={I18n.t("profile.logout.menulabel")}
+              onPress={this.onLogoutPress}
+              hideIcon={true}
+              isLastItem={true}
+            />
 
-          {this.versionListItem(
-            `${I18n.t("profile.main.appVersion")} ${getAppVersion()}`,
-            this.onTapAppVersion
-          )}
+            {this.versionListItem(
+              `${I18n.t("profile.main.appVersion")} ${getAppVersion()}`,
+              this.onTapAppVersion
+            )}
 
-          {/* Developers Section */}
-          {(this.props.isDebugModeEnabled || isDevEnv) && (
-            <React.Fragment>
-              <SectionHeaderComponent
-                sectionHeader={I18n.t("profile.main.developersSectionHeader")}
-              />
-              <View style={{backgroundColor: "pink", height: 100, width: 300}}></View>
+            {/* Developers Section */}
+            {(this.props.isDebugModeEnabled || isDevEnv) && (
+              <React.Fragment>
+                <SectionHeaderComponent
+                  sectionHeader={I18n.t("profile.main.developersSectionHeader")}
+                />
+                <View
+                  style={{ backgroundColor: "pink", height: 100, width: 300 }}
+                ></View>
 
-              {
-                // since no experimental features are available we avoid to render this item (see https://www.pivotaltracker.com/story/show/168263994).
-                // It could be useful when new experimental features will be available
-                /*
+                {
+                  // since no experimental features are available we avoid to render this item (see https://www.pivotaltracker.com/story/show/168263994).
+                  // It could be useful when new experimental features will be available
+                  /*
                   this.developerListItem(
                   I18n.t("profile.main.experimentalFeatures.confirmTitle"),
                   this.props.isExperimentalFeaturesEnabled,
                   this.onExperimentalFeaturesToggle
                 ) */
-              }
-              {isPlaygroundsEnabled && (
-                <>
-                  <ListItemComponent
-                    title={"MyPortal Web Playground"}
-                    onPress={() => navigation.navigate(ROUTES.WEB_PLAYGROUND)}
-                  />
-                  <ListItemComponent
-                    title={"Markdown Playground"}
-                    onPress={() =>
-                      navigation.navigate(ROUTES.MARKDOWN_PLAYGROUND)
-                    }
-                  />
-                </>
-              )}
-              {this.developerListItem(
-                I18n.t("profile.main.pagoPaEnvironment.pagoPaEnv"),
-                this.props.isPagoPATestEnabled,
-                this.onPagoPAEnvironmentToggle,
-                I18n.t("profile.main.pagoPaEnvironment.pagoPAEnvAlert")
-              )}
-              {this.developerListItem(
-                I18n.t("profile.main.debugMode"),
-                this.props.isDebugModeEnabled,
-                this.props.setDebugModeEnabled
-              )}
-              {this.props.isDebugModeEnabled && (
-                <React.Fragment>
-                  {backendInfo &&
-                  this.debugListItem(
-                    `${I18n.t("profile.main.backendVersion")} ${
-                      backendInfo.version
-                    }`,
-                    () => clipboardSetStringWithFeedback(backendInfo.version),
-                    false
-                  )}
+                }
+                {isPlaygroundsEnabled && (
+                  <>
+                    <ListItemComponent
+                      title={"MyPortal Web Playground"}
+                      onPress={() => navigation.navigate(ROUTES.WEB_PLAYGROUND)}
+                    />
+                    <ListItemComponent
+                      title={"Markdown Playground"}
+                      onPress={() =>
+                        navigation.navigate(ROUTES.MARKDOWN_PLAYGROUND)
+                      }
+                    />
+                  </>
+                )}
+                {this.developerListItem(
+                  I18n.t("profile.main.pagoPaEnvironment.pagoPaEnv"),
+                  this.props.isPagoPATestEnabled,
+                  this.onPagoPAEnvironmentToggle,
+                  I18n.t("profile.main.pagoPaEnvironment.pagoPAEnvAlert")
+                )}
+                {this.developerListItem(
+                  I18n.t("profile.main.debugMode"),
+                  this.props.isDebugModeEnabled,
+                  this.props.setDebugModeEnabled
+                )}
+                {this.props.isDebugModeEnabled && (
+                  <React.Fragment>
+                    {backendInfo &&
+                      this.debugListItem(
+                        `${I18n.t("profile.main.backendVersion")} ${
+                          backendInfo.version
+                        }`,
+                        () =>
+                          clipboardSetStringWithFeedback(backendInfo.version),
+                        false
+                      )}
 
-                  {isDevEnv &&
-                  sessionToken &&
-                  this.debugListItem(
-                    `Session Token ${sessionToken}`,
-                    () => clipboardSetStringWithFeedback(sessionToken),
-                    false
-                  )}
+                    {isDevEnv &&
+                      sessionToken &&
+                      this.debugListItem(
+                        `Session Token ${sessionToken}`,
+                        () => clipboardSetStringWithFeedback(sessionToken),
+                        false
+                      )}
 
-                  {isDevEnv &&
-                  walletToken &&
-                  this.debugListItem(
-                    `Wallet token ${walletToken}`,
-                    () => clipboardSetStringWithFeedback(walletToken),
-                    false
-                  )}
+                    {isDevEnv &&
+                      walletToken &&
+                      this.debugListItem(
+                        `Wallet token ${walletToken}`,
+                        () => clipboardSetStringWithFeedback(walletToken),
+                        false
+                      )}
 
-                  {isDevEnv &&
-                  this.debugListItem(
-                    `Notification ID ${notificationId.slice(0, 6)}`,
-                    () => clipboardSetStringWithFeedback(notificationId),
-                    false
-                  )}
+                    {isDevEnv &&
+                      this.debugListItem(
+                        `Notification ID ${notificationId.slice(0, 6)}`,
+                        () => clipboardSetStringWithFeedback(notificationId),
+                        false
+                      )}
 
-                  {isDevEnv &&
-                  notificationToken &&
-                  this.debugListItem(
-                    `Notification token ${notificationToken.slice(0, 6)}`,
-                    () => clipboardSetStringWithFeedback(notificationToken),
-                    false
-                  )}
+                    {isDevEnv &&
+                      notificationToken &&
+                      this.debugListItem(
+                        `Notification token ${notificationToken.slice(0, 6)}`,
+                        () => clipboardSetStringWithFeedback(notificationToken),
+                        false
+                      )}
 
-                  {this.debugListItem(
-                    I18n.t("profile.main.cache.clear"),
-                    this.handleClearCachePress,
-                    true
-                  )}
+                    {this.debugListItem(
+                      I18n.t("profile.main.cache.clear"),
+                      this.handleClearCachePress,
+                      true
+                    )}
 
-                  {isDevEnv &&
-                  this.debugListItem(
-                    I18n.t("profile.main.forgetCurrentSession"),
-                    this.props.dispatchSessionExpired,
-                    true
-                  )}
+                    {isDevEnv &&
+                      this.debugListItem(
+                        I18n.t("profile.main.forgetCurrentSession"),
+                        this.props.dispatchSessionExpired,
+                        true
+                      )}
 
-                  {bpdEnabled &&
-                  this.debugListItem(
-                    "Leave BPD",
-                    this.props.dispatchLeaveBpd,
-                    true
-                  )}
-                </React.Fragment>
-              )}
-            </React.Fragment>
-          )}
+                    {bpdEnabled &&
+                      this.debugListItem(
+                        "Leave BPD",
+                        this.props.dispatchLeaveBpd,
+                        true
+                      )}
+                  </React.Fragment>
+                )}
+              </React.Fragment>
+            )}
 
-          {/* end list */}
-          <EdgeBorderComponent/>
-        </List>
-      </ScrollView>
-    )};
+            {/* end list */}
+            <EdgeBorderComponent />
+          </List>
+        </ScrollView>
+      );
+    };
 
     const ContainerComponent = withLoadingSpinner(() => (
       <TopScreenComponent
@@ -666,7 +732,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         </React.Fragment>
         {screenContent()}
       </TopScreenComponent>
-      ))
+    ));
 
     return <ContainerComponent isLoading={this.state.isLoading} />;
   }
@@ -685,12 +751,12 @@ const mapStateToProps = (state: GlobalState) => ({
   isDebugModeEnabled: isDebugModeEnabledSelector(state),
   isPagoPATestEnabled: isPagoPATestEnabledSelector(state),
   isExperimentalFeaturesEnabled:
-  state.persistedPreferences.isExperimentalFeaturesEnabled
+    state.persistedPreferences.isExperimentalFeaturesEnabled
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   // hard-logout
-  logout: () => dispatch(logoutRequest({keepUserData: false})),
+  logout: () => dispatch(logoutRequest({ keepUserData: false })),
   resetPin: () => dispatch(updatePin()),
   clearCache: () => dispatch(clearCache()),
   navigateToPaymentScanQrCode: () => dispatch(navigateToPaymentScanQrCode()),
@@ -698,14 +764,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(setDebugModeEnabled(enabled)),
   setPagoPATestEnabled: (isPagoPATestEnabled: boolean) =>
     dispatch(
-      preferencesPagoPaTestEnvironmentSetEnabled({isPagoPATestEnabled})
+      preferencesPagoPaTestEnvironmentSetEnabled({ isPagoPATestEnabled })
     ),
   dispatchSessionExpired: () => dispatch(sessionExpired()),
   dispatchLeaveBpd: () => dispatch(bpdDeleteUserFromProgram.request()),
   dispatchPreferencesExperimentalFeaturesSetEnabled: (enabled: boolean) =>
     dispatch(preferencesExperimentalFeaturesSetEnabled(enabled))
 });
-
 
 export default connect(
   mapStateToProps,
