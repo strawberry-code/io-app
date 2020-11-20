@@ -121,7 +121,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     let callback = qrData.callback
 
     // TODO: questi sarebbero i campi che vengono presi dal QR, quindi cambiare quando lato server hanno finito
-    // Devo mostrare SOLO le VC che hanno uno o più di questi campi
+    // L'app deve mostrare in questa vita SOLO le VC che hanno uno o più di questi campi
     let requestedTypes = ['VerifiableCredential']
 
     console.log(`\nAPI URL che verrà chiamata: ${callback}\n`)
@@ -238,21 +238,38 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
   private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
     const VC = info.item;
     //console.log(JSON.stringify(VC))
+
+    console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
+
+    if(VC.vc.type[1] === 'VID') {
+      console.log('renderizzazione di una VC di tipo VID')
+      return this.renderVID(VC, info)
+    } else if (VC.vc.type[1] === 'DimensioneImpresa'){
+      console.log('renderizzazione di una VC di tipo DimensioneImpresa')
+      return this.renderDimensioneImpresa(VC, info)
+    } else {
+      console.warn('unrecognized vc type: ' + VC.vc.type)
+    }
+
+  }
+
+
+  private renderDimensioneImpresa(VC, info) {
     let vcName
     let firstName
     let lastName
     let number
     let iss
     try {
-      vcName = VC.vc.credentialSubject.name
-      firstName = VC.vc.credentialSubject.firstName
-      lastName = VC.vc.credentialSubject.lastName
-      number = VC.vc.credentialSubject.number
-      iss = VC.vc.credentialSubject.iss
+      vcName = "Dimensione Impresa - " + VC.vc.credentialSubject.ragioneFiscale
+      firstName = VC.vc.credentialSubject.piva
+      lastName = VC.vc.credentialSubject.indirizzoSedeLegale.substr(0, 30) + '...'
+      number = VC.vc.credentialSubject.dimensioneImpresa
+      iss = VC.vc.credentialSubject.expirationDate
     } catch (e) {
       vcName = "uncompliant credential format"
       firstName = "uncompliant credential format"
-      lastName = "uncompliant credential format"
+      lastName =  "uncompliant credential format"
       number = "uncompliant credential format"
       iss = "uncompliant credential format"
     }
@@ -283,27 +300,81 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           borderRadius: 8
         }}>
           {this.textHeader(vcName)}
-          <View style={{flexDirection: 'row'}}>
+          <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
             <View>
-              <Text style={{color: variables.colorWhite}}>First
-                Name: {firstName}</Text>
-              <Text style={{color: variables.colorWhite}}>Last Name: {lastName}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>ID: {number}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>iss: {iss}</Text>
+              <Text style={{color: variables.colorWhite}}>Partita IVA: {firstName}</Text>
+              <Text style={{color: variables.colorWhite}}>Sede Legale: {lastName}</Text>
+              <Text style={{color: variables.colorWhite, fontSize: 10}}>Dimensione Impresa: {number}</Text>
+              <Text style={{color: variables.colorWhite, fontSize: 10}}>Scadenza: {iss}</Text>
             </View>
-            <View>
+            <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                style={{
-                  textAlign: "center",
-                  justifyContent: "center",
-                }}
                 name={VC.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={'white'}
                 size={25}
               />
             </View>
           </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
+  private renderVID(VC, info) {
+    let vcName
+    let firstName
+    let lastName
+    let number
+    let iss
+    try {
+      vcName = VC.vc.type[1] + " - Carta di Identità"
+      firstName = VC.vc.credentialSubject.firstName
+      lastName = VC.vc.credentialSubject.lastName
+    } catch (e) {
+      vcName = "uncompliant credential format"
+      firstName = "uncompliant credential format"
+      lastName =  "uncompliant credential format"
+    }
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          // Azione lanciata quando si clicca su una VC
+          let data = [...this.state.data] // Bisogna copiare il vettore, perchè this.state.data è ReadOnly
+          data[info.index].selected = !data[info.index].selected // Inverte il flag selected (switcha lo chekcbox)
+
+          // Aggiorna il button blu "YES" cliccabile o meno
+          let shareable = false
+          data.forEach(item => {
+            if (item.selected === true) {
+              shareable = true
+            }
+          })
+
+          // Aggiorna la vista della componente
+          this.setState({data: data, shareable: shareable})
+        }}>
+        <View style={{
+          backgroundColor: variables.brandPrimary,
+          borderColor: '#333333',
+          borderWidth: 0.5,
+          margin: 10,
+          padding: 5,
+          borderRadius: 8
+        }}>
+          {this.textHeader(vcName)}
+          <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
+            <View>
+              <Text style={{color: variables.colorWhite}}>Nome: {firstName}</Text>
+              <Text style={{color: variables.colorWhite}}>Cognome: {lastName}</Text>
+            </View>
+            <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={VC.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={'white'}
+                size={25}
+              />
+            </View>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -400,6 +471,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                         sharedFail: false
                       }
                     });
+                    this.props.navigateToSsiHome();
                   }}
                 >
                   <Text style={styles.textStyle}>Ok, thanks</Text>

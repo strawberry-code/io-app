@@ -169,6 +169,8 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     let vcJwt
     try {
+      console.log('payload: ' + JSON.stringify(payload))
+      console.log('issuer: ' + JSON.stringify(issuer))
       vcJwt = await createVerifiableCredentialJwt(payload, issuer)
       console.log('signed token: ' + vcJwt)
       alert('signed token:\n' + vcJwt)
@@ -178,11 +180,11 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     }
 
     let body = JSON.stringify({"verifiableCredential": vcJwt})
-    console.log(`making POST\nurl: ${callback}\nbody: ${body}`)
+    console.log(`making PUT\nurl: ${callback}\nbody: ${body}`)
 
 
     fetch(callback, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -251,7 +253,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     });
 
     let qrData = JSON.parse(data)
-    let jwt = qrData.payload
+    let jwt = qrData.verifiableCredential
+
+    console.log('jwt X: ' + jwt)
 
     this.props.navigateToVCsList({action:"saveVCinTheStore", data: jwt});
 
@@ -303,11 +307,13 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       return
     }
 
+    console.log('qrdata X: ' + JSON.stringify(data))
+
     if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiShareReq(data); // Condividi una VC (qr piccolo)
     } else if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiSignReq(data); // Firma una VC (qr grande, step 2)
-    } else if(data.includes("ssi-issuedVC")) {
+    } else if(data.includes("issued")) {
       this.onSsiIssuedVc(data); // Salva una VC (qr grande, step 3)
     } else {
       const resultOrError = decodePagoPaQrCode(data);

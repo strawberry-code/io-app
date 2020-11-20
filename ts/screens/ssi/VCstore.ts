@@ -25,6 +25,7 @@ let storeVC = async (VC: string) => {
 }
 
 let getJwts = async (): Promise<string[]> => {
+  console.log('async storage: X' + await AsyncStorage.getItem(AS_SSI_KEY))
   return JSON.parse(<string>(await AsyncStorage.getItem(AS_SSI_KEY)))
 }
 
