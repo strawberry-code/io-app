@@ -537,25 +537,6 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                 </>
               )}
 
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false})
-                    this.setState({
-                      modalStates: {
-                        showPrompt: true,
-                        sharing: false,
-                        sharedSuccess: false,
-                        sharedFail: false
-                      }
-                    });
-                    this.props.navigateToSsiHome();
-                  }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
-
               {this.state.modalStates.sharedFail && <>
                 <Text style={styles.modalText}>Failed to share the credential</Text>
                 <Text style={styles.modalText}>🚫</Text>
