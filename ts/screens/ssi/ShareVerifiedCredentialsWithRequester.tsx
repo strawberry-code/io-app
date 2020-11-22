@@ -59,6 +59,7 @@ import VCstore from "./VCstore";
 import IconFont from "../../components/ui/IconFont";
 import { showToast } from "../../utils/showToast";
 import { strings } from "instabug-reactnative";
+import SingleVC from './SsiSingleVC'
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -74,7 +75,7 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
-  data: Array<VerifiedCredential>;
+  data: Array<JwtCredentialPayload>;
   modalVisible: boolean;
   modalStates: any;
   shareable: boolean;
@@ -113,7 +114,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       shareable: false
     };
   }
-
+  
   public componentDidMount() {
     // Da usare per test e debug: tre JWT già decodificati da mettere in store
     //let _data = JSON.parse('[{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Identity card","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1603968221,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Tessera Museo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Diploma Asilo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""}]')
@@ -270,157 +271,37 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     );
   };
 
+  // Funzione che verra passata alla SingleVC View per fare il toggle della checkbox
+  private checkSelectedVC = (info : JwtCredentialPayload) => {
+     //  Aggiorno i data dello stato 
+     const updatedData = this.state.data.map((item, index) => {
+      return (index === info.index) 
+        ? {...item, selected: !item.selected}
+        : item
+    })
+    
+    // Cerca se ci sono VC selezionati, altrimenti ritorna undefined
+    const isSharable = updatedData.find(item => item.selected === true)
+    
+    // Aggiorna la vista della componente
+    this.setState({ data : updatedData, shareable: Boolean(isSharable) });
+  }
+
   /**
    * Genera la vista di una singola VC (functional component passata alla FlatList)
    * @param info: contiene la VC i-esima
    */
-  private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
+  private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
     const VC = info.item;
     //console.log(JSON.stringify(VC))
 
     console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
-    if(VC.vc.type[1] === 'VID') {
-      console.log('renderizzazione di una VC di tipo VID')
-      return this.renderVID(VC, info)
-    } else if (VC.vc.type[1] === 'DimensioneImpresa'){
-      console.log('renderizzazione di una VC di tipo DimensioneImpresa')
-      return this.renderDimensioneImpresa(VC, info)
-    } else {
-      console.warn('unrecognized vc type: ' + VC.vc.type)
-    }
+    return (
+      <SingleVC key={info.item.sub} info={info} onPress={() => this.checkSelectedVC(info)} />
+    )
 
   }
-
-
-  private renderDimensioneImpresa(VC, info) {
-    let vcName
-    let firstName
-    let lastName
-    let number
-    let iss
-    try {
-      vcName = "Dimensione Impresa - " + VC.vc.credentialSubject.ragioneFiscale
-      firstName = VC.vc.credentialSubject.piva
-      lastName = VC.vc.credentialSubject.indirizzoSedeLegale.substr(0, 30) + '...'
-      number = VC.vc.credentialSubject.dimensioneImpresa
-      iss = VC.vc.credentialSubject.expirationDate
-    } catch (e) {
-      vcName = "uncompliant credential format"
-      firstName = "uncompliant credential format"
-      lastName =  "uncompliant credential format"
-      number = "uncompliant credential format"
-      iss = "uncompliant credential format"
-    }
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          // Azione lanciata quando si clicca su una VC
-          let data = [...this.state.data]; // Bisogna copiare il vettore, perchè this.state.data è ReadOnly
-          data[info.index].selected = !data[info.index].selected; // Inverte il flag selected (switcha lo chekcbox)
-
-          // Aggiorna il button blu "YES" cliccabile o meno
-          let shareable = false;
-          data.forEach(item => {
-            if (item.selected === true) {
-              shareable = true;
-            }
-          });
-
-          // Aggiorna la vista della componente
-          this.setState({ data, shareable });
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: variables.brandPrimary,
-            borderColor: "#333333",
-            borderWidth: 0.5,
-            margin: 10,
-            padding: 5,
-            borderRadius: 8
-          }}
-        >
-          {this.textHeader(vcName)}
-          <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
-            <View>
-              <Text style={{color: variables.colorWhite}}>Partita IVA: {firstName}</Text>
-              <Text style={{color: variables.colorWhite}}>Sede Legale: {lastName}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>Dimensione Impresa: {number}</Text>
-              <Text style={{color: variables.colorWhite, fontSize: 10}}>Scadenza: {iss}</Text>
-            </View>
-            <View style={{paddingRight: 10, justifyContent: 'center'}}>
-              <IconFont
-                name={VC.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                color={'white'}
-                size={25}
-              />
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  private renderVID(VC, info) {
-    let vcName
-    let firstName
-    let lastName
-    let number
-    let iss
-    try {
-      vcName = VC.vc.type[1] + " - Carta di Identità"
-      firstName = VC.vc.credentialSubject.firstName
-      lastName = VC.vc.credentialSubject.lastName
-    } catch (e) {
-      vcName = "uncompliant credential format"
-      firstName = "uncompliant credential format"
-      lastName =  "uncompliant credential format"
-    }
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          // Azione lanciata quando si clicca su una VC
-          let data = [...this.state.data] // Bisogna copiare il vettore, perchè this.state.data è ReadOnly
-          data[info.index].selected = !data[info.index].selected // Inverte il flag selected (switcha lo chekcbox)
-
-          // Aggiorna il button blu "YES" cliccabile o meno
-          let shareable = false
-          data.forEach(item => {
-            if (item.selected === true) {
-              shareable = true
-            }
-          })
-
-          // Aggiorna la vista della componente
-          this.setState({data: data, shareable: shareable})
-        }}>
-        <View style={{
-          backgroundColor: variables.brandPrimary,
-          borderColor: '#333333',
-          borderWidth: 0.5,
-          margin: 10,
-          padding: 5,
-          borderRadius: 8
-        }}>
-          {this.textHeader(vcName)}
-          <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
-            <View>
-              <Text style={{color: variables.colorWhite}}>Nome: {firstName}</Text>
-              <Text style={{color: variables.colorWhite}}>Cognome: {lastName}</Text>
-            </View>
-            <View style={{paddingRight: 10, justifyContent: 'center'}}>
-              <IconFont
-                name={VC.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                color={'white'}
-                size={25}
-              />
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   public render() {
     return (
