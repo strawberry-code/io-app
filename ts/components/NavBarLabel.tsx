@@ -23,23 +23,14 @@ type Props = OwnProps & ReturnType<typeof mapStateToProps>;
 
 type RouteLabelMap = { [key in Routes]?: TranslationKeys };
 const ROUTE_LABEL: RouteLabelMap = {
-  MESSAGES_NAVIGATOR: "global.navigator.messages",
-  WALLET_HOME: "global.navigator.wallet",
-  DOCUMENTS_HOME: "global.navigator.documents",
-  SERVICES_NAVIGATOR: "global.navigator.services",
-  PROFILE_NAVIGATOR: "global.navigator.profile",
   SSI_NAVIGATOR: "global.navigator.ssi",
   ERCWALLET_NAVIGATOR: "global.navigator.ercWallet",
 };
 const fallbackLabel = "unknown"; // fallback label
 
 const routeOrder = new Map<Routes, number>([
-  ["MESSAGES_NAVIGATOR", 1],
-  ["WALLET_HOME", 2],
-  ["SERVICES_NAVIGATOR", 3],
-  ["PROFILE_NAVIGATOR", 4],
-  ["SSI_NAVIGATOR", 5],
-  ["ERCWALLET_NAVIGATOR", 6]
+  ["SSI_NAVIGATOR", 1],
+  ["ERCWALLET_NAVIGATOR", 2]
 ]);
 
 const getLabel = (routeName: string, locale: Locales): string =>

@@ -37,11 +37,6 @@ type Routes = keyof typeof ROUTES;
 
 type RouteIconMap = { [key in Routes]?: string };
 const ROUTE_ICON: RouteIconMap = {
-  MESSAGES_NAVIGATOR: "io-messaggi",
-  WALLET_HOME: "io-portafoglio",
-  DOCUMENTS_HOME: "io-documenti",
-  SERVICES_NAVIGATOR: "io-servizi",
-  PROFILE_NAVIGATOR: "io-profilo",
   SSI_NAVIGATOR: "io-cie-card",
   ERCWALLET_NAVIGATOR: "io-test"
 };
@@ -122,23 +117,6 @@ const getTabBarVisibility = (
  */
 const navigation = createBottomTabNavigator(
   {
-    [ROUTES.MESSAGES_NAVIGATOR]: {
-      screen: MessageNavigator
-    },
-    [ROUTES.WALLET_HOME]: {
-      screen: WalletNavigator
-    },
-    // FIXME: Documents are temporarily disabled during the experimental phase
-    // see https://www.pivotaltracker.com/story/show/159490857
-    // [ROUTES.DOCUMENTS_HOME]: {
-    //   screen: PlaceholderScreen
-    // },
-    [ROUTES.SERVICES_NAVIGATOR]: {
-      screen: ServicesNavigator
-    },
-    [ROUTES.PROFILE_NAVIGATOR]: {
-      screen: ProfileNavigator
-    },
     [ROUTES.SSI_NAVIGATOR]: {
       screen: SsiNavigator
     },
@@ -160,35 +138,6 @@ const navigation = createBottomTabNavigator(
       tabBarIcon: (options: { tintColor: string | null; focused: boolean }) => {
         const { routeName } = nav.state;
         const iconName: string = getIcon(routeName);
-        if (routeName === ROUTES.MESSAGES_NAVIGATOR) {
-          return (
-            <MessagesTabIcon
-              color={options.tintColor === null ? undefined : options.tintColor}
-            />
-          );
-        }
-        if (iconName === ROUTE_ICON.WALLET_HOME) {
-          return (
-            <WalletTabIcon
-              color={options.tintColor === null ? undefined : options.tintColor}
-            />
-          );
-        }
-        if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
-          return (
-            <ProfileTabIcon
-              size={variables.iconSize3}
-              color={options.tintColor === null ? undefined : options.tintColor}
-            />
-          );
-        }
-        if (iconName === ROUTE_ICON.SERVICES_NAVIGATOR) {
-          return (
-            <ServiceTabIcon
-              color={options.tintColor === null ? undefined : options.tintColor}
-            />
-          );
-        }
         if (iconName === ROUTE_ICON.PROFILE_NAVIGATOR) {
           return (
             <SSITabIcon
@@ -239,7 +188,7 @@ const navigation = createBottomTabNavigator(
     },
     animationEnabled: true,
     swipeEnabled: false,
-    initialRouteName: ROUTES.MESSAGES_NAVIGATOR
+    initialRouteName: ROUTES.SSI_NAVIGATOR
   }
 );
 
