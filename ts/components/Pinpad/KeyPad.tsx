@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
   buttonTextLabel: {
     fontSize: radius - 5
   },
+  buttonPrimaryLight: {
+    backgroundColor: variables.brandPrimaryLight,
+  },
   noPadded: {
     paddingRight: 0
   }
@@ -73,7 +76,7 @@ const renderPinCol = (
 ) => {
   const buttonStyle =
     style === "digit"
-      ? styles.roundButton
+      ? [styles.roundButton, styles.buttonPrimaryLight]
       : style === "label"
       ? [styles.roundButton, styles.transparent]
       : undefined;
