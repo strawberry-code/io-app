@@ -239,7 +239,7 @@ const navigation = createBottomTabNavigator(
     },
     animationEnabled: true,
     swipeEnabled: false,
-    initialRouteName: ROUTES.MESSAGES_NAVIGATOR
+    initialRouteName: ROUTES.SSI_NAVIGATOR
   }
 );
 
