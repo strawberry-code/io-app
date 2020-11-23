@@ -12,13 +12,13 @@ describe("Test navigation utils", () => {
       {
         index: 0,
         isTransitioning: false,
-        key: "SSI_NAVIGATOR",
+        key: "MESSAGES_NAVIGATOR",
         params: undefined,
-        routeName: "SSI_NAVIGATOR",
+        routeName: "MESSAGES_NAVIGATOR",
         routes: [
           {
             key: "id-1588000867273-1",
-            routeName: "SSI_HOME"
+            routeName: "MESSAGES_HOME"
           } as NavigationRoute
         ]
       }
@@ -44,7 +44,7 @@ describe("Test navigation utils", () => {
   ];
 
   it("getRouteName return the name of the route", () => {
-    expect(getRouteName(navRouteOK)).toStrictEqual(some("SSI_HOME"));
+    expect(getRouteName(navRouteOK)).toStrictEqual(some("MESSAGES_HOME"));
   });
 
   it("getRouteName return none if navigation route bad formatted", () => {
@@ -65,6 +65,6 @@ describe("Test navigation utils", () => {
         { ...navRouteKO } as NavigationState,
         { ...navRouteOK } as NavigationState
       ])
-    ).toStrictEqual(some("SSI_HOME"));
+    ).toStrictEqual(some("MESSAGES_HOME"));
   });
 });
