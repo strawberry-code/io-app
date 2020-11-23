@@ -148,7 +148,7 @@ const navigation = createBottomTabNavigator(
   },
   {
     defaultNavigationOptions: ({ navigation: nav }) => ({
-      tabBarVisible: getTabBarVisibility(nav),
+      tabBarVisible: false,
       tabBarLabel: (options: {
         tintColor: string | null;
         focused: boolean;
