@@ -47,10 +47,11 @@ import {
 } from "../../store/reducers/profile";
 import {GlobalState} from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
-import {VerifiedCredential} from "did-jwt-vc";
+import {JwtCredentialPayload} from "did-jwt-vc";
 import variables from "../../theme/variables";
 import VCstore from "./VCstore";
 import {showToast} from "../../utils/showToast";
+import SingleVC from './SsiSingleVC'
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -190,100 +191,15 @@ class PreferencesScreen extends React.Component<Props, State> {
     return (<Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{headerTitle}</Text>)
   }
 
-  private renderItem = (info: ListRenderItemInfo<VerifiedCredential>) => {
-    const VC = info.item;
-    console.log(JSON.stringify(VC))
+  private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
+    const VC = info.item
+    // console.log(JSON.stringify(VC))
 
     console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
-    if (VC.vc.type[1] === 'VID') {
-      console.log('renderizzazione di una VC di tipo VID')
-      return this.renderVID(VC)
-    } else if (VC.vc.type[1] === 'DimensioneImpresa') {
-      console.log('renderizzazione di una VC di tipo DimensioneImpresa')
-      return this.renderDimensioneImpresa(VC)
-    } else {
-      console.warn('unrecognized vc type: ' + VC.vc.type)
-    }
-
-  }
-
-  private renderDimensioneImpresa(VC) {
-    let vcName
-    let firstName
-    let lastName
-    let number
-    let issxd
-    try {
-      vcName = "Dimensione Impresa"
-      firstName = VC.vc.credentialSubject.piva
-      lastName = VC.vc.credentialSubject.indirizzoSedeLegale
-      number = VC.vc.credentialSubject.dimensioneImpresa
-      iss = VC.vc.credentialSubject.expirationDate
-    } catch (e) {
-      vcName = "uncompliant credential format"
-      firstName = "uncompliant credential format"
-      lastName = "uncompliant credential format"
-      number = "uncompliant credential format"
-      iss = "uncompliant credential format"
-    }
     return (
-      <TouchableOpacity
-        onPress={() => {
-          alert(JSON.stringify(VC))
-        }}>
-        <View style={{
-          backgroundColor: variables.brandPrimary,
-          borderColor: '#333333',
-          borderWidth: 0.5,
-          margin: 10,
-          padding: 5,
-          borderRadius: 8
-        }}>
-          {this.textHeader(vcName)}
-          <Text style={{color: variables.colorWhite}}>Partita IVA: {firstName}</Text>
-          <Text style={{color: variables.colorWhite}}>Sede Legale: {lastName}</Text>
-          <Text style={{color: variables.colorWhite, fontSize: 10}}>Dimensione Impresa: {number}</Text>
-          <Text style={{color: variables.colorWhite, fontSize: 10}}>Scadenza: {iss}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  private renderVID(VC) {
-    let vcName
-    let firstName
-    let lastName
-    let number
-    let iss
-    try {
-      vcName = VC.vc.type[1] + " - Carta di Identità"
-      firstName = VC.vc.credentialSubject.firstName
-      lastName = VC.vc.credentialSubject.lastName
-    } catch (e) {
-      vcName = "uncompliant credential format"
-      firstName = "uncompliant credential format"
-      lastName = "uncompliant credential format"
-    }
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          alert(JSON.stringify(VC))
-        }}>
-        <View style={{
-          backgroundColor: variables.brandPrimary,
-          borderColor: '#333333',
-          borderWidth: 0.5,
-          margin: 10,
-          padding: 5,
-          borderRadius: 8
-        }}>
-          {this.textHeader(vcName)}
-          <Text style={{color: variables.colorWhite}}>Nome: {firstName}</Text>
-          <Text style={{color: variables.colorWhite}}>Cognome: {lastName}</Text>
-        </View>
-      </TouchableOpacity>
-    );
+      <SingleVC info={info} />
+    )
   }
 
   public render() {
