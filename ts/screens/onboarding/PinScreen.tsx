@@ -264,9 +264,9 @@ class PinScreen extends React.PureComponent<Props, State> {
       return (
         <Pinpad
           inactiveColor={variables.brandLightGray}
-          activeColor={variables.contentPrimaryBackground}
+          activeColor={variables.brandPrimary}
           onFulfill={this.onPinFulfill}
-          buttonType={"light"}
+          buttonType={'primary'}
         />
       );
     } else {
@@ -277,11 +277,11 @@ class PinScreen extends React.PureComponent<Props, State> {
         <React.Fragment>
           <Pinpad
             inactiveColor={variables.brandLightGray}
-            activeColor={variables.contentPrimaryBackground}
+            activeColor={variables.brandPrimary}
             compareWithCode={pinState.pin}
             onFulfill={this.onPinConfirmFulfill}
             ref={pinpad => (this.pinConfirmComponent = pinpad)} // eslint-disable-line
-            buttonType={"light"}
+            buttonType={'primary'}
             onDeleteLastDigit={this.onPinConfirmRemoveLastDigit}
           />
         </React.Fragment>

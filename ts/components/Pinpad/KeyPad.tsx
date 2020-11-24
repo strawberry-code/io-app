@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     fontSize: radius - 5
   },
   buttonPrimaryLight: {
-    backgroundColor: variables.brandPrimaryLight,
+    backgroundColor: variables.brandPrimary,
   },
   noPadded: {
     paddingRight: 0
