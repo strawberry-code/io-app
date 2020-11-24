@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, GestureResponderEvent } from "react-native"
+import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native"
 import { ListRenderItemInfo } from 'react-native'
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
 import variables from "../../theme/variables"
@@ -62,6 +62,26 @@ interface DeMinimis extends JwtCredentialPayload {
   }  
 }
 
+const styles = StyleSheet.create({
+  card: {
+    margin: 10,
+    overflow: 'hidden',
+    borderRadius: 5,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 10,
+      height: 10
+    },
+    backgroundColor: "white",
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5
+  },
+  cardHeader: { backgroundColor: variables.brandPrimary, padding: 10, flex: 1 },
+  cardBody: {flexDirection: 'row', justifyContent:"space-between" , padding: 10},
+  cardBodyText: { color: 'black'}
+})
+
 type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis
 
 interface Props {
@@ -106,26 +126,21 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
   return (
     <TouchableOpacity
         onPress={(onPress) ? onPress : showCredentials} >
-        <View style={{
-          backgroundColor: variables.brandPrimary,
-          borderColor: '#333333',
-          borderWidth: 0.5,
-          margin: 10,
-          padding: 5,
-          borderRadius: 8
-        }}>
-          <Header title="Carta d'identità" />
-          <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Header title="Carta d'identità" />
+          </View>
+          <View style={styles.cardBody}>
             <View>
-              <Text style={{color: variables.colorWhite}}>Nome: {firstName}</Text>
-              <Text style={{color: variables.colorWhite}}>Cognome: {lastName}</Text>
+              <Text style={styles.cardBodyText}>Nome: {firstName}</Text>
+              <Text style={styles.cardBodyText}>Cognome: {lastName}</Text>
             </View>
             {
               onPress && (
               <View style={{paddingRight: 10, justifyContent: 'center'}}>
                   <IconFont
                     name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                    color='white'
+                    color={variables.brandPrimary}
                     size={25}
                   />
               </View>
@@ -150,28 +165,23 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={{
-        backgroundColor: variables.brandPrimary,
-        borderColor: '#333333',
-        borderWidth: 0.5,
-        margin: 10,
-        padding: 5,
-        borderRadius: 8
-      }}>
-        <Header title="Dimensione Impresa" />
-        <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Header title="Dimensione Impresa" />
+        </View>
+        <View style={styles.cardBody}>
               <View>
-                <Text style={{color: variables.colorWhite}}>Partita IVA: {piva}</Text>
-                <Text style={{color: variables.colorWhite}}>Sede Legale: {showIndirizzoSL}</Text>
-                <Text style={{color: variables.colorWhite, fontSize: 10}}>Dimensione Impresa: {dimensioneImpresa}</Text>
-                <Text style={{color: variables.colorWhite, fontSize: 10}}>Scadenza: {expirationDate}</Text>
+                <Text style={styles.cardBodyText}>Partita IVA: {piva}</Text>
+                <Text style={styles.cardBodyText}>Sede Legale: {showIndirizzoSL}</Text>
+                <Text style={styles.cardBodyText}>Dimensione Impresa: {dimensioneImpresa}</Text>
+                <Text style={styles.cardBodyText}>Scadenza: {expirationDate}</Text>
               </View>
               {
                 onPress && (
                 <View style={{paddingRight: 10, justifyContent: 'center'}}>
                     <IconFont
                       name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color='white'
+                      color={variables.brandPrimary}
                       size={25}
                     />
                 </View>
@@ -193,26 +203,21 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={{
-        backgroundColor: variables.brandPrimary,
-        borderColor: '#333333',
-        borderWidth: 0.5,
-        margin: 10,
-        padding: 5,
-        borderRadius: 8
-      }}>
-        <Header title="Bachelor Degree" />
-        <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Header title="Bachelor Degree" />
+        </View>
+        <View style={styles.cardBody}>
               <View>
-                <Text style={{color: variables.colorWhite}}>Tipologia: {type}</Text>
-                <Text style={{color: variables.colorWhite}}>Data di conseguimento: {dateOfAchievement}</Text>
+                <Text style={styles.cardBodyText}>Tipologia: {type}</Text>
+                <Text style={styles.cardBodyText}>Data di conseguimento: {dateOfAchievement}</Text>
               </View>
               {
                 onPress && (
                 <View style={{paddingRight: 10, justifyContent: 'center'}}>
                     <IconFont
                       name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color='white'
+                      color={variables.brandPrimary}
                       size={25}
                     />
                 </View>
@@ -234,26 +239,21 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={{
-        backgroundColor: variables.brandPrimary,
-        borderColor: '#333333',
-        borderWidth: 0.5,
-        margin: 10,
-        padding: 5,
-        borderRadius: 8
-      }}>
-        <Header title="Master Degree" />
+      <View style={styles.cardHeader}>
+        <View style={styles.cardHeader}>
+          <Header title="Master Degree" />
+        </View>
         <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
               <View>
-                <Text style={{color: variables.colorWhite}}>Tipologia: {type}</Text>
-                <Text style={{color: variables.colorWhite}}>Data di conseguimento: {dateOfAchievement}</Text>
+                <Text style={styles.cardBodyText}>Tipologia: {type}</Text>
+                <Text style={styles.cardBodyText}>Data di conseguimento: {dateOfAchievement}</Text>
               </View>
               {
                 onPress && (
                 <View style={{paddingRight: 10, justifyContent: 'center'}}>
                     <IconFont
                       name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color='white'
+                      color={variables.brandPrimary}
                       size={25}
                     />
                 </View>
@@ -277,29 +277,24 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={{
-        backgroundColor: variables.brandPrimary,
-        borderColor: '#333333',
-        borderWidth: 0.5,
-        margin: 10,
-        padding: 5,
-        borderRadius: 8
-      }}>
-        <Header title="De Minimis" />
-        <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Header title="De Minimis" />
+        </View>
+        <View style={styles.cardBody}>
               <View>
-              <Text style={{color: variables.colorWhite}}>Ragione Fiscale: {ragioneFiscale}</Text>
-              <Text style={{color: variables.colorWhite}}>Partita IVA: {piva}</Text>
-                <Text style={{color: variables.colorWhite}}>Sede Legale: {showIndirizzoSL}</Text>
-                <Text style={{color: variables.colorWhite, fontSize: variables.fontSizeSmaller}}>Eleggibilità: {eleggibilita}</Text>
-                <Text style={{color: variables.colorWhite, fontSize: variables.fontSizeSmaller}}>Scadenza: {expirationDate}</Text>
+              <Text style={styles.cardBodyText}>Ragione Fiscale: {ragioneFiscale}</Text>
+              <Text style={styles.cardBodyText}>Partita IVA: {piva}</Text>
+                <Text style={styles.cardBodyText}>Sede Legale: {showIndirizzoSL}</Text>
+                <Text style={styles.cardBodyText}>Eleggibilità: {eleggibilita}</Text>
+                <Text style={styles.cardBodyText}>Scadenza: {expirationDate}</Text>
               </View>
               {
                 onPress && (
                 <View style={{paddingRight: 10, justifyContent: 'center'}}>
                     <IconFont
                       name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color='white'
+                      color={variables.brandPrimary}
                       size={25}
                     />
                 </View>
@@ -312,7 +307,7 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
 }
 
 const Header: React.FC<{ title: string }> = ({ title }) => (
-  <Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{title}</Text>
+  <Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center', fontSize: variables.fontSizeBase}}>{title}</Text>
 )
 
 export default SingleVC
