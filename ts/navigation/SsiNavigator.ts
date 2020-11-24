@@ -1,10 +1,12 @@
 import { createStackNavigator } from "react-navigation";
 import SsiMainScreen from "../screens/ssi/SsiMainScreen";
+import SsiWalletSendScreen from "../screens/ssi/SsiWalletSendScreen"
+import SsiWalletReceiveScreen from "../screens/ssi/SsiWalletReceiveScreen"
 import SsiVerifiedCredentials from "../screens/ssi/SsiVerifiedCredentialsScreen";
 import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlayground";
 import WebPlayground from "../screens/profile/WebPlayground";
-import ROUTES from "./routes";
 import ShareVcsWithRequesterScreen from "../screens/ssi/ShareVerifiedCredentialsWithRequester";
+import ROUTES from "./routes";
 
 /**
  * A navigator for all the screens of the SSI section
@@ -26,7 +28,13 @@ const ProfileNavigator = createStackNavigator(
     },
     [ROUTES.WEB_PLAYGROUND]: {
       screen: WebPlayground
-    }
+    },
+    [ROUTES.SSI_WALLET_SEND_SCREEN]: {
+      screen: SsiWalletSendScreen
+    },
+    [ROUTES.SSI_WALLET_RECEIVE_SCREEN]: {
+      screen: SsiWalletReceiveScreen
+    },
   },
   {
     // Let each screen handle the header and navigation
