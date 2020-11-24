@@ -47,7 +47,7 @@ const customVariables = Object.assign(materialVariables, {
   btnLightBorderColor: "#AEB5BF",
 
   // Color
-  brandPrimary: "#0066CC",
+  brandPrimary: "#297A38", // Regione Lombardia Primary Color
   brandPrimaryInverted: "#FFFFFF",
   brandGray: "#F5F6F7",
   brandLight: "#FCFDFF",
@@ -57,7 +57,8 @@ const customVariables = Object.assign(materialVariables, {
   brandMildGray: "#C7D1D9",
   brandDarkGray: "#5C6F82",
   brandDarkestGray: "#17324D",
-  brandPrimaryLight: "#99CCFF",
+  brandPrimaryLight: "#42B357", 
+  brandPrimaryDark: "#013C0B", 
   brandHighlight: "#00C5CA",
   brandHighLighter: "#00CDD2",
 
@@ -167,7 +168,7 @@ const customVariables = Object.assign(materialVariables, {
   contentPadding: 24,
   contentPaddingLarge: 48,
   contentBackground: "#FFFFFF",
-  contentPrimaryBackground: "#0073E6",
+  contentPrimaryBackground: "#297A38", // old #0073E6
 
   // Footer
   footerBackground: "#FFFFFF",

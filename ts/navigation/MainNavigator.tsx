@@ -148,7 +148,7 @@ const navigation = createBottomTabNavigator(
   },
   {
     defaultNavigationOptions: ({ navigation: nav }) => ({
-      tabBarVisible: getTabBarVisibility(nav),
+      tabBarVisible: false,
       tabBarLabel: (options: {
         tintColor: string | null;
         focused: boolean;
@@ -239,7 +239,7 @@ const navigation = createBottomTabNavigator(
     },
     animationEnabled: true,
     swipeEnabled: false,
-    initialRouteName: ROUTES.MESSAGES_NAVIGATOR
+    initialRouteName: ROUTES.SSI_NAVIGATOR
   }
 );
 

@@ -7,7 +7,7 @@ type Props = {
   checked: boolean;
 };
 
-const checkBoxColor = "#039BE5";
+const checkBoxColor = customVariables.brandPrimaryDark; // #039BE5
 const transparentColor = "transparent";
 const checkBoxIcon = "io-tick-big";
 
