@@ -7,6 +7,7 @@ import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlaygroun
 import WebPlayground from "../screens/profile/WebPlayground";
 import ShareVcsWithRequesterScreen from "../screens/ssi/ShareVerifiedCredentialsWithRequester";
 import ROUTES from "./routes";
+import SsiBalanceAndTransctionScreen from "../screens/ssi/SsiBalanceAndTransaction";
 
 /**
  * A navigator for all the screens of the SSI section
@@ -34,6 +35,9 @@ const ProfileNavigator = createStackNavigator(
     },
     [ROUTES.SSI_WALLET_RECEIVE_SCREEN]: {
       screen: SsiWalletReceiveScreen
+    },
+    [ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION]: {
+      screen: SsiBalanceAndTransctionScreen
     },
   },
   {

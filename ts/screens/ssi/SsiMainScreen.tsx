@@ -477,10 +477,16 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             false,
             false,
             true,
-            "io-qr",
-            "Scan QR",
-            this.props.navigateToPaymentScanQrCode
-          )}
+            "io-portafoglio",
+            "Balance & Transaction",
+            async () => {
+              // await DidSingleton.loadDidFromKeychain()
+              // alert(DidSingleton.getDidAddress())
+              console.log((await VCstore.getJwts()).forEach(item => {
+                console.log(item)
+              }))
+              navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
+            })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
           {touchableMenuItem(false, true, true, false, "io-portafoglio","Invia dal Wallet", async () => {
@@ -489,7 +495,6 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             console.log((await VCstore.getJwts()).forEach(item => {
               console.log(item)
             }))
-
             navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
           })}
           {touchableMenuItem(true, false, true, false, "io-portafoglio","Ricevi nel Wallet", async () => {
