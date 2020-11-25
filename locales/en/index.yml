@@ -302,6 +302,16 @@ ssi:
   vcslist:
     title: Verified Credentials
     subtitle: These are your Verified Credentials related to your SPID
+  balanceAndTransaction:
+    title: Balance & Transactions
+    balanceTitle: Balance
+    transactionTitle: Transactions
+    sendButton: Send
+    receiveButton: Receive
+  sendFromWallet:
+    title: Send from Wallet
+  receiveIntoWallet:
+    title: Receive into Wallet
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
