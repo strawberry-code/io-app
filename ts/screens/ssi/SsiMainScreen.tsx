@@ -477,22 +477,27 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             false,
             false,
             true,
-            "io-qr",
-            "Scan QR",
-            this.props.navigateToPaymentScanQrCode
-          )}
+            "io-portafoglio",
+            "Balance & Transaction",
+            async () => {
+              // await DidSingleton.loadDidFromKeychain()
+              // alert(DidSingleton.getDidAddress())
+              console.log((await VCstore.getJwts()).forEach(item => {
+                console.log(item)
+              }))
+              navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
+            })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "io-portafoglio","Invia dal Wallet", async () => {
+          {touchableMenuItem(false, true, true, false, "io-share","Invia dal Wallet", async () => {
             // await DidSingleton.loadDidFromKeychain()
             // alert(DidSingleton.getDidAddress())
             console.log((await VCstore.getJwts()).forEach(item => {
               console.log(item)
             }))
-
             navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
           })}
-          {touchableMenuItem(true, false, true, false, "io-portafoglio","Ricevi nel Wallet", async () => {
+          {touchableMenuItem(true, false, true, false, "io-save","Ricevi nel Wallet", async () => {
             // VCstore.clearStore()
             // console.log(await VCstore.getVCs())
             // const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
