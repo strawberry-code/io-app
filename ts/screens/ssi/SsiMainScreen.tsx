@@ -478,9 +478,21 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             false,
             true,
             "io-portafoglio",
+<<<<<<< HEAD
             "Bilancio e Transazioni",
             () => navigation.navigate(ROUTES.SSI_BALANCE_TRANSACTION_SCREEN)
           )}
+=======
+            "Balance & Transaction",
+            async () => {
+              // await DidSingleton.loadDidFromKeychain()
+              // alert(DidSingleton.getDidAddress())
+              console.log((await VCstore.getJwts()).forEach(item => {
+                console.log(item)
+              }))
+              navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
+            })}
+>>>>>>> a1246cc430aa9bb3e882b55441c11b40131a2ad8
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
           {touchableMenuItem(false, true, true, false, "io-share","Invia dal Wallet", async () => {
@@ -489,7 +501,6 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             console.log((await VCstore.getJwts()).forEach(item => {
               console.log(item)
             }))
-
             navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
           })}
           {touchableMenuItem(true, false, true, false, "io-save","Ricevi nel Wallet", async () => {
