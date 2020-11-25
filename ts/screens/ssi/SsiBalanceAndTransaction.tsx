@@ -65,9 +65,8 @@ const SsiBalanceAndTransctionScreen: React.FC = () => {
           <FlatList
             nestedScrollEnabled={true}
             data={dummyData}
-            renderItem={({item}) => (<Transaction item={item} />)}
+            renderItem={({item}) => <Transaction item={item} />}
             keyExtractor={(_item, index) => index.toString()}
-            }
           />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: "#D3EAD8"}}>
