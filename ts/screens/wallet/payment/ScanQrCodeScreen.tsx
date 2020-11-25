@@ -156,6 +156,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     // TODO
     let type = qrData.type
     let callback = qrData.callback
+    let callbackMethod = qrData.callbackMethod
     let payload: JwtCredentialPayload = qrData.payload
 
     console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
@@ -180,17 +181,17 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     }
 
     let body = JSON.stringify({"verifiableCredential": vcJwt})
-    console.log(`making PUT\nurl: ${callback}\nbody: ${body}`)
+    console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
 
     fetch(callback, {
-      method: 'PUT',
+      method: callbackMethod.toUpperCase(),
       headers: {
         'Content-Type': 'application/json',
       },
       body: body,
     })
-      .then(response => response.text())
+      .then(response => response.json())
       .then(data => {
         console.log('Success:', data);
       })
