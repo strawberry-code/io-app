@@ -1,8 +1,10 @@
 import React from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableHighlight, Dimensions, Platform } from "react-native"
+import { NavigationComponent } from "react-navigation";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import I18n from "../../i18n"
 import variables from "../../theme/variables";
+import ROUTES from '../../navigation/routes'
 
 
 // dati per testare la parte grafica
@@ -49,19 +51,31 @@ const dummyData = [
   }
 ]
 
+interface BalanceAndTransactionProps {
+ navigation: NavigationComponent
+  
+}
+
+const fontRegular = Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb'
 
 
-const SsiBalanceAndTransctionScreen: React.FC = () => {
+const fontBold: BoldFont = Platform.OS === 'android' 
+  ? { fontFamily : 'TitilliumWeb-Bold', fontWeight: 'normal'}
+  : { fontFamily: 'Titillium Web', fontWeight: 'bold'} 
+
+const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ navigation }) => {
 
   return (
       <TopScreenComponent
       faqCategories={["profile", "privacy", "authentication_SPID"]}
-      headerTitle={I18n.t("ssi.title")}
+      headerTitle={I18n.t('ssi.balanceAndTransaction.title')}
       goBack={true}
       >
         <View style={{ flex: 1 }}>
           <Balance balance={10000} />
-          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10,marginBottom: 10}}>Transazioni</Text>
+          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10, ...fontBold}}>
+            {I18n.t('ssi.balanceAndTransaction.transactionTitle')}
+          </Text>
           <FlatList
             nestedScrollEnabled={true}
             data={dummyData}
@@ -70,11 +84,11 @@ const SsiBalanceAndTransctionScreen: React.FC = () => {
           />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 10, backgroundColor: "#D3EAD8"}}>
-          <TouchableHighlight style={[button.container, button.send]}>
-            <Text style={button.sendText}>Invia</Text>
+          <TouchableHighlight style={[button.container, button.send]} onPress={() => navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN)} >
+            <Text style={button.sendText}>{I18n.t('ssi.balanceAndTransaction.sendButton')}</Text>
           </TouchableHighlight>
-          <TouchableHighlight style={[button.container, button.receive]}>
-            <Text style={button.receiveText}>Ricevi</Text>
+          <TouchableHighlight style={[button.container, button.receive]} onPress={() => navigation.navigate(ROUTES.SSI_WALLET_RECEIVE_SCREEN)}>
+            <Text style={button.receiveText}>{I18n.t('ssi.balanceAndTransaction.receiveButton')}</Text>
           </TouchableHighlight>
         </View>
       </TopScreenComponent>
@@ -99,11 +113,13 @@ const button = StyleSheet.create({
   },
   sendText: {
     color: variables.colorWhite,
-    fontSize: variables.h4FontSize
+    fontSize: variables.h4FontSize,
+    fontFamily:fontRegular
   },
   receiveText: {
     color: variables.brandPrimary,
-    fontSize: variables.h5FontSize
+    fontSize: variables.h5FontSize,
+    fontFamily: fontRegular
   }
 })
 
@@ -142,11 +158,11 @@ const Transaction: React.FC<TransactionProps> = ({ item }) => {
   const color = item.action === 'sent' ? 'black' : 'green'
   return (
     <View style={transactionStyle.container}>
-        <Text style={{ color, fontSize: variables.h5FontSize, fontWeight: 'bold' }}>
+        <Text style={{ color, fontSize: variables.h5FontSize, ...fontBold}}>
           {item.action === 'sent'? '-': '+'}
           {item.amount} ETH
         </Text>
-        <Text>Data: {item.date}</Text>
+        <Text style={{ fontFamily: fontRegular }}>Data: {item.date}</Text>
     </View>
   )
 }
@@ -161,7 +177,7 @@ const Balance: React.FC<BalanceProps> = ({ balance }) => {
   console.log(balanceStyle.title)
   return (
     <View style={balanceStyle.container}>
-      <Text style={balanceStyle.title}>Bilancio</Text>
+      <Text style={balanceStyle.title}>{I18n.t('ssi.balanceAndTransaction.balanceTitle')}</Text>
       <Text style={balanceStyle.total}>{balance} ETH</Text>
     </View>
   )
@@ -172,7 +188,7 @@ const balanceStyle = StyleSheet.create({
   container: {
     overflow: 'hidden',
     marginHorizontal: 10,
-    marginBottom: 10,
+    marginVertical: 10,
     borderRadius: 5,
     shadowOffset: {
       width: 10,
@@ -188,13 +204,13 @@ const balanceStyle = StyleSheet.create({
     color: variables.colorWhite,
     backgroundColor: variables.brandPrimary,
     padding: 10,
-    fontFamily: Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb' 
+    fontFamily: fontRegular,
   },
   total: {
     paddingVertical: 20,
     paddingHorizontal: 10,
-    fontWeight: "bold",
-    fontSize: variables.h4FontSize
+    fontSize: variables.h4FontSize,
+    ...fontBold
   }
 })
 
