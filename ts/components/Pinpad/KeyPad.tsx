@@ -59,7 +59,13 @@ const styles = StyleSheet.create({
     fontSize: radius - 5
   },
   buttonPrimaryLight: {
+    backgroundColor: variables.brandPrimaryLight,
+  },
+  buttonPrimary: {
     backgroundColor: variables.brandPrimary,
+  },
+  buttonLightText : {
+    color: variables.colorWhite,
   },
   noPadded: {
     paddingRight: 0
@@ -76,7 +82,7 @@ const renderPinCol = (
 ) => {
   const buttonStyle =
     style === "digit"
-      ? [styles.roundButton, styles.buttonPrimaryLight]
+      ? [styles.roundButton, buttonType === 'primary' ? styles.buttonPrimary : styles.buttonPrimaryLight]
       : style === "label"
       ? [styles.roundButton, styles.transparent]
       : undefined;
@@ -97,7 +103,8 @@ const renderPinCol = (
               white={style === "label" && buttonType === "primary"}
               style={[
                 styles.buttonTextBase,
-                style === "label" && styles.buttonTextLabel
+                style === "label" && styles.buttonTextLabel,
+                buttonType === "light" && styles.buttonLightText
               ]}
             >
               {l}
@@ -110,8 +117,8 @@ const renderPinCol = (
               style={[styles.noPadded]}
               color={
                 buttonType === "light"
-                  ? customVariables.contentPrimaryBackground
-                  : customVariables.colorWhite
+                  ? customVariables.colorWhite
+                  : customVariables.contentPrimaryBackground
               }
               accessibilityLabel={ic.accessibilityLabel}
             />
