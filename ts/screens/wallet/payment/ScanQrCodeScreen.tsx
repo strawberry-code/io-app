@@ -161,9 +161,20 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
 
+
+    /**
+     * PReparo i dati per creare un nuovo EthrDID Issuer, però la private key non deve iniziare con '0x', il controllo
+     * c'è già in DID.ts, ma per sicurezza viene aggiunto anche qui.
+     */
+    let address = DidSingleton.getEthAddress()
+    let potPrivateKey = DidSingleton.getPrivateKey()
+    if(potPrivateKey.startsWith('0x')) {
+      potPrivateKey = potPrivateKey.replace('0x', '')
+    }
+
     const issuer: Issuer = new EthrDID({
-      address: DidSingleton.getEthAddress(),
-      privateKey: DidSingleton.getPrivateKey()
+      address: address,
+      privateKey: potPrivateKey
     })
 
     console.log('issuer: ' + issuer.did)
@@ -172,6 +183,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     try {
       console.log('payload: ' + JSON.stringify(payload))
       console.log('issuer: ' + JSON.stringify(issuer))
+      console.log('address: ' + JSON.stringify(DidSingleton.getEthAddress()))
+      console.log('private key: ' + JSON.stringify(DidSingleton.getPrivateKey()))
+      console.log('public key: ' + JSON.stringify(DidSingleton.getPublicKey()))
       vcJwt = await createVerifiableCredentialJwt(payload, issuer)
       console.log('signed token: ' + vcJwt)
       alert('signed token:\n' + vcJwt)

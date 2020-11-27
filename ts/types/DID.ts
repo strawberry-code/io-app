@@ -79,8 +79,14 @@ export class DID {
     this.setDidAddress(`did:ethr:${hdnode.address}`)
     this.setEthAddress(hdnode.address)
     this.setPublicKey(hdnode.publicKey)
-    this.setPrivateKey(hdnode.privateKey)
+
+    let potPrivateKey = hdnode.privateKey
+    if(potPrivateKey.startsWith('0x')) {
+      potPrivateKey = potPrivateKey.replace('0x', '')
+    }
+    this.setPrivateKey(potPrivateKey)
   }
+
 
   public marshal(): string {
     let DidData = {
