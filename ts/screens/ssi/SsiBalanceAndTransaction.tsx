@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, FlatList, TouchableHighlight, Dimensions, Platform } from "react-native"
+import React, { Component } from 'react'
+import { View, Text, StyleSheet, FlatList, TouchableHighlight, Dimensions, Platform, TextStyle } from "react-native"
 import { NavigationComponent } from "react-navigation";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import I18n from "../../i18n"
@@ -59,7 +59,7 @@ interface BalanceAndTransactionProps {
 const fontRegular = Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb'
 
 
-const fontBold: BoldFont = Platform.OS === 'android' 
+const fontBold: TextStyle = Platform.OS === 'android' 
   ? { fontFamily : 'TitilliumWeb-Bold', fontWeight: 'normal'}
   : { fontFamily: 'Titillium Web', fontWeight: 'bold'} 
 
@@ -87,13 +87,13 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
           <TouchableHighlight style={[button.container, button.send]} onPress={() => navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN)} >
             <Text style={button.sendText}>{I18n.t('ssi.balanceAndTransaction.sendButton')}</Text>
           </TouchableHighlight>
-          <TouchableHighlight style={[button.container, button.receive]} onPress={() => navigation.navigate(ROUTES.SSI_WALLET_RECEIVE_SCREEN)}>
-            <Text style={button.receiveText}>{I18n.t('ssi.balanceAndTransaction.receiveButton')}</Text>
-          </TouchableHighlight>
-        </View>
-      </TopScreenComponent>
-  )
-}
+            <TouchableHighlight style={[button.container, button.receive]} onPress={() => navigation.navigate(ROUTES.SSI_WALLET_RECEIVE_SCREEN)}>
+              <Text style={button.receiveText}>{I18n.t('ssi.balanceAndTransaction.receiveButton')}</Text>
+            </TouchableHighlight>
+          </View>
+        </TopScreenComponent>
+    )
+  }
 
 const button = StyleSheet.create({
   container: {
