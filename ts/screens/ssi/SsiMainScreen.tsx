@@ -482,9 +482,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             async () => {
               // await DidSingleton.loadDidFromKeychain()
               // alert(DidSingleton.getDidAddress())
-              console.log((await VCstore.getJwts()).forEach(item => {
-                console.log(item)
-              }))
+              // console.log((await VCstore.getJwts()).forEach(item => {
+              //   console.log(item)
+              // }))
               navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
             })}
         </View>
@@ -492,10 +492,11 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           {touchableMenuItem(false, true, true, false, "io-share",I18n.t('ssi.sendFromWallet.title'), async () => {
             // await DidSingleton.loadDidFromKeychain()
             // alert(DidSingleton.getDidAddress())
-            console.log((await VCstore.getJwts()).forEach(item => {
-              console.log(item)
-            }))
             navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
+
+            // console.log((await VCstore.getJwts()).forEach(item => {
+            //   console.log(item)
+            // }))
           })}
           {touchableMenuItem(true, false, true, false, "io-save", I18n.t('ssi.receiveIntoWallet.title'), async () => {
             // VCstore.clearStore()

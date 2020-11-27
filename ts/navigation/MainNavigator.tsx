@@ -99,7 +99,9 @@ const NoTabBarRoutes: ReadonlyArray<string> = [
   ROUTES.MARKDOWN_PLAYGROUND,
   ROUTES.WEB_PLAYGROUND,
   ROUTES.SSI_NAVIGATOR,
-  ROUTES.ERCWALLET_NAVIGATOR,
+  ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION,
+  ROUTES.SSI_WALLET_RECEIVE_SCREEN,
+  ROUTES.SSI_WALLET_SEND_SCREEN,
   ROUTES.SHOWROOM,
   ROUTES.SERVICE_WEBVIEW
 ];
@@ -142,9 +144,16 @@ const navigation = createBottomTabNavigator(
     [ROUTES.SSI_NAVIGATOR]: {
       screen: SsiNavigator
     },
+    [ROUTES.SSI_WALLET_RECEIVE_SCREEN]: {
+      screen: SsiNavigator
+    },
     [ROUTES.ERCWALLET_NAVIGATOR]: {
-      screen: ErcWalletNavigator
+      screen: SsiNavigator
+    },
+    [ROUTES.ERCWALLET_NAVIGATOR]: {
+      screen: SsiNavigator
     }
+
   },
   {
     defaultNavigationOptions: ({ navigation: nav }) => ({
