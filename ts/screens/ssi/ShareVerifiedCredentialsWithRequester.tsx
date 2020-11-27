@@ -80,6 +80,7 @@ type State = {
   modalStates: any;
   shareable: boolean;
   shareTo?: string;
+  method?: string;
   VCtoBeShared?: string | undefined;
 };
 
@@ -130,17 +131,18 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
     // Callback è l'API URL server COMPLETA da invocare quando l'utente decide di codnividere le VCs
     let callback = qrData.callback;
+    let method = qrData.callbackMethod;
+
 
     // TODO: questi sarebbero i campi che vengono presi dal QR, quindi cambiare quando lato server hanno finito
     // L'app deve mostrare in questa vita SOLO le VC che hanno uno o più di questi campi
     let requestedTypes = ['VerifiableCredential']
 
-    console.log(`\nAPI URL che verrà chiamata: ${callback}\n`);
+    console.log(`\nAPI URL (di tipo ${qrData.callbackMethod}) che verrà chiamata è: ${callback}\n`);
 
     //let VCs = HardcodedVCs
 
     //callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
-    console.log("making http fetch post");
 
     // Carica le VCs da store
     void VCstore.getVCs().then((data): void => {
@@ -172,7 +174,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       // Aggiorna stato della vista
       // shareable: aggiorna il flag del button blu "YES" (switcha se cliccabile o meno), siccome carico tutte come checkate, ora è su true
       this.setState({
-        data,
+        data: data,
         shareable: true,
         modalVisible: false,
         modalStates: {
@@ -182,7 +184,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           sharedFail: false
         },
         shareTo: callback,
-
+        method: method,
         // TODO: che passare come JSON qui?
         VCtoBeShared: JSON.stringify({
           verifiableCredential:
@@ -194,18 +196,26 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
   private shareVCnow = () => {
     const shareTo = this.state.shareTo;
+    const method = this.state.method;
     let VCsToBeShared = [];
 
     this.state.data.forEach(VCinState => {
-      if (VCinState.selected === true) VCsToBeShared.push(VCinState);
+      if (VCinState.selected === true) VCsToBeShared.push(VCinState.jwt);
     });
 
+
+    console.log('sto per fare una fetch per la shareVC')
+    console.log('metodo della richiesta (preso da QR): ' + method)
+    console.log('callback url: ' + shareTo)
+    console.log('body: ' + JSON.stringify(VCsToBeShared))
+
+
     fetch(shareTo, {
-      method: "POST",
+      method: method.toUpperCase(),
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(VCsToBeShared)
+      body: JSON.stringify({"verifiableCredential":VCsToBeShared[0]})
     })
       .then(response => response.json())
       .then(data => {

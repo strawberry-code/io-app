@@ -42,7 +42,10 @@ const getVCs = async (): Promise<Array<VerifiedCredential> | undefined> => {
   // eslint-disable-next-line functional/no-let
   let VCs: Array<VerifiedCredential> = [];
   Jwts.forEach(jwt => {
-    VCs = VCs.concat(decodeJwt(jwt));
+    console.log('jwt: ' + jwt)
+    let item = decodeJwt(jwt)
+    item.jwt = jwt
+    VCs = VCs.concat(item);
   });
   console.log(VCs);
   return VCs;
