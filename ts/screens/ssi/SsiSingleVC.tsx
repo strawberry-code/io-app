@@ -1,5 +1,6 @@
-import React from 'react'
-import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native"
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet, Platform, Modal } from "react-native"
+import { Button } from 'native-base'
 import { ListRenderItemInfo } from 'react-native'
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
 import variables from "../../theme/variables"
@@ -62,25 +63,6 @@ interface DeMinimis extends JwtCredentialPayload {
   }  
 }
 
-const styles = StyleSheet.create({
-  card: {
-    margin: 10,
-    overflow: 'hidden',
-    borderRadius: 5,
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 10,
-      height: 10
-    },
-    backgroundColor: "white",
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5
-  },
-  cardHeader: { backgroundColor: variables.brandPrimary, padding: 10, flex: 1 },
-  cardBody: {flexDirection: 'row', justifyContent:"space-between" , padding: 10},
-  cardBodyText: { color: 'black'}
-})
 
 type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis
 
@@ -113,41 +95,102 @@ const SingleVC: React.FC<Props> = ({ info, onPress }) => {
 
 }
 
+const vcItem = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    paddingVertical: 20
+  },
+  modalHeader : {
+    backgroundColor: variables.brandPrimary,
+    padding: 20
+  },
+  modalTitle: {
+    marginTop: 50,
+    marginBottom: 20,
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Bold',
+    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
+    fontSize: variables.h1FontSize,
+    color: variables.colorWhite
+  },
+  modalBody: {
+    paddingHorizontal: 20,
+    paddingVertical: 30
+  },
+  modalDescription: {
+    fontSize: variables.h3FontSize,
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Bold',
+    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
+  },
+  modalInfo : {
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Regular',
+    fontSize: variables.h4FontSize,
+    marginBottom: 10
+  }
+})
+
 
 const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
   
   const { firstName, lastName, } = info.item.vc.credentialSubject
 
+  const [modalVisibile, setModalVisible] = useState(false)
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => alert(JSON.stringify(info.item))
+  const showCredentials = ():void => {
+     // alert(JSON.stringify(info.item))
+    setModalVisible(!modalVisibile)
+  }
 
 
   return (
     <TouchableOpacity
-        onPress={(onPress) ? onPress : showCredentials} >
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
+    onPress={(onPress) ? onPress : showCredentials} >
+        <View style={vcItem.container}>
+        { 
+          onPress && (
+        <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={variables.brandPrimary}
+                size={25}
+              />
+          </View>
+          )
+        }
             <Header title="Carta d'identità" />
-          </View>
-          <View style={styles.cardBody}>
-            <View>
-              <Text style={styles.cardBodyText}>Nome: {firstName}</Text>
-              <Text style={styles.cardBodyText}>Cognome: {lastName}</Text>
-            </View>
-            {
-              onPress && (
-              <View style={{paddingRight: 10, justifyContent: 'center'}}>
-                  <IconFont
-                    name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                    color={variables.brandPrimary}
-                    size={25}
-                  />
-              </View>
-              )
-            }
-          </View>
+            <TouchableOpacity 
+              onPress={() => setModalVisible(!modalVisibile)}
+            >
+            <IconFont
+                name="io-right"
+                color={variables.brandPrimary}
+                size={30}
+              />
+            </TouchableOpacity>
         </View>
+        <Modal visible={modalVisibile} animationType='slide'>
+          <View style={vcItem.modalHeader}>
+            <TouchableOpacity 
+              onPress={() => setModalVisible(!modalVisibile)}
+            >
+              <IconFont 
+                name='io-close'
+                color={variables.colorWhite}
+                size={30}
+              />
+            </TouchableOpacity>
+            <Text style={vcItem.modalTitle}>Carta d'identità</Text>
+          </View>
+          <View style={vcItem.modalBody}>
+            <Text style={vcItem.modalDescription}>Nome: </Text>
+              <Text style={vcItem.modalInfo}>{firstName}</Text>
+            <Text style={vcItem.modalDescription}>Cognome: </Text>
+            <Text style={vcItem.modalInfo}>{lastName}</Text>
+          </View>
+        </Modal>
       </TouchableOpacity>
   )
 }
@@ -156,39 +199,62 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
 const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
   const { piva, indirizzoSedeLegale, dimensioneImpresa, expirationDate  } = info.item.vc.credentialSubject
   
+  const [modalVisibile, setModalVisible] = useState(false)
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => alert(JSON.stringify(info.item))
+  const showCredentials = ():void => {
+    // alert(JSON.stringify(info.item))
+    setModalVisible(!modalVisibile)
+  }
 
   const showIndirizzoSL = onPress ? indirizzoSedeLegale.substr(0, 30) + '...' : indirizzoSedeLegale
 
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Header title="Dimensione Impresa" />
+      <View style={vcItem.container}>
+        { 
+          onPress && (
+          <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={variables.brandPrimary}
+                size={25}
+              />
+          </View>
+          )
+        }
+            <Header title="Dimensione Impresa" />
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <IconFont
+                name="io-right"
+                color={variables.brandPrimary}
+                size={30}
+              />
+            </TouchableOpacity>
         </View>
-        <View style={styles.cardBody}>
-              <View>
-                <Text style={styles.cardBodyText}>Partita IVA: {piva}</Text>
-                <Text style={styles.cardBodyText}>Sede Legale: {showIndirizzoSL}</Text>
-                <Text style={styles.cardBodyText}>Dimensione Impresa: {dimensioneImpresa}</Text>
-                <Text style={styles.cardBodyText}>Scadenza: {expirationDate}</Text>
-              </View>
-              {
-                onPress && (
-                <View style={{paddingRight: 10, justifyContent: 'center'}}>
-                    <IconFont
-                      name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color={variables.brandPrimary}
-                      size={25}
-                    />
-                </View>
-                )
-              }
-        </View>
-      </View>
+
+        <Modal visible={modalVisibile} animationType='slide'>
+          <View style={vcItem.modalHeader}>
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+              <IconFont 
+                name='io-close'
+                color={variables.colorWhite}
+              />
+            </TouchableOpacity>
+            <Text style={vcItem.modalTitle}>Dimensione Impresa</Text>
+          </View>
+          <View style={vcItem.modalBody}>
+            <Text style={vcItem.modalDescription}>Partita IVA: </Text>
+              <Text style={vcItem.modalInfo}>{piva}</Text>
+            <Text style={vcItem.modalDescription}>Sede Legale: </Text>
+            <Text style={vcItem.modalInfo}>{showIndirizzoSL}</Text>
+            <Text style={vcItem.modalDescription}>Dimensione Impresa: </Text>
+            <Text style={vcItem.modalInfo}>{dimensioneImpresa}</Text>
+            <Text style={vcItem.modalDescription}>Scandenza: </Text>
+            <Text style={vcItem.modalInfo}>{expirationDate}</Text>
+          </View>
+        </Modal>
     </TouchableOpacity>
   );
 }
@@ -196,35 +262,55 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
 const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
   const { type, dateOfAchievement  } = info.item.vc.credentialSubject
   
+  const [modalVisibile, setModalVisible] = useState(false)
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => alert(JSON.stringify(info.item))
+  const showCredentials = ():void => {
+     // alert(JSON.stringify(info.item))
+    setModalVisible(!modalVisibile)
+  }
 
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Header title="Bachelor Degree" />
+      <View style={vcItem.container}>
+        { 
+          onPress && (
+        <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={variables.brandPrimary}
+                size={25}
+              />
+          </View>
+          )
+        }
+            <Header title="Bachelor Degree" />
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <IconFont
+                name="io-right"
+                color={variables.brandPrimary}
+                size={30}
+              />
+            </TouchableOpacity>
         </View>
-        <View style={styles.cardBody}>
-              <View>
-                <Text style={styles.cardBodyText}>Tipologia: {type}</Text>
-                <Text style={styles.cardBodyText}>Data di conseguimento: {dateOfAchievement}</Text>
-              </View>
-              {
-                onPress && (
-                <View style={{paddingRight: 10, justifyContent: 'center'}}>
-                    <IconFont
-                      name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color={variables.brandPrimary}
-                      size={25}
-                    />
-                </View>
-                )
-              }
-        </View>
-      </View>
+        <Modal visible={modalVisibile} animationType='slide'>
+          <View style={vcItem.modalHeader}>
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+              <IconFont 
+                name='io-close'
+                color={variables.colorWhite}
+              />
+            </TouchableOpacity>
+            <Text style={vcItem.modalTitle}>Bachelor Degree</Text>
+          </View>
+          <View style={vcItem.modalBody}>
+            <Text style={vcItem.modalDescription}>Tipologia: </Text>
+              <Text style={vcItem.modalInfo}>{type}</Text>
+            <Text style={vcItem.modalDescription}>Data di conseguimento: </Text>
+            <Text style={vcItem.modalInfo}>{dateOfAchievement}</Text>
+          </View>
+        </Modal>
     </TouchableOpacity>
   );
 }
@@ -232,35 +318,55 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
 const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
   const { type, dateOfAchievement  } = info.item.vc.credentialSubject
   
+  const [modalVisibile, setModalVisible] = useState(false)
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => alert(JSON.stringify(info.item))
+  const showCredentials = ():void => {
+    // alert(JSON.stringify(info.item))
+    setModalVisible(!modalVisibile)
+  }
 
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={styles.cardHeader}>
-        <View style={styles.cardHeader}>
-          <Header title="Master Degree" />
+      <View style={vcItem.container}>
+        { 
+          onPress && (
+        <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={variables.brandPrimary}
+                size={25}
+              />
+          </View>
+          )
+        }
+            <Header title="Master Degree" />
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <IconFont
+                name="io-right"
+                color={variables.brandPrimary}
+                size={30}
+              />
+            </TouchableOpacity>
         </View>
-        <View style={{flexDirection: 'row', justifyContent:"space-between"}}>
-              <View>
-                <Text style={styles.cardBodyText}>Tipologia: {type}</Text>
-                <Text style={styles.cardBodyText}>Data di conseguimento: {dateOfAchievement}</Text>
-              </View>
-              {
-                onPress && (
-                <View style={{paddingRight: 10, justifyContent: 'center'}}>
-                    <IconFont
-                      name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color={variables.brandPrimary}
-                      size={25}
-                    />
-                </View>
-                )
-              }
-        </View>
-      </View>
+        <Modal visible={modalVisibile} animationType='slide'>
+          <View style={vcItem.modalHeader}>
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+              <IconFont 
+                name='io-close'
+                color={variables.colorWhite}
+              />
+            </TouchableOpacity>
+            <Text style={vcItem.modalTitle}>Master Degree</Text>
+          </View>
+          <View style={vcItem.modalBody}>
+            <Text style={vcItem.modalDescription}>Tipologia: </Text>
+              <Text style={vcItem.modalInfo}>{type}</Text>
+            <Text style={vcItem.modalDescription}>Data di conseguimento: </Text>
+            <Text style={vcItem.modalInfo}>{dateOfAchievement}</Text>
+          </View>
+        </Modal>
     </TouchableOpacity>
   );
 }
@@ -268,46 +374,76 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
 const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
   const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = info.item.vc.credentialSubject
   
+  const [modalVisibile, setModalVisible] = useState(false)
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => alert(JSON.stringify(info.item))
+  const showCredentials = ():void => {
+    // alert(JSON.stringify(info.item))
+    setModalVisible(!modalVisibile)
+  }
 
   const showIndirizzoSL = onPress ? indirizzoSedeLegale.substr(0, 30) + '...' : indirizzoSedeLegale
 
   return (
     <TouchableOpacity
       onPress={(onPress) ? onPress : showCredentials}>
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Header title="De Minimis" />
+      <View style={vcItem.container}>
+        { 
+          onPress && (
+          <View style={{paddingRight: 10, justifyContent: 'center'}}>
+              <IconFont
+                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                color={variables.brandPrimary}
+                size={25}
+              />
+          </View>
+          )
+        }
+            <Header title="De Minimis" />
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <IconFont
+                name="io-right"
+                color={variables.brandPrimary}
+                size={30}
+              />
+            </TouchableOpacity>
         </View>
-        <View style={styles.cardBody}>
-              <View>
-              <Text style={styles.cardBodyText}>Ragione Fiscale: {ragioneFiscale}</Text>
-              <Text style={styles.cardBodyText}>Partita IVA: {piva}</Text>
-                <Text style={styles.cardBodyText}>Sede Legale: {showIndirizzoSL}</Text>
-                <Text style={styles.cardBodyText}>Eleggibilità: {eleggibilita}</Text>
-                <Text style={styles.cardBodyText}>Scadenza: {expirationDate}</Text>
-              </View>
-              {
-                onPress && (
-                <View style={{paddingRight: 10, justifyContent: 'center'}}>
-                    <IconFont
-                      name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
-                      color={variables.brandPrimary}
-                      size={25}
-                    />
-                </View>
-                )
-              }
-        </View>
-      </View>
+
+        <Modal visible={modalVisibile} animationType='slide'>
+          <View style={vcItem.modalHeader}>
+            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+              <IconFont 
+                name='io-close'
+                color={variables.colorWhite}
+              />
+            </TouchableOpacity>
+            <Text style={vcItem.modalTitle}>De Minimis</Text>
+          </View>
+          <View style={vcItem.modalBody}>
+            <Text style={vcItem.modalDescription}>Ragione Fiscale: </Text>
+              <Text style={vcItem.modalInfo}>{ragioneFiscale}</Text>
+            <Text style={vcItem.modalDescription}>Partita IVA: </Text>
+              <Text style={vcItem.modalInfo}>{piva}</Text>
+            <Text style={vcItem.modalDescription}>Sede Legale: </Text>
+            <Text style={vcItem.modalInfo}>{showIndirizzoSL}</Text>
+            <Text style={vcItem.modalDescription}>Eleggibilità: </Text>
+            <Text style={vcItem.modalInfo}>{eleggibilita}</Text>
+            <Text style={vcItem.modalDescription}>Scandenza: </Text>
+            <Text style={vcItem.modalInfo}>{expirationDate}</Text>
+          </View>
+        </Modal>
     </TouchableOpacity>
   );
 }
 
 const Header: React.FC<{ title: string }> = ({ title }) => (
-  <Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center', fontSize: variables.fontSizeBase}}>{title}</Text>
+  <Text style={{
+    color: variables.colorBlack,
+    fontWeight: Platform.OS === 'ios'? 'bold' : 'normal',
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web': 'TitilliumWeb-Bold',
+    textAlign: 'center',
+    fontSize: variables.h3FontSize,
+  }}>{title}</Text>
 )
 
 export default SingleVC

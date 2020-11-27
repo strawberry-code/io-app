@@ -482,7 +482,7 @@ class IdentificationModal extends React.PureComponent<Props, State> {
               compareWithCode={pin as string}
               activeColor={defaultColor}
               inactiveColor={defaultColor}
-              buttonType={isValidatingTask ? "light" : "primary"}
+              buttonType={!isValidatingTask? "light": "primary"}
               delayOnFailureMillis={1000}
               onFulfill={(_: string, __: boolean) =>
                 this.onPinFullfill(

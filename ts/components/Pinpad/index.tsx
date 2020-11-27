@@ -314,18 +314,18 @@ class Pinpad extends React.PureComponent<Props, State> {
         {this.props.onPinResetHandler !== undefined && (
           <React.Fragment>
             <Text
-              white={this.props.buttonType === "primary"}
+              white={this.props.buttonType === "light"}
               onPress={this.confirmResetAlert}
               alignCenter={true}
             >
               {`${I18n.t("identification.unlockCode.reset.button")} `}
               <Text
                 underlined={true}
-                white={this.props.buttonType === "primary"}
+                white={this.props.buttonType === "light"}
               >
                 {I18n.t("identification.unlockCode.reset.code")}
               </Text>
-              <Text white={this.props.buttonType === "primary"}>
+              <Text white={this.props.buttonType === "light"}>
                 {I18n.t("global.symbols.question")}
               </Text>
             </Text>
