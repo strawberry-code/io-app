@@ -56,12 +56,12 @@ interface BalanceAndTransactionProps {
   
 }
 
+/*
 const fontRegular = Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb'
-
-
 const fontBold: BoldFont = Platform.OS === 'android' 
   ? { fontFamily : 'TitilliumWeb-Bold', fontWeight: 'normal'}
-  : { fontFamily: 'Titillium Web', fontWeight: 'bold'} 
+  : { fontFamily: 'Titillium Web', fontWeight: 'bold'}
+ */
 
 const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ navigation }) => {
 
@@ -73,7 +73,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
       >
         <View style={{ flex: 1 }}>
           <Balance balance={10000} />
-          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10, ...fontBold}}>
+          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10}}>
             {I18n.t('ssi.balanceAndTransaction.transactionTitle')}
           </Text>
           <FlatList
@@ -114,12 +114,12 @@ const button = StyleSheet.create({
   sendText: {
     color: variables.colorWhite,
     fontSize: variables.h4FontSize,
-    fontFamily:fontRegular
+    fontFamily:variables.fontFamily
   },
   receiveText: {
     color: variables.brandPrimary,
     fontSize: variables.h5FontSize,
-    fontFamily: fontRegular
+    fontFamily: variables.fontFamily
   }
 })
 
@@ -158,11 +158,11 @@ const Transaction: React.FC<TransactionProps> = ({ item }) => {
   const color = item.action === 'sent' ? 'black' : 'green'
   return (
     <View style={transactionStyle.container}>
-        <Text style={{ color, fontSize: variables.h5FontSize, ...fontBold}}>
+        <Text style={{ color, fontSize: variables.h5FontSize}}>
           {item.action === 'sent'? '-': '+'}
           {item.amount} ETH
         </Text>
-        <Text style={{ fontFamily: fontRegular }}>Data: {item.date}</Text>
+        <Text style={{ fontFamily: variables.fontFamily }}>Data: {item.date}</Text>
     </View>
   )
 }
@@ -204,13 +204,11 @@ const balanceStyle = StyleSheet.create({
     color: variables.colorWhite,
     backgroundColor: variables.brandPrimary,
     padding: 10,
-    fontFamily: fontRegular,
   },
   total: {
     paddingVertical: 20,
     paddingHorizontal: 10,
     fontSize: variables.h4FontSize,
-    ...fontBold
   }
 })
 
