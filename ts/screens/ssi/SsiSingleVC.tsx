@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet, Platform, Modal } from "react-native"
+import { Button } from 'native-base'
 import { ListRenderItemInfo } from 'react-native'
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
 import variables from "../../theme/variables"
@@ -170,7 +171,7 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
         </View>
-        <Modal visible={modalVisibile}>
+        <Modal visible={modalVisibile} animationType='slide'>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity 
               onPress={() => setModalVisible(!modalVisibile)}
@@ -233,7 +234,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
             </TouchableOpacity>
         </View>
 
-        <Modal visible={modalVisibile}>
+        <Modal visible={modalVisibile} animationType='slide'>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
               <IconFont 
@@ -244,7 +245,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalTitle}>Dimensione Impresa</Text>
           </View>
           <View style={vcItem.modalBody}>
-            <Text style={vcItem.modalDescription}>PartitaI IVA: </Text>
+            <Text style={vcItem.modalDescription}>Partita IVA: </Text>
               <Text style={vcItem.modalInfo}>{piva}</Text>
             <Text style={vcItem.modalDescription}>Sede Legale: </Text>
             <Text style={vcItem.modalInfo}>{showIndirizzoSL}</Text>
@@ -293,7 +294,7 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
         </View>
-        <Modal visible={modalVisibile}>
+        <Modal visible={modalVisibile} animationType='slide'>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
               <IconFont 
@@ -349,7 +350,7 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
         </View>
-        <Modal visible={modalVisibile}>
+        <Modal visible={modalVisibile} animationType='slide'>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
               <IconFont 
@@ -408,7 +409,7 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
             </TouchableOpacity>
         </View>
 
-        <Modal visible={modalVisibile}>
+        <Modal visible={modalVisibile} animationType='slide'>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
               <IconFont 
