@@ -195,7 +195,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
         </Form>
 
           <Balance balance={10000} symbol={'PwC'}/>
-          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10, ...fontBold}}>
+          <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10}}>
             {I18n.t('ssi.balanceAndTransaction.transactionTitle')}
           </Text>
           <FlatList
@@ -281,7 +281,7 @@ const Transaction: React.FC<TransactionProps> = ({ item }) => {
   const color = item.action === 'sent' ? 'black' : 'green'
   return (
     <View style={transactionStyle.container}>
-        <Text style={{ color, fontSize: variables.h5FontSize, ...fontBold}}>
+        <Text style={{ color, fontSize: variables.h5FontSize}}>
           {item['value']} 
         </Text>
         <Text style={{ fontFamily: variables.fontFamily }}>Data: {item.date}</Text>
