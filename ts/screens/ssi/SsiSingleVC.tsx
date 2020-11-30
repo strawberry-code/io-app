@@ -544,8 +544,6 @@ const VCVID: React.FC<Props> = ({ info, onPress }) => {
               <Text style={vcItem.modalInfo}>{firstName}</Text>
             <Text style={vcItem.modalDescription}>Cognome: </Text>
             <Text style={vcItem.modalInfo}>{lastName}</Text>
-            <Text style={vcItem.modalDescription}>Cognome: </Text>
-            <Text style={vcItem.modalInfo}>{lastName}</Text>
             <Text style={vcItem.modalDescription}>Data di nascita: </Text>
             <Text style={vcItem.modalInfo}>{birthday}</Text>
             <Text style={vcItem.modalDescription}>Luogo di nascita: </Text>
