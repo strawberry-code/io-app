@@ -2,10 +2,13 @@ import React, { useState, useEffect} from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableHighlight, Dimensions, Platform, TextStyle } from "react-native"
 import { Picker, Form } from 'native-base';
 import { NavigationComponent } from "react-navigation";
+
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import I18n from "../../i18n"
 import variables from "../../theme/variables";
 import ROUTES from '../../navigation/routes'
+import { RefreshIndicator } from '../../components/ui/RefreshIndicator';
+
 
 
 // dati per testare la parte grafica
@@ -123,30 +126,44 @@ const fontBold: TextStyle = Platform.OS === 'android'
 
 const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ navigation }) => {
 
-  const [ assets, setAssets ] = useState([])
-  const [ transactionList, setTransactionList ] = useState([])
-  const [ selected, setSelected ] = useState(undefined)
+  const [ assets, setAssets ] = useState([]);
+  const [ transactionList, setTransactionList ] = useState([]);
+  const [ selected, setSelected ] = useState<string | undefined>(undefined);
+  const [ isLoading, setisLoading ] = useState<boolean>(true);
+
+  // console.log('assetList=', assets)
+  console.log('transactionList=', transactionList);
 
   const fetchAssets = async () => {
+    setisLoading(true)
     try {
-      const response = await fetch('http://localhost:10000/api/asset/app/listassets', {
-        method: "GET",
+      const response = await fetch('https://tokenization.pub.blockchaincc.ga/api/asset/app/listassets', {
+        method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ userAddress: '0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54'})
       });
+
+      
       const data = await response.json();
-      setSelected(data.docs[0]);
-      setAssets(assets.concat(data.docs));
+      
+      if (response.status !== 200) {
+        throw new Error(data);
+      }
+
+      setAssets(data.docs);
+      setSelected(data.docs[0].address);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
+    setisLoading(false)
   }
 
-  const fetchTransactionList = async(assetAddress: string) => {
+  const fetchTransactionList = async(assetAddress: string | undefined) => {
+    setisLoading(true)
     try {
-      const response = await fetch(`http://localhost:10000/api/transaction/app/list/${assetAddress}`, {
+      const response = await fetch(`https://tokenization.pub.blockchaincc.ga/api/transaction/app/list/${assetAddress}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -154,20 +171,36 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
         body: JSON.stringify({ userAddress: '0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54'})
       });
       const data = await response.json();
-      setTransactionList(transactionList.concat(data.docs));
+
+      if (response.status !== 200) {
+        throw new Error(data);
+      }
+
+      console.log('data from transactionList', data.docs);
+      setTransactionList(data.docs);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
+    setisLoading(false)
   } 
 
+  
+  useEffect(() => {
+    console.log('called fetch assets');
+    void fetchAssets();
+  }, []);
+  
+  useEffect(() => {
+    console.log('called fetch transactionList');
+    void fetchTransactionList(selected);
+  }, []);
+  
   const handleChangeAssets = (value: string) => {
     setSelected(value)
     void fetchTransactionList(value);
   }
 
-  useEffect(() => {
-    void fetchAssets()
-  }, [])
+  const assetChosen = assets.find(asset => asset.address === selected);
 
   return (
       <TopScreenComponent
@@ -175,7 +208,16 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
       headerTitle={I18n.t('ssi.balanceAndTransaction.title')}
       goBack={true}
       >
-        <View style={{ flex: 1 }}>
+        {
+          isLoading && (
+          <View style={loading.overlay}>
+                <RefreshIndicator />
+          </View>
+          )
+        }
+          
+       
+        <View style={{ flex: 1}}>
         <Text style={{ fontSize: variables.h3FontSize, marginLeft: 20}}>Asset Selection</Text>
         <Form>
             <Picker
@@ -194,13 +236,15 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
             </Picker>
         </Form>
 
-          <Balance balance={10000} symbol={'PwC'}/>
+          <Balance transactions={transactionList} symbol={assetChosen?.symbol}/>
           <Text style={{ fontSize: variables.h5FontSize, color: variables.brandPrimary, marginHorizontal: 10, marginBottom: 10}}>
             {I18n.t('ssi.balanceAndTransaction.transactionTitle')}
           </Text>
           <FlatList
             nestedScrollEnabled={true}
-            ListEmptyComponent={() => <Text>Non ci sono transazioni al momento</Text>}
+            ListEmptyComponent={() => 
+              <Text style={{ fontSize: variables.fontSizeBase, marginLeft: 10}}>Non ci sono transazioni al momento</Text>
+            }
             data={transactionList}
             renderItem={({item}) => <Transaction item={item} />}
             keyExtractor={(_item, index) => index.toString()}
@@ -217,6 +261,21 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({ n
         </TopScreenComponent>
     )
   }
+
+const loading = StyleSheet.create({
+  overlay: { 
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: "#fff",
+    zIndex: 1,
+    opacity: 0.8,
+    justifyContent: "center",
+    height: '100%',
+    width: '100%'
+  }
+});
 
 const button = StyleSheet.create({
   container: {
@@ -277,14 +336,19 @@ interface TransactionProps {
 }
 
 const Transaction: React.FC<TransactionProps> = ({ item }) => {
-  console.log('dummy', item)
-  const color = item.action === 'sent' ? 'black' : 'green'
+  // console.log('transaction item', item)
+  const userAddress = '0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54'
+
+  const date = Date(item.timestamp).toLocaleString(undefined, { dateStyle: 'short' });
+ 
+  const color = item.to === userAddress ? 'green' : 'black';
   return (
     <View style={transactionStyle.container}>
         <Text style={{ color, fontSize: variables.h5FontSize}}>
-          {item['value']} 
+          {color === 'green' ? '+ ': '- '}
+          {item.value} 
         </Text>
-        <Text style={{ fontFamily: variables.fontFamily }}>Data: {item.date}</Text>
+        <Text style={{ fontFamily: variables.fontFamily }}>Data: {date}</Text>
     </View>
   )
 }
@@ -292,16 +356,26 @@ const Transaction: React.FC<TransactionProps> = ({ item }) => {
 
 
 interface BalanceProps {
-  balance: number,
-  symbol: string
+  transactions: [];
+  symbol: string;
 }
 
-const Balance: React.FC<BalanceProps> = ({ balance, symbol }) => {
-  console.log(balanceStyle.title)
+const Balance: React.FC<BalanceProps> = ({ transactions, symbol }) => {
+
+  const userAddress =  '0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54';
+
+  const balanceCalculation = transactions.reduce((total: number, transaction) => {
+    if (transaction.to === userAddress) return total += transaction.value;
+    
+    if (transaction.from === userAddress) return total -= transaction.value;
+
+    return total;
+  }, 0);
+
   return (
     <View style={balanceStyle.container}>
       <Text style={balanceStyle.title}>{I18n.t('ssi.balanceAndTransaction.balanceTitle')}</Text>
-  <Text style={balanceStyle.total}>{balance} {symbol}</Text>
+      <Text style={balanceStyle.total}>{balanceCalculation} {symbol}</Text>
     </View>
   )
 }
