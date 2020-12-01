@@ -609,9 +609,17 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                 <SectionHeaderComponent
                   sectionHeader={I18n.t("profile.main.developersSectionHeader")}
                 />
-                <View
-                  style={{ backgroundColor: "pink", height: 100, width: 300 }}
-                ></View>
+                <View style={{margin: 5}}>
+                  <ButtonDefaultOpacity
+                    block={true}
+                    onPress={VCstore.clearStore()}
+                    activeOpacity={1}
+                  >
+                    <IconFont name="io-test" style={styles.white} />
+                    <Text>Pulisci VC Storage</Text>
+                  </ButtonDefaultOpacity>
+                </View>
+
 
                 {
                   // since no experimental features are available we avoid to render this item (see https://www.pivotaltracker.com/story/show/168263994).
