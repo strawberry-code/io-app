@@ -207,7 +207,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     console.log('sto per fare una fetch per la shareVC')
     console.log('metodo della richiesta (preso da QR): ' + method)
     console.log('callback url: ' + shareTo)
-    console.log('body: ' + JSON.stringify(VCsToBeShared))
+    console.log('body: ' + JSON.stringify({"verifiableCredential":VCsToBeShared[0]}))
 
 
     fetch(shareTo, {
