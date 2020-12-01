@@ -29,7 +29,7 @@ import {
   navigateToEmailInsertScreen,
   navigateToEmailReadScreen,
   navigateToFingerprintPreferenceScreen,
-  navigateToLanguagePreferenceScreen
+  navigateToLanguagePreferenceScreen, navigateToSsiHome
 } from "../../store/actions/navigation";
 import {Dispatch, ReduxProps} from "../../store/actions/types";
 import {
@@ -52,6 +52,7 @@ import variables from "../../theme/variables";
 import VCstore from "./VCstore";
 import {showToast} from "../../utils/showToast";
 import SingleVC from './SsiSingleVC'
+import IconFont from "../../components/ui/IconFont";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -207,7 +208,7 @@ class PreferencesScreen extends React.Component<Props, State> {
       <TopScreenComponent
         faqCategories={["profile", "privacy", "authentication_SPID"]}
         headerTitle={I18n.t("ssi.title")}
-        goBack={true}
+        customGoBack={<TouchableHighlight onPress={() => {this.props.navigateToSsiHome()}}><IconFont name={"io-back"} style={{ color: variables.colorBlack }}/></TouchableHighlight>}
       >
         <ScreenContent
           title={I18n.t("ssi.vcslist.title")}
@@ -385,6 +386,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(navigateToEmailForwardingPreferenceScreen()),
   navigateToCalendarPreferenceScreen: () =>
     dispatch(navigateToCalendarPreferenceScreen()),
+  navigateToSsiHome: () => dispatch(navigateToSsiHome()),
   navigateToLanguagePreferenceScreen: () =>
     dispatch(navigateToLanguagePreferenceScreen()),
   navigateToEmailReadScreen: () => dispatch(navigateToEmailReadScreen()),
