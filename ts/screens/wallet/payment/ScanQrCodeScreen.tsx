@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 /**
  * Delay for reactivating the QR scanner after a scan
  */
-const QRCODE_SCANNER_REACTIVATION_TIME_MS = 5000;
+const QRCODE_SCANNER_REACTIVATION_TIME_MS = 4000;
 
 const contextualHelpMarkdown: ContextualHelpPropsMarkdown = {
   title: "wallet.QRtoPay.contextualHelpTitle",
