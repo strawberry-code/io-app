@@ -421,6 +421,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                           sharedFail: false
                         }
                       });
+                      this.props.navigateToSsiHome()
                     }}
                   >
                     <Text style={styles.textStyle}>Ok, thanks</Text>
