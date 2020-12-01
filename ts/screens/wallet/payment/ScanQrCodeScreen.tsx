@@ -188,7 +188,6 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       console.log('public key: ' + JSON.stringify(DidSingleton.getPublicKey()))
       vcJwt = await createVerifiableCredentialJwt(payload, issuer)
       console.log('signed token: ' + vcJwt)
-      alert('signed token:\n' + vcJwt)
     } catch (e) {
       console.log(e)
       alert('codice type QR è sbagliato')
