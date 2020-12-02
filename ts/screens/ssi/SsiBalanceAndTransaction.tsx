@@ -24,7 +24,7 @@ import AssetListPicker from "./components/AssetListPicker";
  '0x7506f0045f03cc82c73341a45f190ab9a1a85a93'
   0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51
 */
-const DUMMY_USER = "0x7506f0045f03cc82c73341a45f190ab9a1a85a93";
+const DUMMY_USER = "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51";
 
 interface BalanceAndTransactionProps {
   navigation: NavigationComponent;
@@ -36,7 +36,7 @@ interface BalanceAndTransactionProps {
 const fontRegular = Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb'
 
 
-const fontBold: TextStyle = Platform.OS === 'android' 
+const fontBold: TextStyle = Platform.OS === 'android'
   ? { fontFamily : 'TitilliumWeb-Bold', fontWeight: 'normal'}
   : { fontFamily: 'Titillium Web', fontWeight: 'bold'}
  */
@@ -231,12 +231,12 @@ interface TransactionProps {
 
 const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   // console.log('transaction item', item)
-  const userAddress = DUMMY_USER;
+  const userAddress = DUMMY_USER.toLowerCase();
 
   const date = new Date(item.timestamp).toLocaleDateString();
   const valueToShow = (item.value / 100).toFixed(2);
 
-  const color = item.to === userAddress ? "green" : "black";
+  const color = item.to.toLowerCase() === userAddress ? "green" : "red";
   return (
     <View style={transactionStyle.container}>
       <Text style={{ color, fontSize: variables.h5FontSize }}>
@@ -254,16 +254,16 @@ interface BalanceProps {
 }
 
 const BalanceComponent: React.FC<BalanceProps> = ({ transactions, symbol }) => {
-  const userAddress = DUMMY_USER;
+  const userAddress = DUMMY_USER.toLowerCase();
 
   const balanceCalculation = transactions.reduce(
     (total: number, transaction) => {
       let newTotal = total; // eslint-disable-line
-      if (transaction.to === userAddress) {
+      if (transaction.to.toLowerCase() === userAddress) {
         return (newTotal += transaction.value);
       }
 
-      if (transaction.from === userAddress) {
+      if (transaction.from.toLowerCase() === userAddress) {
         return (newTotal -= transaction.value);
       }
 
