@@ -18,110 +18,14 @@ import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import IconFont from "../../components/ui/IconFont";
+import { Transaction, Asset } from "./types";
 
-// dati per testare la parte grafica
-const dummyData = [
-  {
-    id: 12,
-    txHash:
-      "0xef61ef7f277e2e35d7d99fdf5dcfe2960959355642d918d96cd9c1df13780d0d",
-    assetAddress: "0x46b90b4ea1095fb20d685bae5e3f20863272a403",
-    from: "0xcda96362caeea9d1745a5fe5b2765f62e9585ad9",
-    to: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54",
-    value: 20000,
-    timestamp: 1604329039,
-    addressFrom: {
-      orgId: 7,
-      userId: null,
-      fullname: "Regione Lombardia"
-    },
-    addressTo: {
-      orgId: 4,
-      userId: null,
-      fullname: "Denarius Owner"
-    }
-  },
-  {
-    id: 10,
-    txHash:
-      "0xb66b72490ce3069e52a3b2f565f2398bea9caefefa0dd6cc63bbf43f400bccd0",
-    assetAddress: "0x46b90b4ea1095fb20d685bae5e3f20863272a403",
-    from: "0xcda96362caeea9d1745a5fe5b2765f62e9585ad9",
-    to: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54",
-    value: 10000,
-    timestamp: 1604328979,
-    addressFrom: {
-      orgId: 7,
-      userId: null,
-      fullname: "Regione Lombardia"
-    },
-    addressTo: {
-      orgId: 4,
-      userId: null,
-      fullname: "Denarius Owner"
-    }
-  },
-  {
-    id: 5,
-    txHash:
-      "0x5dc09450d7b79aea266828f89827de021144018f4cb2114e68aee99556f8cc80",
-    assetAddress: "0x46b90b4ea1095fb20d685bae5e3f20863272a403",
-    from: "0x0000000000000000000000000000000000000000",
-    to: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54",
-    value: 100000,
-    timestamp: 1604319259,
-    addressFrom: {
-      orgId: null,
-      userId: null,
-      fullname: "0x0000000000000000000000000000000000000000"
-    },
-    addressTo: {
-      orgId: 4,
-      userId: null,
-      fullname: "Denarius Owner"
-    }
-  },
-  {
-    id: 4,
-    txHash:
-      "0x2606f5ca2c421a12a9421b4196dcd3af17aa3119f9b21a204561d1edfeb6dc10",
-    assetAddress: "0x46b90b4ea1095fb20d685bae5e3f20863272a403",
-    from: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54",
-    to: "0xb3ea39eeac4015c6e8e716052f6897a08d384321",
-    value: 10000,
-    timestamp: 1604319199,
-    addressFrom: {
-      orgId: 4,
-      userId: null,
-      fullname: "Denarius Owner"
-    },
-    addressTo: {
-      orgId: null,
-      userId: null,
-      fullname: "0xb3ea39eeac4015c6e8e716052f6897a08d384321"
-    }
-  },
-  {
-    id: 3,
-    txHash:
-      "0x7fbd8370a90e0cec2c9d8a83c23ef305fe8c86f31b2f676cc5d5668e5fc39c91",
-    assetAddress: "0x46b90b4ea1095fb20d685bae5e3f20863272a403",
-    from: "0x0000000000000000000000000000000000000000",
-    to: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54",
-    value: 100000,
-    timestamp: 1604319049,
-    addressFrom: {
-      orgId: null,
-      userId: null,
-      fullname: "0x0000000000000000000000000000000000000000"
-    },
-    addressTo: {
-      orgId: 4,
-      userId: null,
-      fullname: "Denarius Owner"
-    }
-  }
-];
+/* Dummy Users
+ "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
+ '0x7506f0045f03cc82c73341a45f190ab9a1a85a93'
+  0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51
+*/
+const DUMMY_USER = "0x7506f0045f03cc82c73341a45f190ab9a1a85a93".toLowerCase();
 
 interface BalanceAndTransactionProps {
   navigation: NavigationComponent;
@@ -139,13 +43,15 @@ const fontBold: TextStyle = Platform.OS === 'android'
 const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   navigation
 }) => {
-  const [assets, setAssets] = useState([]);
-  const [transactionList, setTransactionList] = useState([]);
-  const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [assets, setAssets] = useState<Array<Asset>>([]);
+  const [transactionList, setTransactionList] = useState<Array<Transaction>>([]); // prettier-ignore
+  const [selectedAsset, setSelectedAsset] = useState<string | undefined>(
+    undefined
+  );
   const [isLoading, setisLoading] = useState<boolean>(true);
 
   // console.log('assetList=', assets)
-  console.log("transactionList=", transactionList);
+  //  console.log("transactionList=", transactionList);
 
   const fetchAssets = async () => {
     setisLoading(true);
@@ -158,7 +64,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
+            userAddress: DUMMY_USER
           })
         }
       );
@@ -169,8 +75,9 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         throw new Error(data);
       }
 
+      console.log("data from assets from API", data);
       setAssets(data.docs);
-      setSelected(data.docs[0].address);
+      setSelectedAsset(data.docs[0].address);
     } catch (e) {
       console.error(e);
     }
@@ -188,7 +95,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
+            userAddress: DUMMY_USER
           })
         }
       );
@@ -198,7 +105,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         throw new Error(data);
       }
 
-      console.log("data from transactionList", data.docs);
+      console.log("data from transactionList from API", data);
       setTransactionList(data.docs);
     } catch (e) {
       console.error(e);
@@ -213,15 +120,14 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
 
   useEffect(() => {
     console.log("called fetch transactionList");
-    void fetchTransactionList(selected);
-  }, []);
+    void fetchTransactionList(selectedAsset);
+  }, [selectedAsset]);
 
   const handleChangeAssets = (value: string) => {
-    setSelected(value);
-    void fetchTransactionList(value);
+    setSelectedAsset(value);
   };
 
-  const assetChosen = assets.find(asset => asset.address === selected);
+  const assetChosen = assets.find(asset => asset.address === selectedAsset);
 
   return (
     <TopScreenComponent
@@ -242,12 +148,18 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         <Form>
           <Picker
             note
-            mode="dropdown"
+            mode="dialog"
             iosIcon={<IconFont name="io-plus" />}
             textStyle={{ fontFamily: "Titillium Web" }}
             style={{ marginHorizontal: 10, width: 200 }}
-            itemTextStyle={{ fontFamily: "TitilliumWeb" }}
-            selectedValue={selected}
+            itemStyle={{
+              color: "red",
+              fontFamily: "Titillium Web",
+              fontSize: 50,
+              backgroundColor: "green",
+              textAlign: "left"
+            }}
+            selectedValue={selectedAsset}
             onValueChange={handleChangeAssets}
           >
             {assets &&
@@ -261,7 +173,10 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
           </Picker>
         </Form>
 
-        <Balance transactions={transactionList} symbol={assetChosen?.symbol} />
+        <BalanceComponent
+          transactions={transactionList}
+          symbol={assetChosen?.symbol}
+        />
         <Text
           style={{
             fontSize: variables.h5FontSize,
@@ -280,7 +195,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             </Text>
           )}
           data={transactionList}
-          renderItem={({ item }) => <Transaction item={item} />}
+          renderItem={({ item }) => <TransactionComponent item={item} />}
           keyExtractor={(_item, index) => index.toString()}
         />
       </View>
@@ -379,18 +294,14 @@ const transactionStyle = StyleSheet.create({
 });
 
 interface TransactionProps {
-  item: {
-    date: string;
-    amount: number;
-    action: "received" | "sent";
-  };
+  item: Transaction;
 }
 
-const Transaction: React.FC<TransactionProps> = ({ item }) => {
+const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   // console.log('transaction item', item)
-  const userAddress = "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54";
+  const userAddress = DUMMY_USER;
 
-  const date = Date(item.timestamp).toLocaleString().substr(0, 15);
+  const date = new Date(item.timestamp).toLocaleDateString();
   const valueToShow = (item.value / 100).toFixed(2);
 
   const color = item.to === userAddress ? "green" : "black";
@@ -406,18 +317,23 @@ const Transaction: React.FC<TransactionProps> = ({ item }) => {
 };
 
 interface BalanceProps {
-  transactions: [];
-  symbol: string;
+  transactions: Array<Transaction>;
+  symbol: Asset["symbol"] | undefined;
 }
 
-const Balance: React.FC<BalanceProps> = ({ transactions, symbol }) => {
-  const userAddress = "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54";
+const BalanceComponent: React.FC<BalanceProps> = ({ transactions, symbol }) => {
+  const userAddress = DUMMY_USER;
 
   const balanceCalculation = transactions.reduce(
     (total: number, transaction) => {
-      if (transaction.to === userAddress) return (total += transaction.value);
+      let newTotal = total; // eslint-disable-line
+      if (transaction.to === userAddress) {
+        return (newTotal += transaction.value);
+      }
 
-      if (transaction.from === userAddress) return (total -= transaction.value);
+      if (transaction.from === userAddress) {
+        return (newTotal -= transaction.value);
+      }
 
       return total;
     },
