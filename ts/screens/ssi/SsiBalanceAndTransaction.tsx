@@ -111,7 +111,6 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         />
         <Text
           style={{
-            fontSize: variables.h5FontSize,
             color: variables.brandPrimary,
             marginHorizontal: 10,
             marginBottom: 10
@@ -122,7 +121,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         <FlatList
           nestedScrollEnabled={true}
           ListEmptyComponent={() => (
-            <Text style={{ fontSize: variables.fontSizeBase, marginLeft: 10 }}>
+            <Text style={{marginLeft: 10 }}>
               Non ci sono transazioni al momento
             </Text>
           )}
@@ -193,13 +192,9 @@ const button = StyleSheet.create({
   },
   sendText: {
     color: variables.colorWhite,
-    fontSize: variables.h4FontSize,
-    fontFamily: variables.fontFamily
   },
   receiveText: {
     color: variables.brandPrimary,
-    fontSize: variables.h5FontSize,
-    fontFamily: variables.fontFamily
   }
 });
 
@@ -239,11 +234,11 @@ const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   const color = item.to.toLowerCase() === userAddress ? "green" : "red";
   return (
     <View style={transactionStyle.container}>
-      <Text style={{ color, fontSize: variables.h5FontSize }}>
+      <Text style={{ color}}>
         {color === "green" ? "+ " : "- "}
         {valueToShow}
       </Text>
-      <Text style={{ fontFamily: variables.fontFamily }}>Data: {date}</Text>
+      <Text>Data: {date}</Text>
     </View>
   );
 };
@@ -302,7 +297,6 @@ const balanceStyle = StyleSheet.create({
     elevation: 5
   },
   title: {
-    fontSize: variables.h2FontSize,
     color: variables.colorWhite,
     backgroundColor: variables.brandPrimary,
     padding: 10
@@ -310,7 +304,6 @@ const balanceStyle = StyleSheet.create({
   total: {
     paddingVertical: 20,
     paddingHorizontal: 10,
-    fontSize: variables.h4FontSize
   }
 });
 

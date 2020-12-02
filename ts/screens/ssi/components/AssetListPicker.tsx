@@ -65,11 +65,8 @@ const AssetListPicker: React.FC<AssetListProps> = ({
     <>
       <Text
         style={{
-          fontSize: variables.h5FontSize,
           marginLeft: 20,
           color: variables.brandPrimary,
-          fontFamily: variables.fontFamily,
-          fontWeight: variables.h3FontWeight
         }}
       >
         Asset Selection
@@ -79,16 +76,12 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           note
           mode="dialog"
           iosIcon={<IconFont name="io-plus" />}
-          textStyle={{ fontFamily: variables.fontFamily }}
           style={{
             marginHorizontal: 10,
             width: 200,
-            fontFamily: variables.fontFamily
           }}
           itemStyle={{
             color: variables.brandPrimary,
-            fontFamily: variables.fontFamily,
-            fontSize: variables.fontSizeBase,
             textAlign: "left"
           }}
           selectedValue={assetSelected}

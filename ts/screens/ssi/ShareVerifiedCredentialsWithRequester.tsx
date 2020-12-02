@@ -325,7 +325,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
-          <Text style={{ fontFamily: variables.fontFamily, padding: 20 }}>
+          <Text style={{padding: 20 }}>
             Do you want to share this credentials?
           </Text>
 
