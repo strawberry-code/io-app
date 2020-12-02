@@ -12,6 +12,7 @@ import IconFont from "../../components/ui/IconFont";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
+import AssetListPicker from "./components/AssetListPicker";
 
 const SsiWalletSendScreen: React.FC = ({ navigation }) => {
   const [selected, setSelected] = useState(undefined);
@@ -34,21 +35,8 @@ const SsiWalletSendScreen: React.FC = ({ navigation }) => {
         </View>
 
         <View>
+          <AssetListPicker />
           <Form>
-            <Picker
-              note
-              mode="dropdown"
-              style={{ marginHorizontal: 10 }}
-              selectedValue={selected}
-              onValueChange={(value: string) => setSelected(value)}
-            >
-              <Picker.Item label="Asset 0" value="key0" />
-              <Picker.Item label="Asset 1" value="key1" />
-              <Picker.Item label="Asset 2" value="key2" />
-              <Picker.Item label="Asset 3" value="key3" />
-              <Picker.Item label="Asset 4" value="key4" />
-            </Picker>
-
             <Item stackedLabel>
               <Label style={{ color: variables.brandPrimary }}>Amount</Label>
               <Input />
