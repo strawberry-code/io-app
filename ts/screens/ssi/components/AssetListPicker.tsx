@@ -3,6 +3,7 @@ import { Text } from "react-native";
 import { Picker, Form } from "native-base";
 import { connect } from "react-redux";
 
+import { DID } from "../../../types/DID";
 import IconFont from "../../../components/ui/IconFont";
 import variables from "../../../theme/variables";
 import { GlobalState } from "../../../store/reducers/types";
@@ -22,6 +23,10 @@ const AssetListPicker: React.FC<AssetListProps> = ({
   dispatchAssetList,
   dispatchAssetSelected
 }) => {
+  const userDID = new DID();
+  const ethAddress = userDID.getEthAddress();
+  console.log("userDID ethAddress=", userDID.getEthAddress());
+
   const fetchAssetList = async () => {
     try {
       const response = await fetch(
@@ -32,7 +37,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: "0x7506f0045f03cc82c73341a45f190ab9a1a85a93"
+            userAddress: "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a5"
           })
         }
       );
@@ -40,9 +45,8 @@ const AssetListPicker: React.FC<AssetListProps> = ({
       const data = await response.json();
 
       if (response.status !== 200) {
-        throw new Error(data);
+        throw new Error(data.message);
       }
-
       // sconsole.log("data from assets from API", data);
       dispatchAssetList(data.docs);
       if (!assetSelected) {
@@ -66,7 +70,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
       <Text
         style={{
           marginLeft: 20,
-          color: variables.brandPrimary,
+          color: variables.brandPrimary
         }}
       >
         Asset Selection
@@ -78,7 +82,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           iosIcon={<IconFont name="io-plus" />}
           style={{
             marginHorizontal: 10,
-            width: 200,
+            width: 200
           }}
           itemStyle={{
             color: variables.brandPrimary,

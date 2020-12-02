@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableHighlight
+  TouchableHighlight,
+  Platform
 } from "react-native";
 import { NavigationComponent } from "react-navigation";
 import { connect } from "react-redux";
@@ -18,6 +19,7 @@ import { GlobalState } from "../../store/reducers/types";
 import { Dispatch } from "../../store/actions/types";
 import { Transaction, Asset } from "./types";
 import AssetListPicker from "./components/AssetListPicker";
+import { DID } from "../../types/DID";
 
 /* Dummy Users
  "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
@@ -52,7 +54,8 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   // console.log('assetList=', assets)
   //  console.log("transactionList=", transactionList);
   // console.log("ssiAssetList", ssiAssetList);
-  console.log("assetSelected", assetSelected);
+  const userDID = new DID();
+  const ethAddress = userDID.getEthAddress();
 
   const fetchTransactionList = async (assetAddress: string | undefined) => {
     setisLoading(true);
@@ -65,14 +68,14 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: DUMMY_USER
+            userAddress: DUMMY_USER.toLowerCase()
           })
         }
       );
       const data = await response.json();
 
       if (response.status !== 200) {
-        throw new Error(data);
+        throw new Error(data.message);
       }
 
       console.log("data from transactionList from API", data);
@@ -121,7 +124,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         <FlatList
           nestedScrollEnabled={true}
           ListEmptyComponent={() => (
-            <Text style={{marginLeft: 10 }}>
+            <Text style={{ marginLeft: 10 }}>
               Non ci sono transazioni al momento
             </Text>
           )}
@@ -191,20 +194,18 @@ const button = StyleSheet.create({
     borderWidth: 1
   },
   sendText: {
-    color: variables.colorWhite,
+    color: variables.colorWhite
   },
   receiveText: {
-    color: variables.brandPrimary,
+    color: variables.brandPrimary
   }
 });
 
 const transactionStyle = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
     marginHorizontal: 10,
-    padding: 30,
+    padding: 20,
     borderColor: variables.brandPrimary,
     borderWidth: 1,
     borderRadius: 5,
@@ -217,6 +218,19 @@ const transactionStyle = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5
+  },
+  value: {
+    marginRight: "auto",
+    justifyContent: "center"
+  },
+  info: {
+    alignItems: "flex-end"
+  },
+  bold: {
+    fontWeight: Platform.OS === "android" ? "bold" : "600"
+  },
+  smMarginBottom: {
+    marginBottom: 10
   }
 });
 
@@ -227,6 +241,8 @@ interface TransactionProps {
 const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   // console.log('transaction item', item)
   const userAddress = DUMMY_USER.toLowerCase();
+  const userDID = new DID();
+  const ethAddress = userDID.getEthAddress().toLowerCase();
 
   const date = new Date(item.timestamp).toLocaleDateString();
   const valueToShow = (item.value / 100).toFixed(2);
@@ -234,11 +250,28 @@ const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   const color = item.to.toLowerCase() === userAddress ? "green" : "red";
   return (
     <View style={transactionStyle.container}>
-      <Text style={{ color}}>
-        {color === "green" ? "+ " : "- "}
-        {valueToShow}
-      </Text>
-      <Text>Data: {date}</Text>
+      <View style={transactionStyle.value}>
+        <Text style={{ color }}>
+          {color === "green" ? "+ " : "- "}
+          {valueToShow}
+        </Text>
+      </View>
+      <View style={transactionStyle.info}>
+        <Text style={transactionStyle.smMarginBottom}>
+          <Text style={transactionStyle.bold}>Data</Text>: {date}
+        </Text>
+        {item.to.toLocaleLowerCase() === userAddress ? (
+          <Text>
+            <Text style={transactionStyle.bold}>Ricevuto da</Text>:{" "}
+            {`${item.addressFrom.fullname.substr(0, 13)}...`}
+          </Text>
+        ) : (
+          <Text>
+            <Text style={transactionStyle.bold}>Inviato a</Text>:{" "}
+            {`${item.addressTo.fullname.substr(0, 13)}...`}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -250,6 +283,8 @@ interface BalanceProps {
 
 const BalanceComponent: React.FC<BalanceProps> = ({ transactions, symbol }) => {
   const userAddress = DUMMY_USER.toLowerCase();
+  const userDID = new DID();
+  const ethAddress = userDID.getEthAddress().toLowerCase();
 
   const balanceCalculation = transactions.reduce(
     (total: number, transaction) => {
@@ -303,7 +338,7 @@ const balanceStyle = StyleSheet.create({
   },
   total: {
     paddingVertical: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   }
 });
 
