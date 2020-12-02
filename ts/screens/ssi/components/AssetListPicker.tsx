@@ -63,21 +63,32 @@ const AssetListPicker: React.FC<AssetListProps> = ({
 
   return (
     <>
-      <Text style={{ fontSize: variables.h5FontSize, marginLeft: 20 }}>
-        Asset Selection Redux
+      <Text
+        style={{
+          fontSize: variables.h5FontSize,
+          marginLeft: 20,
+          color: variables.brandPrimary,
+          fontFamily: variables.fontFamily,
+          fontWeight: variables.h3FontWeight
+        }}
+      >
+        Asset Selection
       </Text>
       <Form>
         <Picker
           note
           mode="dialog"
           iosIcon={<IconFont name="io-plus" />}
-          textStyle={{ fontFamily: "Titillium Web" }}
-          style={{ marginHorizontal: 10, width: 200 }}
+          textStyle={{ fontFamily: variables.fontFamily }}
+          style={{
+            marginHorizontal: 10,
+            width: 200,
+            fontFamily: variables.fontFamily
+          }}
           itemStyle={{
-            color: "red",
-            fontFamily: "Titillium Web",
-            fontSize: 50,
-            backgroundColor: "green",
+            color: variables.brandPrimary,
+            fontFamily: variables.fontFamily,
+            fontSize: variables.fontSizeBase,
             textAlign: "left"
           }}
           selectedValue={assetSelected}
