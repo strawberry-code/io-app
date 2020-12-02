@@ -4,31 +4,32 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableHighlight,
-  Dimensions,
-  Platform,
-  TextStyle
+  TouchableHighlight
 } from "react-native";
-import { Picker, Form } from "native-base";
 import { NavigationComponent } from "react-navigation";
+import { connect } from "react-redux";
 
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
-import IconFont from "../../components/ui/IconFont";
+import { GlobalState } from "../../store/reducers/types";
+import { Dispatch } from "../../store/actions/types";
 import { Transaction, Asset } from "./types";
+import AssetListPicker from "./components/AssetListPicker";
 
 /* Dummy Users
  "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
  '0x7506f0045f03cc82c73341a45f190ab9a1a85a93'
   0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51
 */
-const DUMMY_USER = "0x7506f0045f03cc82c73341a45f190ab9a1a85a93".toLowerCase();
+const DUMMY_USER = "0x7506f0045f03cc82c73341a45f190ab9a1a85a93";
 
 interface BalanceAndTransactionProps {
   navigation: NavigationComponent;
+  ssiAssetList: Array<Asset>;
+  assetSelected: Asset["address"];
 }
 
 /*
@@ -41,48 +42,17 @@ const fontBold: TextStyle = Platform.OS === 'android'
  */
 
 const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
-  navigation
+  navigation,
+  ssiAssetList,
+  assetSelected
 }) => {
-  const [assets, setAssets] = useState<Array<Asset>>([]);
   const [transactionList, setTransactionList] = useState<Array<Transaction>>([]); // prettier-ignore
-  const [selectedAsset, setSelectedAsset] = useState<string | undefined>(
-    undefined
-  );
   const [isLoading, setisLoading] = useState<boolean>(true);
 
   // console.log('assetList=', assets)
   //  console.log("transactionList=", transactionList);
-
-  const fetchAssets = async () => {
-    setisLoading(true);
-    try {
-      const response = await fetch(
-        "https://tokenization.pub.blockchaincc.ga/api/asset/app/listassets",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            userAddress: DUMMY_USER
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.status !== 200) {
-        throw new Error(data);
-      }
-
-      console.log("data from assets from API", data);
-      setAssets(data.docs);
-      setSelectedAsset(data.docs[0].address);
-    } catch (e) {
-      console.error(e);
-    }
-    setisLoading(false);
-  };
+  // console.log("ssiAssetList", ssiAssetList);
+  console.log("assetSelected", assetSelected);
 
   const fetchTransactionList = async (assetAddress: string | undefined) => {
     setisLoading(true);
@@ -114,20 +84,13 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   };
 
   useEffect(() => {
-    console.log("called fetch assets");
-    void fetchAssets();
-  }, []);
-
-  useEffect(() => {
     console.log("called fetch transactionList");
-    void fetchTransactionList(selectedAsset);
-  }, [selectedAsset]);
+    void fetchTransactionList(assetSelected);
+  }, [assetSelected]);
 
-  const handleChangeAssets = (value: string) => {
-    setSelectedAsset(value);
-  };
-
-  const assetChosen = assets.find(asset => asset.address === selectedAsset);
+  const assetChosen = ssiAssetList.find(
+    asset => asset.address === assetSelected
+  );
 
   return (
     <TopScreenComponent
@@ -140,39 +103,8 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
           <RefreshIndicator />
         </View>
       )}
-
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: variables.h5FontSize, marginLeft: 20 }}>
-          Asset Selection
-        </Text>
-        <Form>
-          <Picker
-            note
-            mode="dialog"
-            iosIcon={<IconFont name="io-plus" />}
-            textStyle={{ fontFamily: "Titillium Web" }}
-            style={{ marginHorizontal: 10, width: 200 }}
-            itemStyle={{
-              color: "red",
-              fontFamily: "Titillium Web",
-              fontSize: 50,
-              backgroundColor: "green",
-              textAlign: "left"
-            }}
-            selectedValue={selectedAsset}
-            onValueChange={handleChangeAssets}
-          >
-            {assets &&
-              assets.map(asset => (
-                <Picker.Item
-                  key={asset.assetName}
-                  label={asset.assetName}
-                  value={asset.address}
-                />
-              ))}
-          </Picker>
-        </Form>
-
+        <AssetListPicker />
         <BalanceComponent
           transactions={transactionList}
           symbol={assetChosen?.symbol}
@@ -382,4 +314,9 @@ const balanceStyle = StyleSheet.create({
   }
 });
 
-export default SsiBalanceAndTransctionScreen;
+const mapStateToProps = (state: GlobalState) => ({
+  ssiAssetList: state.ssi.ssiAssetList,
+  assetSelected: state.ssi.assetSelected
+});
+
+export default connect(mapStateToProps)(SsiBalanceAndTransctionScreen);
