@@ -144,6 +144,7 @@
     "sha.js": "^2.4.11",
     "source-map": "^0.6.1",
     "stacktrace-js": "^2.0.0",
+    "text-encoding": "^0.7.0",
     "text-encoding-polyfill": "^0.6.7",
     "tslib": "^1.9.3",
     "typesafe-actions": "^4.0.0",
