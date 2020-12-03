@@ -1,6 +1,8 @@
 import {ethers} from "ethers";
 import {generateSecureRandom} from "react-native-securerandom";
 import {getDidFromKeychain, setDidOnKeychain} from "../utils/keychain";
+import {Issuer} from "did-jwt-vc";
+import EthrDID from 'ethr-did'
 
 /**
  * DID manager, built following singleton pattern
@@ -124,6 +126,19 @@ export class DID {
 
   public async saveDidOnKeychain(): Promise<void> {
     await setDidOnKeychain()
+  }
+
+  public getIssuer(): Issuer {
+    let address = DidSingleton.getEthAddress()
+    let potPrivateKey = DidSingleton.getPrivateKey()
+    if(potPrivateKey.startsWith('0x')) {
+      potPrivateKey = potPrivateKey.replace('0x', '')
+    }
+
+    return new EthrDID({
+      address: address,
+      privateKey: potPrivateKey
+    })
   }
 }
 
