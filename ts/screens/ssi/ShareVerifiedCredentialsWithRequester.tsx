@@ -1,7 +1,7 @@
 /**
  * Implementazione della vista che compare dopo la scansione di un QR di tipo Share Req. L'utente potrà selezionare quali VCs convidivdere.
  */
-import { fromNullable } from "fp-ts/lib/Option";
+import {fromNullable} from "fp-ts/lib/Option";
 import * as React from "react";
 import {
   ActivityIndicator,
@@ -14,7 +14,6 @@ import {
   TextStyle,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
   View
 } from "react-native";
 import {
@@ -22,11 +21,11 @@ import {
   NavigationScreenProp,
   NavigationState
 } from "react-navigation";
-import { connect } from "react-redux";
-import { withLightModalContext } from "../../components/helpers/withLightModalContext";
+import {connect} from "react-redux";
+import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import ScreenContent from "../../components/screens/ScreenContent";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
-import { LightModalContextInterface } from "../../components/ui/LightModal";
+import {LightModalContextInterface} from "../../components/ui/LightModal";
 import I18n from "../../i18n";
 import {
   navigateToCalendarPreferenceScreen,
@@ -37,7 +36,7 @@ import {
   navigateToLanguagePreferenceScreen,
   navigateToSsiHome
 } from "../../store/actions/navigation";
-import { Dispatch, ReduxProps } from "../../store/actions/types";
+import {Dispatch, ReduxProps} from "../../store/actions/types";
 import {
   isCustomEmailChannelEnabledSelector,
   preferredLanguageSelector
@@ -51,15 +50,14 @@ import {
   profileMobilePhoneSelector,
   profileSpidEmailSelector
 } from "../../store/reducers/profile";
-import { GlobalState } from "../../store/reducers/types";
+import {GlobalState} from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
-import { JwtCredentialPayload, VerifiedCredential } from "did-jwt-vc";
+import {CredentialPayload, JwtCredentialPayload} from "did-jwt-vc";
 import variables from "../../theme/variables";
 import VCstore from "./VCstore";
-import IconFont from "../../components/ui/IconFont";
-import { showToast } from "../../utils/showToast";
-import { strings } from "instabug-reactnative";
 import SingleVC from './SsiSingleVC'
+import {buildVerifiablePresentation} from "./VerifiablePresentations";
+import {JWT} from "did-jwt-vc/lib/types";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -75,13 +73,12 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
-  data: Array<JwtCredentialPayload>;
+  data: CredentialPayload[];
   modalVisible: boolean;
   modalStates: any;
   shareable: boolean;
-  shareTo?: string;
+  callbackUrl?: RequestInfo;
   method?: string;
-  VCtoBeShared?: string | undefined;
 };
 
 /**
@@ -115,7 +112,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       shareable: false
     };
   }
-  
+
   public componentDidMount() {
     // Da usare per test e debug: tre JWT già decodificati da mettere in store
     //let _data = JSON.parse('[{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Identity card","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1603968221,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Tessera Museo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Diploma Asilo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""}]')
@@ -123,9 +120,9 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
   /**
    * Gestisce la logica dopo che la navigation ha portato la vista da QR Scan a qui
-   * @param data Contiene i dati del QR scansionato
+   * @param qrData
    */
-  public handleQrDataAfterNavigation(qrData): void {
+  public handleQrDataAfterNavigation(qrData: any): void {
     console.log("🟢 eseguendo logica per shareReq");
     console.log(`qrData: ${JSON.stringify(qrData)}`);
 
@@ -183,43 +180,59 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           sharedSuccess: false,
           sharedFail: false
         },
-        shareTo: callback,
+        callbackUrl: callback,
         method: method,
-        // TODO: che passare come JSON qui?
-        VCtoBeShared: JSON.stringify({
-          verifiableCredential:
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"
-        })
       });
     });
   }
 
-  private shareVCnow = () => {
-    const shareTo = this.state.shareTo;
-    const method = this.state.method;
-    let VCsToBeShared = [];
+  private shareVCnow = async () => {
+
+
+    if (this.state.callbackUrl === undefined) {
+      throw new TypeError("La callbackUrl da QR Code non può essere undefined!")
+    }
+
+    if (this.state.method === undefined) {
+      throw new TypeError("Il method della callback ottenuto QR Code non può essere undefined!")
+    }
+
+    const callbackUrl: RequestInfo = this.state.callbackUrl;
+    const method: string = this.state.method;
+    let VCsToBeShared: JWT[] = [];
 
     this.state.data.forEach(VCinState => {
       if (VCinState.selected === true) VCsToBeShared.push(VCinState.jwt);
     });
 
+    let VerifiablePresentationDaCondividere: string
+    try {
+      console.log(`costruisco la Verifiable Presentation da condividere`)
+      VerifiablePresentationDaCondividere = await buildVerifiablePresentation(VCsToBeShared)
+      console.log(`la Verifiable Presentation è stata costruita`)
+    } catch (errVP) {
+      console.error(`impossibile costruire la Verifiable Presentation: ${JSON.stringify(errVP)}`)
+      return
+    }
 
-    console.log('sto per fare una fetch per la shareVC')
+    console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita')
+
     console.log('metodo della richiesta (preso da QR): ' + method)
-    console.log('callback url: ' + shareTo)
-    console.log('body: ' + JSON.stringify({"verifiableCredential":VCsToBeShared[0]}))
+    console.log('callback url: ' + callbackUrl)
+    console.log('headers: {"Content-Type": "plain/text"}')
+    console.log('body: ' + VerifiablePresentationDaCondividere)
 
 
-    fetch(shareTo, {
+    fetch(callbackUrl, {
       method: method.toUpperCase(),
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "plain/text"
       },
-      body: JSON.stringify({"verifiableCredential":VCsToBeShared[0]})
+      body: VerifiablePresentationDaCondividere
     })
       .then(response => response.json())
       .then(data => {
-        console.info("Success:", JSON.stringify(data));
+        console.info("Response received:", JSON.stringify(data));
         this.setState({
           modalVisible: true,
           modalStates: {
@@ -244,16 +257,6 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       });
   };
 
-  // FIXME: metodo non più usato, valutare se toglierlo
-  private saveVCinTheStore = jwt => {
-    console.log("saving new jwt in the store: " + jwt);
-    VCstore.storeVC(jwt).then(() => {
-      VCstore.getVCs().then(data => {
-        this.setState({ data: data });
-      });
-    });
-  };
-
   /**
    * Metodo che viene chiamato quando si apre questa vista.
    */
@@ -267,34 +270,37 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     }
   };
 
-  private textHeader = (headerTitle: string) => {
-    return (
-      <Text
-        style={{
-          color: variables.colorWhite,
-          fontWeight: "bold",
-          textAlign: "center"
-        }}
-      >
-        {headerTitle}
-      </Text>
-    );
-  };
+  // XXX
+  // //FIXME: @Pedro: hai scritto tu questo? Non ricordo, se sì, sembra non essere utilizzato, potremmo toglierlo?
+  // private textHeader = (headerTitle: string) => {
+  //   return (
+  //     <Text
+  //       style={{
+  //         color: variables.colorWhite,
+  //         fontWeight: "bold",
+  //         textAlign: "center"
+  //       }}
+  //     >
+  //       {headerTitle}
+  //     </Text>
+  //   );
+  // };
+  // YYY
 
   // Funzione che verra passata alla SingleVC View per fare il toggle della checkbox
-  private checkSelectedVC = (info : JwtCredentialPayload) => {
-     //  Aggiorno i data dello stato 
-     const updatedData = this.state.data.map((item, index) => {
-      return (index === info.index) 
+  private checkSelectedVC = (info: JwtCredentialPayload) => {
+    //  Aggiorno i data dello stato
+    const updatedData = this.state.data.map((item, index) => {
+      return (index === info.index)
         ? {...item, selected: !item.selected}
         : item
     })
-    
+
     // Cerca se ci sono VC selezionati, altrimenti ritorna undefined
     const isSharable = updatedData.find(item => item.selected === true)
-    
+
     // Aggiorna la vista della componente
-    this.setState({ data : updatedData, shareable: Boolean(isSharable) });
+    this.setState({data: updatedData, shareable: Boolean(isSharable)});
   }
 
   /**
@@ -308,7 +314,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-      <SingleVC key={info.item.sub} info={info} onPress={() => this.checkSelectedVC(info)} />
+      <SingleVC key={info.item.sub} info={info} onPress={() => this.checkSelectedVC(info)}/>
     )
 
   }
@@ -325,11 +331,11 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
-          <Text style={{padding: 20 }}>
+          <Text style={{padding: 20}}>
             Do you want to share this credentials?
           </Text>
 
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={{flexDirection: "row", justifyContent: "center"}}>
             <TouchableHighlight
               style={{
                 ...styles.openButton,
@@ -372,13 +378,11 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
             </TouchableHighlight>
           </View>
 
-          <View
-            style={{
+          <View style={{
               borderBottomColor: variables.brandGray,
               borderTopWidth: 0.5,
               margin: 15
-            }}
-          ></View>
+            }}/>
 
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
@@ -386,7 +390,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
             renderItem={this.renderItem}
           />
         </ScreenContent>
-        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus} />
+        <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
         <Modal
           animationType="slide"
           transparent={true}
@@ -397,7 +401,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
               {this.state.modalStates.sharing && (
                 <>
                   <Text style={styles.modalText}>Sharing credential...</Text>
-                  <ActivityIndicator />
+                  <ActivityIndicator/>
                 </>
               )}
 
@@ -412,7 +416,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                       backgroundColor: variables.brandPrimary
                     }}
                     onPress={() => {
-                      this.setState({ modalVisible: false });
+                      this.setState({modalVisible: false});
                       this.setState({
                         modalStates: {
                           showPrompt: true,
@@ -464,7 +468,7 @@ interface Style {
   modalText: TextStyle;
 }
 
-const ItemSeparator = () => <ItemSeparatorComponent noPadded={true} />;
+const ItemSeparator = () => <ItemSeparatorComponent noPadded={true}/>;
 
 const styles = StyleSheet.create<Style>({
   centeredView: {
