@@ -75,6 +75,7 @@ import AnimatedScreenContent from "../../components/screens/AnimatedScreenConten
 import PushNotification from "react-native-push-notification";
 import {store} from "../../App";
 import {updateNotificationsInstallationToken} from "../../store/actions/notifications";
+import {EthereumWalletTest} from "./erc20wallet/Erc20WalletManager";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -614,8 +615,11 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                 />
                 <View style={{margin: 5}}>
                   <ButtonDefaultOpacity
+                    style={{marginVertical: 5}}
                     block={true}
-                    onPress={VCstore.clearStore()}
+                    onPress={() => {
+                      VCstore.clearStore()
+                    }}
                     activeOpacity={1}
                   >
                     <IconFont name="io-test" style={styles.white} />
@@ -640,6 +644,37 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                   >
                     <IconFont name="io-test" style={styles.white} />
                     <Text>RN Push Notification Get Token</Text>
+                  </ButtonDefaultOpacity>
+
+                  <ButtonDefaultOpacity
+                    style={{marginVertical: 5}}
+                    block={true}
+                    onPress={async () => {
+                      console.log('testing erc20 wallet...')
+                      let testRpcEndpoint = 'https://rpc-node.pub.blockchaincc.ga'
+                      let testAssetAddress = "0xb8935fe854a081c329d1ddcaab554845a05d3951"
+                      let testNetwork = {
+                        name: 'openstack',
+                        networkId: 8283,
+                        chainId: 8485,
+                      };
+                      let walletTest = new EthereumWalletTest(testRpcEndpoint, testAssetAddress)
+                      try {
+                        console.log('getBlock(): ' + JSON.stringify(await walletTest.getSomething()))
+                      } catch(e) {
+                        console.log('error: ' + e)
+                      }
+                      try {
+                        console.log('makeTransaction(): ' + await walletTest.makeTransaction())
+                      } catch(e) {
+                        console.log('error: ' + e)
+                      }
+                      console.log('test erc20 wallet done')
+                    }}
+                    activeOpacity={1}
+                  >
+                    <IconFont name="io-test" style={styles.white} />
+                    <Text>Test ERC20 Wallet ethers.io</Text>
                   </ButtonDefaultOpacity>
                 </View>
 

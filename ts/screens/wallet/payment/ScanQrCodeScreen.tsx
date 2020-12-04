@@ -23,7 +23,7 @@ import I18n from "../../../i18n";
 import {
   navigateToPaymentManualDataInsertion,
   navigateToPaymentTransactionSummaryScreen, navigateToShareVCsList,
-  navigateToSsiHome, navigateToVCsList,
+  navigateToSsiHome, navigateToSsiSignReq, navigateToVCsList,
   navigateToWalletHome
 } from "../../../store/actions/navigation";
 import {Dispatch} from "../../../store/actions/types";
@@ -35,6 +35,7 @@ import {openAppSettings} from "../../../utils/appSettings";
 import {decodePagoPaQrCode} from "../../../utils/payment";
 import {showToast} from "../../../utils/showToast";
 import {DidSingleton} from "../../../types/DID";
+import {SsiSignReqOld} from '../../ssi/SsiSignReq'
 import 'text-encoding-polyfill'
 import {createVerifiableCredentialJwt, Issuer, JwtCredentialPayload} from "did-jwt-vc";
 
@@ -150,71 +151,16 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       scanningState: "VALID"
     });
 
-    let qrData = JSON.parse(data)
-    console.log('eseguento logica per signReq')
-    // Fare la POST VC Issue verso SSI Server
-    // TODO
-    let type = qrData.type
-    let callback = qrData.callback
-    let callbackMethod = qrData.callbackMethod
-    let payload: JwtCredentialPayload = qrData.payload
+    //  let SignRequestHandler: SsiSignReqOld = new SsiSignReqOld(data)
+    //  SignRequestHandler.handleRequest()
 
-    console.log(`type: ${type}\ncallback: ${callback}\npayload: ${payload}\n`)
+    console.log('navigo verso SSI_SIGNREQ')
+    //this.props.navigation.navigate('SSI_WALLET_RECEIVE_SCREEN')
 
+    // action: variabile fittizia che suggerisce la prossima azione da fare
+    // data: oggetto JSON che rappresenta i dati del QR Code parsati
+    this.props.navigateToSsiSignReq({action: "signRequest", data: JSON.parse(data)});
 
-    /**
-     * PReparo i dati per creare un nuovo EthrDID Issuer, però la private key non deve iniziare con '0x', il controllo
-     * c'è già in DID.ts, ma per sicurezza viene aggiunto anche qui.
-     */
-    let address = DidSingleton.getEthAddress()
-    let potPrivateKey = DidSingleton.getPrivateKey()
-    if(potPrivateKey.startsWith('0x')) {
-      potPrivateKey = potPrivateKey.replace('0x', '')
-    }
-
-    const issuer: Issuer = new EthrDID({
-      address: address,
-      privateKey: potPrivateKey
-    })
-
-    console.log('issuer: ' + issuer.did)
-
-    let vcJwt
-    try {
-      console.log('payload: ' + JSON.stringify(payload))
-      console.log('issuer: ' + JSON.stringify(issuer))
-      console.log('address: ' + JSON.stringify(DidSingleton.getEthAddress()))
-      console.log('private key: ' + JSON.stringify(DidSingleton.getPrivateKey()))
-      console.log('public key: ' + JSON.stringify(DidSingleton.getPublicKey()))
-      vcJwt = await createVerifiableCredentialJwt(payload, issuer)
-      console.log('signed token: ' + vcJwt)
-    } catch (e) {
-      console.log(e)
-      alert('codice type QR è sbagliato')
-    }
-
-    let body = JSON.stringify({"verifiableCredential": vcJwt})
-    console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
-
-
-    fetch(callback, {
-      method: callbackMethod.toUpperCase(),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body,
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-
-
-
-    this.props.navigateToScannedSsiQrCode();
 
     this.scannerReactivateTimeoutHandler = setTimeout(() => {
       // eslint-disable-next-line
@@ -240,7 +186,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     let qrData = JSON.parse(data)
 
-    this.props.navigateToShareVCsList({action:"shareVCfromQR", data: qrData});
+    this.props.navigateToShareVCsList({action: "shareVCfromQR", data: qrData});
 
     this.scannerReactivateTimeoutHandler = setTimeout(() => {
       // eslint-disable-next-line
@@ -271,7 +217,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     console.log('jwt X: ' + jwt)
 
-    this.props.navigateToVCsList({action:"saveVCinTheStore", data: jwt});
+    this.props.navigateToVCsList({action: "saveVCinTheStore", data: jwt});
 
     this.scannerReactivateTimeoutHandler = setTimeout(() => {
       // eslint-disable-next-line
@@ -315,19 +261,20 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     console.log(data)
 
     // On-the-fly fix for badly-read QRs
-    if(data === null || data === undefined) {
+    if (data === null || data === undefined) {
       const resultOrError = decodePagoPaQrCode(data);
       resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
       return
     }
 
-    console.log('qrdata X: ' + JSON.stringify(data))
+    let qrType = (JSON.parse(data)).type
+    console.log('qr type scansionato: ' + qrType)
 
-    if (data.includes("ssi-shareReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
+    if (qrType === "ssi-shareReq") { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiShareReq(data); // Condividi una VC (qr piccolo)
-    } else if (data.includes("ssi-signReq")) { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
+    } else if (qrType === "ssi-signReq") { // FIXME: non propriamente "safe", se pagopa includesse una stringa shareReq, non si potrà scansionare con effetti imprevedibili
       this.onSsiSignReq(data); // Firma una VC (qr grande, step 2)
-    } else if(data.includes("issued")) {
+    } else if (qrType === "ssi-issuedVC") {
       this.onSsiIssuedVc(data); // Salva una VC (qr grande, step 3)
     } else {
       const resultOrError = decodePagoPaQrCode(data);
@@ -518,6 +465,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToScannedSsiQrCode: () => dispatch(navigateToSsiHome()),
   navigateToVCsList: (params: any) => dispatch(navigateToVCsList(params)),
   navigateToShareVCsList: (params: any) => dispatch(navigateToShareVCsList(params)),
+  navigateToSsiSignReq: (params: any) => dispatch(navigateToSsiSignReq(params)),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (

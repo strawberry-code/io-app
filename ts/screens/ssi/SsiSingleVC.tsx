@@ -85,8 +85,19 @@ interface Props {
 
 
 const SingleVC: React.FC<Props> = ({ info, onPress }) => {
-  const VC = info.item
-  const VCtype = VC.vc.type
+
+  if(info === undefined) return <></>
+
+  let VC
+  let VCtype
+
+  if(!!info.item) {
+    VC = info.item
+    VCtype = VC.vc.type
+  } else {
+    VC = info
+    VCtype = VC.type
+  }
 
   console.log('inside single VC component with type', VCtype)
   // For testing schema
