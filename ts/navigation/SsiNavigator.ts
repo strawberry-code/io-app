@@ -2,6 +2,7 @@ import { createStackNavigator } from "react-navigation";
 import SsiMainScreen from "../screens/ssi/SsiMainScreen";
 import SsiWalletSendScreen from "../screens/ssi/SsiWalletSendScreen"
 import SsiWalletReceiveScreen from "../screens/ssi/SsiWalletReceiveScreen"
+import SsiSignReq from "../screens/ssi/SsiSignReq";
 import SsiBalanceAndTransactionScreen from "../screens/ssi/SsiBalanceAndTransaction"
 import SsiVerifiedCredentials from "../screens/ssi/SsiVerifiedCredentialsScreen";
 import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlayground";
@@ -39,6 +40,10 @@ const ProfileNavigator = createStackNavigator(
     [ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION]: {
       screen: SsiBalanceAndTransactionScreen
     },
+    [ROUTES.SSI_SIGNREQ]: {
+      screen: SsiSignReq
+    },
+
   },
   {
     // Let each screen handle the header and navigation

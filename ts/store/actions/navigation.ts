@@ -252,6 +252,14 @@ export const navigateToShareVCsList = (
     params
   });
 
+export const navigateToSsiSignReq = (
+  params?: InferNavigationParams<typeof SsiVerifiedCredentialsScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_SIGNREQ,
+    params
+  });
+
 export const navigateToVCsList = (
   params?: InferNavigationParams<typeof SsiVerifiedCredentialsScreen>
 ) =>
