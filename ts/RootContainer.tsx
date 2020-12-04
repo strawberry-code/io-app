@@ -45,6 +45,7 @@ class RootContainer extends React.PureComponent<Props> {
     super(props);
 
     /* Configure the application to receive push notifications */
+    console.log('🏗 RootContainer built!')
     configurePushNotifications();
   }
 

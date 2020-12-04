@@ -30,13 +30,15 @@ const NotificationPayload = t.partial({
 
 function configurePushNotifications() {
   // if isDevEnv, disable push notification to avoid crash for missing firebase settings
-  if (isDevEnv) {
-    return;
-  }
+  // Cristiano: disabilitato perchè è necessario avere le push abilitate anche in dev mode
+  // if (isDevEnv) {
+  //   return;
+  // }
   PushNotification.configure({
     // Called when token is generated
     onRegister: token => {
       // Dispatch an action to save the token in the store
+      console.log('PUSH NOTIFICATIONS TOKEN: ' + token.token)
       store.dispatch(updateNotificationsInstallationToken(token.token));
     },
 

@@ -31,7 +31,7 @@ import { AlertModal } from "../../components/ui/AlertModal";
 import { LightModalContextInterface } from "../../components/ui/LightModal";
 import Markdown from "../../components/ui/Markdown";
 import Switch from "../../components/ui/Switch";
-import { bpdEnabled, isPlaygroundsEnabled } from "../../config";
+import {bpdEnabled, gcmSenderId, isPlaygroundsEnabled} from "../../config";
 import I18n from "../../i18n";
 import ROUTES from "../../navigation/routes";
 import {
@@ -72,6 +72,9 @@ import VCstore from "./VCstore";
 import SsiModal from "./SsiModal";
 import { useRef } from "react";
 import AnimatedScreenContent from "../../components/screens/AnimatedScreenContent";
+import PushNotification from "react-native-push-notification";
+import {store} from "../../App";
+import {updateNotificationsInstallationToken} from "../../store/actions/notifications";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -617,6 +620,26 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                   >
                     <IconFont name="io-test" style={styles.white} />
                     <Text>Pulisci VC Storage</Text>
+                  </ButtonDefaultOpacity>
+                  <ButtonDefaultOpacity
+                    block={true}
+                    onPress={() => {
+                      console.log('senderID: ' + gcmSenderId)
+                      PushNotification.configure({
+                        // Called when token is generated
+                        onRegister: token => {
+                          // Dispatch an action to save the token in the store
+                          console.log('PUSH NOTIFICATIONS TOKEN: ' + token.token)
+                          store.dispatch(updateNotificationsInstallationToken(token.token));
+                        },
+                        senderID: gcmSenderId
+                      })
+                      console.log(JSON.stringify(this.props))
+                    }}
+                    activeOpacity={1}
+                  >
+                    <IconFont name="io-test" style={styles.white} />
+                    <Text>RN Push Notification Get Token</Text>
                   </ButtonDefaultOpacity>
                 </View>
 
