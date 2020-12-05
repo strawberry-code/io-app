@@ -3,10 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
   TouchableHighlight,
   Platform
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import Share from "react-native-share";
 
 import { DID } from "../../types/DID";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
@@ -32,6 +34,18 @@ const SsiWalletReceiveScreen: React.FC = () => {
   const userDID = new DID();
   console.log("generating DID qrcode", userDID.getEthAddress());
 
+  const shareOptions = {
+    message: `Questo è il mio indirizzo ${DUMMY_USER_3.address}`
+  };
+
+  const shareAddressHandler = async () => {
+    try {
+      const shareResponse = await Share.open(shareOptions);
+      console.log("Success: ", shareResponse);
+    } catch (e) {
+      console.log("Error: ", (e as Error).message);
+    }
+  };
   return (
     <TopScreenComponent
       faqCategories={["profile", "privacy", "authentication_SPID"]}
@@ -53,7 +67,7 @@ const SsiWalletReceiveScreen: React.FC = () => {
         <Text style={styles.addressText}>{DUMMY_USER_3.address}</Text>
         <TouchableHighlight
           style={button.container}
-          onPress={() => alert("da definire")}
+          onPress={() => void shareAddressHandler()}
         >
           <Text style={button.text}>
             {I18n.t("ssi.balanceAndTransaction.receiveButton")}
