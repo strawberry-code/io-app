@@ -150,8 +150,8 @@ class PreferencesScreen extends React.Component<Props, State> {
   }
 
   public componentDidMount() {
-    console.log('sss')
     //VCstore.clearStore()
+    console.log('Inside Veriable Credential Screen');
     VCstore.getVCs().then((data) => {
       console.log('data X: ' + JSON.stringify(data))
       this.setState({data: data})
@@ -193,13 +193,13 @@ class PreferencesScreen extends React.Component<Props, State> {
   }
 
   private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
-    const VC = info.item
+    const VC = info.item.vc;
     // console.log(JSON.stringify(VC))
-
-    console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
+    console.log('devo renderizzare')
+    //console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-      <SingleVC info={info} />
+      <SingleVC info={VC} isSigning={false}/>
     )
   }
 

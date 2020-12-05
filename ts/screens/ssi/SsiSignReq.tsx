@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-let */
 import React, {useEffect, useState} from "react";
 import {
   View,
@@ -19,20 +20,21 @@ import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
 import {DidSingleton} from "../../types/DID";
 
 const SsiSignReq: React.FC = ({ navigation }) => {
-  const [selected, setSelected] = useState(undefined);
   const [VC, setVC] = useState(undefined)
+  console.log('-------------------------')
+  console.log('Inside SignReq Component', VC);
 
   useEffect(() => {
     onBoarding()
-  });
+  }, []);
 
-  let onBoarding = () => {
-    let VC = navigation.state.params.data
-    console.log(`[SsiSignReq]: VC from navigation: ${JSON.stringify(VC)}`)
-    setVC(VC)
+  const onBoarding = () => {
+    const fetchedVC = navigation.state.params.data
+    console.log(`[SsiSignReq]: fetchedVC from navigation: ${JSON.stringify(VC)}`)
+    setVC(fetchedVC)
   }
 
-  let signRequest = async () => {
+  const signRequest = async () => {
     console.log(`firma in corso... ${VC.payload.vc.type}`)
     let {type, callback, callbackMethod, payload} = VC
 
@@ -43,7 +45,7 @@ const SsiSignReq: React.FC = ({ navigation }) => {
     const issuer: Issuer = DidSingleton.getIssuer()
     console.log('[SsiSignReq]: issuer.did: ' + issuer.did)
 
-    let vcJwt
+    let vcJwt;
     try {
       console.log('payload: ' + JSON.stringify(payload))
       console.log('issuer: ' + JSON.stringify(issuer))
@@ -77,6 +79,10 @@ const SsiSignReq: React.FC = ({ navigation }) => {
       });
   }
 
+  const VCtoPass = VC ? VC.payload.vc : undefined;
+
+  console.log('rendered VCToPass,', VCtoPass);
+
   return (
     <TopScreenComponent
       faqCategories={["profile", "privacy", "authentication_SPID"]}
@@ -85,11 +91,15 @@ const SsiSignReq: React.FC = ({ navigation }) => {
     >
       <View style={{ flex: 1, justifyContent: "space-between", padding: 20 }}>
         <View style={{ justifyContent: "space-between" }}>
-          <Text style={title.text}>Vuoi firmare questa VC? (da tradurre)</Text>
+          <Text style={title.text}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>
         </View>
 
         <View>
-          <Text>{VC ? JSON.stringify(VC.payload.vc) : undefined}</Text>
+          <SingleVC 
+            info={VCtoPass}
+            backHome={() => navigation.navigate('SSI_HOME')}
+            isSigning 
+            signRequest={() => signRequest()}/>
         </View>
 
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
@@ -97,13 +107,13 @@ const SsiSignReq: React.FC = ({ navigation }) => {
             style={[button.container, {backgroundColor: variables.brandDanger}]}
             onPress={() => navigation.navigate('SSI_HOME')}
           >
-            <Text style={button.text}>Non firmare</Text>
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
           </TouchableHighlight>
           <TouchableHighlight
             style={button.container}
             onPress={() => signRequest()}
           >
-            <Text style={button.text}>Firma</Text>
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
           </TouchableHighlight>
 
         </View>
