@@ -11,6 +11,7 @@ import QRCode from "react-native-qrcode-svg";
 import Share from "react-native-share";
 
 import { DID } from "../../types/DID";
+import IconFont from "../../components/ui/IconFont";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
@@ -73,6 +74,12 @@ const SsiWalletReceiveScreen: React.FC = () => {
         >
           <Text style={button.text}>
             {I18n.t("ssi.receiveIntoWallet.receiveButton")}
+            {"  "}
+            <IconFont
+              style={{ textAlign: "center", justifyContent: "center" }}
+              name="io-share2"
+              size={variables.fontSizeBase}
+            />
           </Text>
         </TouchableHighlight>
       </View>
