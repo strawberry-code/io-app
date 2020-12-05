@@ -52,25 +52,27 @@ const SsiWalletReceiveScreen: React.FC = () => {
       headerTitle={I18n.t("ssi.title")}
       goBack={true}
     >
-      <Text style={styles.title}>Ricevi nel Wallet</Text>
+      <Text style={styles.title}>{I18n.t("ssi.receiveIntoWallet.title")}</Text>
       <View style={{ padding: 30, justifyContent: "space-around" }}>
         <View style={styles.qrcode}>
           <QRCode value={DUMMY_USER_3.address} size={200} />
         </View>
-        <Text style={styles.descriptionTitle}>Descrizione</Text>
-        <Text style={styles.descriptionText}>
-          Potrai ricevere transazioni condividendo il tuo indirizzo col{" "}
-          <Text style={styles.makeBold}>QRcode</Text> col tasto{" "}
-          <Text style={styles.makeBold}>Ricevi</Text>.
+        <Text style={styles.descriptionTitle}>
+          {I18n.t("ssi.receiveIntoWallet.descriptionTitle")}
         </Text>
-        <Text style={styles.descriptionTitle}>Indirizzo</Text>
+        <Text style={styles.descriptionText}>
+          {I18n.t("ssi.receiveIntoWallet.descriptionContent")}
+        </Text>
+        <Text style={styles.descriptionTitle}>
+          {I18n.t("ssi.receiveIntoWallet.addressTitle")}
+        </Text>
         <Text style={styles.addressText}>{DUMMY_USER_3.address}</Text>
         <TouchableHighlight
           style={button.container}
           onPress={() => void shareAddressHandler()}
         >
           <Text style={button.text}>
-            {I18n.t("ssi.balanceAndTransaction.receiveButton")}
+            {I18n.t("ssi.receiveIntoWallet.receiveButton")}
           </Text>
         </TouchableHighlight>
       </View>
