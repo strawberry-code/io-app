@@ -314,6 +314,10 @@ ssi:
     title: Invia dal Wallet
   receiveIntoWallet:
     title: Ricevi nel Wallet
+  signReqScreen:
+    saveQuestion: Vuoi firmare questa Credenziale Verificata?
+    acceptButton: Firma
+    declineButton: Non firmare
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

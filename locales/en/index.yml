@@ -312,6 +312,10 @@ ssi:
     title: Send from Wallet
   receiveIntoWallet:
     title: Receive into Wallet
+  signReqScreen:
+    saveQuestion: Want to sign this Verifiable Credential?
+    acceptButton: Sign
+    declineButton: Decline
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
