@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, TouchableHighlight, GestureResponderEvent, StyleSheet, Platform, Modal, ScrollView, Alert } from "react-native"
 import { NavigationComponent } from 'react-navigation'
-import { ListRenderItemInfo } from 'react-native'
-import I18n from "../../i18n";
 
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
+import I18n from "../../i18n";
 import variables from "../../theme/variables"
 import IconFont from "../../components/ui/IconFont";
 
@@ -17,7 +16,8 @@ interface IdentityCard extends JwtCredentialPayload {
         firstName: string
         lastName : string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface DimensioneImpresa extends JwtCredentialPayload {
@@ -26,10 +26,12 @@ interface DimensioneImpresa extends JwtCredentialPayload {
     credentialSubject: {
       piva : string
       indirizzoSedeLegale : string
-      dimensioneImpresa: string
+      eleggibilita: string
+      ragioneFiscale: string
       expirationDate: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface BachelorDegree extends JwtCredentialPayload {
@@ -39,7 +41,8 @@ interface BachelorDegree extends JwtCredentialPayload {
       type: string
       dateOfAchievement: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface MasterDegree extends JwtCredentialPayload {
@@ -49,7 +52,8 @@ interface MasterDegree extends JwtCredentialPayload {
       type: string
       dateOfAchievement: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface DeMinimis extends JwtCredentialPayload {
@@ -62,7 +66,8 @@ interface DeMinimis extends JwtCredentialPayload {
       eleggibilita: string
       expirationDate: string
     }
-  }  
+  }
+  select?: boolean;  
 }
 interface VID extends JwtCredentialPayload {
   vc: JwtCredentialPayload['vc'] & {
@@ -74,14 +79,15 @@ interface VID extends JwtCredentialPayload {
       birthday: string;
       placeOfBirth: string;
     }
-  }  
+  }
+  select?: boolean;  
 }
 
 
-type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | VID
+type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | VID;
 
 interface Props {
-  info: ListRenderItemInfo<VCType>
+  vCredential: VCType;
   onPress?:(event: GestureResponderEvent) => void
   backHome?: NavigationComponent;
   isSigning?: boolean;
@@ -89,32 +95,32 @@ interface Props {
 }
 
 
-const SingleVC: React.FC<Props> = ({ info, onPress, backHome, isSigning, signRequest }) => {
+const SingleVC: React.FC<Props> = ({ vCredential, onPress, backHome, isSigning, signRequest }) => {
   
-  if (!info) return null;
+  if (!vCredential) return null;
 
-  const VCtype = info.type;
+  const VCtype = vCredential.vc.type;
   
   console.log('inside single VC component with type', VCtype)
   // For testing schema
   // console.log('credenziale', info.item);
 
   if (VCtype.includes('IdentityCard')) {
-    return (<VCIdentityCard info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCIdentityCard vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('DimensioneImpresa')) {
-    return (<VCDimensioneImpresa info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCDimensioneImpresa vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('BachelorDegree')) {
-    return (<VCBachelorDegree info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCBachelorDegree vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('MasterDegree')) {
-    return (<VCMasterDegree info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCMasterDegree vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('DeMinimis')) {
-    return (<VCDeMinimis info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCDeMinimis vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('/VID')) {
-    return (<VCVID info={info} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+    return (<VCVID vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else {
     // COSA FARE NEL CASO IN CUI NON CORRISPONDE A NESSUNA DI QUESTE VISTE?
     return (
-    <TouchableOpacity onPress={() => alert(JSON.stringify(info))}>
+    <TouchableOpacity onPress={() => alert(JSON.stringify(vCredential))}>
       <Text>Credenziale Work in Progress. Clicca qui per vederla</Text>
     </TouchableOpacity>
     )
@@ -174,11 +180,11 @@ const vcItem = StyleSheet.create({
 })
 
 
-const VCIdentityCard: React.FC<Props> = ({ info, onPress, isSigning, backHome, signRequest }) => {
+const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
-  const { firstName, lastName, } = info.credentialSubject
-
-  const [modalVisibile, setModalVisible] = useState<boolean | undefined>(isSigning);
+  const { firstName, lastName, } = vCredential.vc.credentialSubject;
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+  
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -200,7 +206,7 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress, isSigning, backHome, s
           onPress && (
           <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -266,12 +272,10 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress, isSigning, backHome, s
 }
 
 
-const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress, isSigning, backHome, signRequest }) => {
-  const { piva, indirizzoSedeLegale, dimensioneImpresa, expirationDate  } = info.credentialSubject
+const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
+  const { piva, indirizzoSedeLegale, expirationDate, ragioneFiscale, eleggibilita  } = vCredential.vc.credentialSubject;
   
-  console.log('info.credential', info.credentialSubject);
-
-  const [modalVisibile, setModalVisible] = useState(isSigning)
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -295,7 +299,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress, isSigning, backHo
           onPress && (
           <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -332,8 +336,10 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress, isSigning, backHo
               <Text style={vcItem.modalInfo}>{piva}</Text>
             <Text style={vcItem.modalDescription}>Sede Legale: </Text>
             <Text style={vcItem.modalInfo}>{showIndirizzoSL}</Text>
-            <Text style={vcItem.modalDescription}>Dimensione Impresa: </Text>
-            <Text style={vcItem.modalInfo}>{dimensioneImpresa}</Text>
+            <Text style={vcItem.modalDescription}>Ragione Fiscale: </Text>
+            <Text style={vcItem.modalInfo}>{ragioneFiscale}</Text>
+            <Text style={vcItem.modalDescription}>Eleggibilità: </Text>
+            <Text style={vcItem.modalInfo}>{eleggibilita}</Text>
             <Text style={vcItem.modalDescription}>Scandenza: </Text>
             <Text style={vcItem.modalInfo}>{expirationDate}</Text>
           </View>
@@ -360,11 +366,12 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress, isSigning, backHo
   );
 }
 
-const VCBachelorDegree: React.FC<Props> = ({ info, onPress, isSigning, signRequest, backHome }) => {
-  const { type, dateOfAchievement  } = info.item.vc.credentialSubject
+const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
   
-  const [modalVisibile, setModalVisible] = useState(isSigning)
- //  Se onPress è undefined verrà chiamata questa funzione nella vista
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+ 
+  //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
     // alert(JSON.stringify(info.item))
@@ -383,7 +390,7 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress, isSigning, signReque
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
                 style={vcItem.modalCloseButton}
@@ -444,10 +451,11 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress, isSigning, signReque
   );
 }
 
-const VCMasterDegree: React.FC<Props> = ({ info, onPress, isSigning, signRequest, backHome }) => {
-  const { type, dateOfAchievement  } = info.credentialSubject
+const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
   
-  const [modalVisibile, setModalVisible] = useState<boolean | undefined>(isSigning);
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+  
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -468,7 +476,7 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress, isSigning, signRequest
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -528,10 +536,10 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress, isSigning, signRequest
   );
 }
 
-const VCDeMinimis: React.FC<Props> = ({ info, onPress, isSigning, signRequest, backHome }) => {
-  const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = info.credentialSubject
+const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = vCredential.vc.credentialSubject
   
-  const [modalVisibile, setModalVisible] = useState<boolean | undefined>(isSigning);
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -554,7 +562,7 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress, isSigning, signRequest, b
           onPress && (
           <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -631,11 +639,17 @@ const Header: React.FC<{ title: string }> = ({ title }) => (
   }}>{title}</Text>
 )
 
-const VCVID: React.FC<Props> = ({ info, onPress, isSigning, backHome, signRequest }) => {
+const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
-  const { firstName, lastName, placeOfBirth, birthday,  } = info.credentialSubject;
-  const [modalVisibile, setModalVisible] = useState<boolean | undefined>(isSigning);
-  //  Se onPress è undefined verrà chiamata questa funzione nella vista
+  
+  const { firstName, lastName, placeOfBirth, birthday,  } = vCredential.vc.credentialSubject;
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+    if (onPress){
+      console.log('onPress active', isSigning);
+      console.log('onPress modalVisible', modalVisibile);
+    }
+  
+      //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
      // alert(JSON.stringify(info.item))
@@ -656,7 +670,7 @@ const VCVID: React.FC<Props> = ({ info, onPress, isSigning, backHome, signReques
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />

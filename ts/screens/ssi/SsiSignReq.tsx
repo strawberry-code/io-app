@@ -79,9 +79,11 @@ const SsiSignReq: React.FC = ({ navigation }) => {
       });
   }
 
-  const VCtoPass = VC ? VC.payload.vc : undefined;
+  const VCtoPass = VC ? VC.payload : undefined;
 
   console.log('rendered VCToPass,', VCtoPass);
+
+  console.log('data VC',  VC);
 
   return (
     <TopScreenComponent
@@ -96,7 +98,7 @@ const SsiSignReq: React.FC = ({ navigation }) => {
 
         <View>
           <SingleVC 
-            info={VCtoPass}
+            vCredential={VCtoPass}
             backHome={() => navigation.navigate('SSI_HOME')}
             isSigning 
             signRequest={() => signRequest()}/>

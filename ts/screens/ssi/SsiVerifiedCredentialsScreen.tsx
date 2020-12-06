@@ -193,13 +193,13 @@ class PreferencesScreen extends React.Component<Props, State> {
   }
 
   private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
-    const VC = info.item.vc;
+    const VC = info.item;
     // console.log(JSON.stringify(VC))
     console.log('devo renderizzare')
     //console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-      <SingleVC info={VC} isSigning={false}/>
+      <SingleVC vCredential={VC} />
     )
   }
 
