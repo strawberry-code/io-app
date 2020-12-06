@@ -311,7 +311,11 @@ ssi:
   sendFromWallet:
     title: Send from Wallet
   receiveIntoWallet:
-    title: Receive into Wallet
+    title: Receive in the Wallet
+    descriptionTitle: Description
+    descriptionContent: You can receive transactions by sharing the address through QRcode or by pressing the Receive button.
+    addressTitle: Address
+    receiveButton: Receive
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version

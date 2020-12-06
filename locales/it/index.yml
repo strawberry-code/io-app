@@ -314,6 +314,10 @@ ssi:
     title: Invia dal Wallet
   receiveIntoWallet:
     title: Ricevi nel Wallet
+    descriptionTitle: Descrizione
+    descriptionContent: Potrai ricevere transazioni condividendo l'indirizzo attraverso il QRcode oppure premendo il tasto Ricevi.
+    addressTitle: Indirizzo
+    receiveButton: Ricevi
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione
