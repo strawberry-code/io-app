@@ -254,7 +254,10 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
             <View style={vcItem.signButtonsRow}>
             <TouchableHighlight
               style={[button.container, button.marginRight]}
-              onPress={() => signRequest()}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
             >
               <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
             </TouchableHighlight>
@@ -349,7 +352,10 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
             <View style={vcItem.signButtonsRow}>
             <TouchableHighlight
               style={[button.container, button.marginRight]}
-              onPress={() => signRequest()}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
             >
               <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
             </TouchableHighlight>
@@ -434,7 +440,10 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
           <View style={vcItem.signButtonsRow}>
           <TouchableHighlight
             style={[button.container, button.marginRight]}
-            onPress={() => signRequest()}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
           >
             <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
           </TouchableHighlight>
@@ -519,7 +528,10 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
           <View style={vcItem.signButtonsRow}>
           <TouchableHighlight
             style={[button.container, button.marginRight]}
-            onPress={() => signRequest()}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
           >
             <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
           </TouchableHighlight>
@@ -612,7 +624,10 @@ const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signReq
             <View style={vcItem.signButtonsRow}>
             <TouchableHighlight
               style={[button.container, button.marginRight]}
-              onPress={() => signRequest()}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
             >
               <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
             </TouchableHighlight>
@@ -722,7 +737,10 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
           <View style={vcItem.signButtonsRow}>
           <TouchableHighlight
             style={[button.container, button.marginRight]}
-            onPress={() => signRequest()}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
           >
             <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
           </TouchableHighlight>

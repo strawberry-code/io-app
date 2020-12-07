@@ -7,20 +7,26 @@ import {
   TouchableHighlight,
   Platform
 } from "react-native";
-import { Form, Item, Input, Label } from "native-base";
+import { NavigationComponent } from 'react-navigation';
+import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
+
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
-import IconFont from "../../components/ui/IconFont";
+import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
-import AssetListPicker from "./components/AssetListPicker";
+import {DidSingleton} from "../../types/DID";
 import {SsiCustomGoBack} from "./components/SsiCustomGoBack";
 import SingleVC from "./SsiSingleVC";
-import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
-import {DidSingleton} from "../../types/DID";
 
-const SsiSignReq: React.FC = ({ navigation }) => {
+interface Props {
+  navigation: NavigationComponent;
+}
+
+const SsiSignReq: React.FC<Props> = ({ navigation }) => {
   const [VC, setVC] = useState(undefined)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  
   console.log('-------------------------')
   console.log('Inside SignReq Component', VC);
 
@@ -62,6 +68,7 @@ const SsiSignReq: React.FC = ({ navigation }) => {
     let body = JSON.stringify({"verifiableCredential": vcJwt})
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
+    setIsLoading(true);
 
     fetch(callback, {
       method: callbackMethod.toUpperCase(),
@@ -73,6 +80,9 @@ const SsiSignReq: React.FC = ({ navigation }) => {
       .then(response => response.json())
       .then(data => {
         console.log('Success:', data);
+        navigation.navigate(ROUTES.SSI_SUCCESS, {
+          message: 'Firma della Credenziale Verificata avvenuta con successo!'
+        });
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -83,8 +93,6 @@ const SsiSignReq: React.FC = ({ navigation }) => {
 
   console.log('rendered VCToPass,', VCtoPass);
 
-  console.log('data VC',  VC);
-
   return (
     <TopScreenComponent
       faqCategories={["profile", "privacy", "authentication_SPID"]}
@@ -92,6 +100,11 @@ const SsiSignReq: React.FC = ({ navigation }) => {
       customGoBack={<SsiCustomGoBack cb={() => navigation.navigate('SSI_HOME')} />}
     >
       <View style={{ flex: 1, justifyContent: "space-between", padding: 20 }}>
+      {isLoading && (
+        <View style={loading.overlay}>
+          <RefreshIndicator />
+        </View>
+      )}
         <View style={{ justifyContent: "space-between" }}>
           <Text style={title.text}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>
         </View>
@@ -107,7 +120,7 @@ const SsiSignReq: React.FC = ({ navigation }) => {
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <TouchableHighlight
             style={[button.container, {backgroundColor: variables.brandDanger}]}
-            onPress={() => navigation.navigate('SSI_HOME')}
+            onPress={() => navigation.navigate(ROUTES.SSI_HOME)}
           >
             <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
           </TouchableHighlight>
@@ -124,6 +137,21 @@ const SsiSignReq: React.FC = ({ navigation }) => {
     </TopScreenComponent>
   );
 };
+
+const loading = StyleSheet.create({
+  overlay: {
+    padding: 50,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: variables.brandPrimary,
+    zIndex: 1,
+    opacity: 1,
+    justifyContent: "center",
+    height: "115%",
+    width: "115%"
+  }
+});
 
 const button = StyleSheet.create({
   container: {
