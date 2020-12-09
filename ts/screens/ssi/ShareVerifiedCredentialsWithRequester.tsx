@@ -312,9 +312,10 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     //console.log(JSON.stringify(VC))
 
     console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
-
+    console.log('info.item=', info.item);
+    //return <Text>Prova</Text>;
     return (
-      <SingleVC key={info.item.sub} info={info} onPress={() => this.checkSelectedVC(info)}/>
+      <SingleVC key={info.item.sub} vCredential={info.item} onPress={() => this.checkSelectedVC(info)}/>
     )
 
   }

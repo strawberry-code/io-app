@@ -102,6 +102,7 @@ const NoTabBarRoutes: ReadonlyArray<string> = [
   ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION,
   ROUTES.SSI_WALLET_RECEIVE_SCREEN,
   ROUTES.SSI_WALLET_SEND_SCREEN,
+  ROUTES.SSI_SUCCESS,
   ROUTES.SHOWROOM,
   ROUTES.SERVICE_WEBVIEW
 ];
@@ -153,7 +154,6 @@ const navigation = createBottomTabNavigator(
     [ROUTES.ERCWALLET_NAVIGATOR]: {
       screen: SsiNavigator
     }
-
   },
   {
     defaultNavigationOptions: ({ navigation: nav }) => ({

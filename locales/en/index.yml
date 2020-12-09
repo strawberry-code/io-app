@@ -316,6 +316,10 @@ ssi:
     descriptionContent: You can receive transactions by sharing the address through QRcode or by pressing the Receive button.
     addressTitle: Address
     receiveButton: Receive
+  signReqScreen:
+    saveQuestion: Want to sign this Verifiable Credential?
+    acceptButton: Sign
+    declineButton: Decline
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
