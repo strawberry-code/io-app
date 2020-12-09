@@ -18,6 +18,7 @@ import ROUTES from "../../navigation/routes";
 import {DidSingleton} from "../../types/DID";
 import {SsiCustomGoBack} from "./components/SsiCustomGoBack";
 import SingleVC from "./SsiSingleVC";
+import {buildVerifiablePresentation} from "./VerifiablePresentations";
 
 interface Props {
   navigation: NavigationComponent;
@@ -26,7 +27,7 @@ interface Props {
 const SsiSignReq: React.FC<Props> = ({ navigation }) => {
   const [VC, setVC] = useState(undefined)
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+
   console.log('-------------------------')
   console.log('Inside SignReq Component', VC);
 
@@ -65,7 +66,11 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
       alert('codice type QR è sbagliato')
     }
 
-    let body = JSON.stringify({"verifiableCredential": vcJwt})
+    if(vcJwt === undefined) {
+      throw new Error('VC JWT could not be undefined!')
+    }
+
+    let body = JSON.stringify({"verifiablePresentation": buildVerifiablePresentation([vcJwt])})
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
     setIsLoading(true);
@@ -110,10 +115,10 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View>
-          <SingleVC 
+          <SingleVC
             vCredential={VCtoPass}
             backHome={() => navigation.navigate('SSI_HOME')}
-            isSigning 
+            isSigning
             signRequest={() => signRequest()}/>
         </View>
 

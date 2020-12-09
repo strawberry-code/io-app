@@ -613,34 +613,6 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                   sectionHeader={I18n.t("profile.main.developersSectionHeader")}
                 />
                 <View style={{margin: 5}}>
-                  <ButtonDefaultOpacity
-                    block={true}
-                    onPress={() => {VCstore.clearStore()}}
-                    activeOpacity={1}
-                  >
-                    <IconFont name="io-test" style={styles.white} />
-                    <Text>Pulisci VC Storage</Text>
-                  </ButtonDefaultOpacity>
-                  <ButtonDefaultOpacity
-                    block={true}
-                    onPress={() => {
-                      console.log('senderID: ' + gcmSenderId)
-                      PushNotification.configure({
-                        // Called when token is generated
-                        onRegister: token => {
-                          // Dispatch an action to save the token in the store
-                          console.log('PUSH NOTIFICATIONS TOKEN: ' + token.token)
-                          store.dispatch(updateNotificationsInstallationToken(token.token));
-                        },
-                        senderID: gcmSenderId
-                      })
-                      console.log(JSON.stringify(this.props))
-                    }}
-                    activeOpacity={1}
-                  >
-                    <IconFont name="io-test" style={styles.white} />
-                    <Text>RN Push Notification Get Token</Text>
-                  </ButtonDefaultOpacity>
                 </View>
 
 
@@ -700,12 +672,27 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                       )}
 
                     {isDevEnv &&
+                    walletToken &&
+                    this.debugListItem(
+                      `Push token ${notificationToken}`,
+                      () => clipboardSetStringWithFeedback(notificationToken),
+                      false
+                    )}
+
+                    {isDevEnv &&
                       walletToken &&
                       this.debugListItem(
                         `Wallet token ${walletToken}`,
                         () => clipboardSetStringWithFeedback(walletToken),
                         false
                       )}
+
+                    {isDevEnv &&
+                    this.debugListItem(
+                      `Pulisci VCs store`,
+                      () => VCstore.clearStore(),
+                      false
+                    )}
 
                     {isDevEnv &&
                       this.debugListItem(
