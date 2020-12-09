@@ -612,7 +612,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                 <View style={{margin: 5}}>
                   <ButtonDefaultOpacity
                     block={true}
-                    onPress={VCstore.clearStore()}
+                    onPress={() => {VCstore.clearStore()}}
                     activeOpacity={1}
                   >
                     <IconFont name="io-test" style={styles.white} />
