@@ -318,6 +318,10 @@ ssi:
     descriptionContent: Potrai ricevere transazioni condividendo l'indirizzo attraverso il QRcode oppure premendo il tasto Ricevi.
     addressTitle: Indirizzo
     receiveButton: Ricevi
+  signReqScreen:
+    saveQuestion: Vuoi firmare questa Credenziale Verificata?
+    acceptButton: Firma
+    declineButton: Non firmare
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

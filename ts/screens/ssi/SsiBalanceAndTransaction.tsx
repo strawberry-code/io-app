@@ -81,12 +81,13 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
       console.log("data from transactionList from API", data);
       setTransactionList(data.docs);
     } catch (e) {
-      console.error(e);
+      console.error('Error:', e);
     }
     setisLoading(false);
   };
 
   useEffect(() => {
+    if (!assetSelected) return;
     console.log("called fetch transactionList");
     void fetchTransactionList(assetSelected);
   }, [assetSelected]);

@@ -217,18 +217,18 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
     console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita')
 
+    let headers = {"Content-Type": "application/json"}
+    let body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere})
     console.log('metodo della richiesta (preso da QR): ' + method)
     console.log('callback url: ' + callbackUrl)
-    console.log('headers: {"Content-Type": "plain/text"}')
-    console.log('body: ' + VerifiablePresentationDaCondividere)
+    console.log('headers: ' + JSON.stringify(headers))
+    console.log('body: ' + body)
 
 
     fetch(callbackUrl, {
       method: method.toUpperCase(),
-      headers: {
-        "Content-Type": "plain/text"
-      },
-      body: VerifiablePresentationDaCondividere
+      headers: headers,
+      body: body
     })
       .then(response => response.json())
       .then(data => {
@@ -312,9 +312,10 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     //console.log(JSON.stringify(VC))
 
     console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
-
+    console.log('info.item=', info.item);
+    //return <Text>Prova</Text>;
     return (
-      <SingleVC key={info.item.sub} info={info} onPress={() => this.checkSelectedVC(info)}/>
+      <SingleVC key={info.item.sub} vCredential={info.item} onPress={() => this.checkSelectedVC(info)}/>
     )
 
   }

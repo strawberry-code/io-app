@@ -20,17 +20,6 @@ import {
 import { App } from "./ts/App";
 import { mixpanel } from "./ts/mixpanel";
 
-// #==== Rimuove l'inutile error su currentlyFocusedField che rende illeggibili i logs ====#    v
-const backup = console.error;
-console.error = function filterErrors(msg) {
-  const supressedErrors = ['currentlyFocusedField'];
-
-  if (!supressedErrors.some(entry => msg.includes(entry))) {
-    backup.apply(console, arguments);
-  }
-};
-// #==== Rimuove l'inutile error su currentlyFocusedField che rende illeggibili i logs ====#    ^
-
 const errorHandler = (e, isFatal) => {
   if (isFatal) {
     if (mixpanel) {

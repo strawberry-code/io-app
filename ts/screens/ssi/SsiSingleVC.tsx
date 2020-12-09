@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet, Platform, Modal, ScrollView, Alert } from "react-native"
-import { Button } from 'native-base'
-import { ListRenderItemInfo } from 'react-native'
+import { View, Text, TouchableOpacity, TouchableHighlight, GestureResponderEvent, StyleSheet, Platform, Modal, ScrollView, Alert } from "react-native"
+import { NavigationComponent } from 'react-navigation'
+
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
+import I18n from "../../i18n";
 import variables from "../../theme/variables"
 import IconFont from "../../components/ui/IconFont";
 
@@ -15,7 +16,8 @@ interface IdentityCard extends JwtCredentialPayload {
         firstName: string
         lastName : string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface DimensioneImpresa extends JwtCredentialPayload {
@@ -24,10 +26,12 @@ interface DimensioneImpresa extends JwtCredentialPayload {
     credentialSubject: {
       piva : string
       indirizzoSedeLegale : string
-      dimensioneImpresa: string
+      eleggibilita: string
+      ragioneFiscale: string
       expirationDate: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface BachelorDegree extends JwtCredentialPayload {
@@ -37,7 +41,8 @@ interface BachelorDegree extends JwtCredentialPayload {
       type: string
       dateOfAchievement: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface MasterDegree extends JwtCredentialPayload {
@@ -47,7 +52,8 @@ interface MasterDegree extends JwtCredentialPayload {
       type: string
       dateOfAchievement: string
     }
-  }  
+  }
+  select?: boolean;   
 }
 
 interface DeMinimis extends JwtCredentialPayload {
@@ -60,7 +66,8 @@ interface DeMinimis extends JwtCredentialPayload {
       eleggibilita: string
       expirationDate: string
     }
-  }  
+  }
+  select?: boolean;  
 }
 interface VID extends JwtCredentialPayload {
   vc: JwtCredentialPayload['vc'] & {
@@ -72,42 +79,48 @@ interface VID extends JwtCredentialPayload {
       birthday: string;
       placeOfBirth: string;
     }
-  }  
+  }
+  select?: boolean;  
 }
 
 
-type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | VID
+type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | VID;
 
 interface Props {
-  info: ListRenderItemInfo<VCType>
+  vCredential: VCType;
   onPress?:(event: GestureResponderEvent) => void
+  backHome?: NavigationComponent;
+  isSigning?: boolean;
+  signRequest?: () => void;
 }
 
 
-const SingleVC: React.FC<Props> = ({ info, onPress }) => {
-  const VC = info.item
-  const VCtype = VC.vc.type
+const SingleVC: React.FC<Props> = ({ vCredential, onPress, backHome, isSigning, signRequest }) => {
+  
+  if (!vCredential) return null;
 
+  const VCtype = vCredential.vc.type;
+  
   console.log('inside single VC component with type', VCtype)
   // For testing schema
   // console.log('credenziale', info.item);
 
   if (VCtype.includes('IdentityCard')) {
-    return (<VCIdentityCard info={info} onPress={onPress}/>)
+    return (<VCIdentityCard vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('DimensioneImpresa')) {
-    return (<VCDimensioneImpresa info={info} onPress={onPress}/>)
+    return (<VCDimensioneImpresa vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('BachelorDegree')) {
-    return (<VCBachelorDegree info={info} onPress={onPress}/>)
+    return (<VCBachelorDegree vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('MasterDegree')) {
-    return (<VCMasterDegree info={info} onPress={onPress}/>)
+    return (<VCMasterDegree vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('DeMinimis')) {
-    return (<VCDeMinimis info={info} onPress={onPress}/>)
+    return (<VCDeMinimis vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('/VID')) {
-    return (<VCVID info={info} onPress={onPress}/>)
+    return (<VCVID vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else {
     // COSA FARE NEL CASO IN CUI NON CORRISPONDE A NESSUNA DI QUESTE VISTE?
     return (
-    <TouchableOpacity onPress={() => alert(JSON.stringify(info.item))}>
+    <TouchableOpacity onPress={() => alert(JSON.stringify(vCredential))}>
       <Text>Credenziale Work in Progress. Clicca qui per vederla</Text>
     </TouchableOpacity>
     )
@@ -151,32 +164,49 @@ const vcItem = StyleSheet.create({
     fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Regular',
     fontSize: variables.h4FontSize,
     marginBottom: 10
+  },
+  signingTitle : {
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Bold',
+    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
+    fontSize: variables.h4FontSize,
+    color: variables.colorWhite
+  },
+  signButtonsRow : {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: "#E6E9F2",
+    padding: 10
   }
 })
 
 
-const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
+const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
-  const { firstName, lastName, } = info.item.vc.credentialSubject
-
-  const [modalVisibile, setModalVisible] = useState(false)
+  const { firstName, lastName, } = vCredential.vc.credentialSubject;
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+  
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
-     // alert(JSON.stringify(info.item))
-    setModalVisible(!modalVisibile)
-  }
+  const toggleCredentials = ():void => {
+    // alert(JSON.stringify(info.item))
+   setModalVisible(!modalVisibile)
+ }
+
+ const closeAll = () => {
+   setModalVisible(false);
+   backHome();
+ }
 
 
   return (
     <TouchableOpacity
-    onPress={(onPress) ? onPress : showCredentials} >
+      onPress={(onPress) ? onPress : toggleCredentials} >
         <View style={vcItem.container}>
         { 
           onPress && (
-        <View style={{paddingRight: 10, justifyContent: 'center'}}>
+          <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -198,7 +228,7 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
           <ScrollView>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity 
-              onPress={() => setModalVisible(!modalVisibile)}
+              onPress={isSigning ? closeAll : toggleCredentials}
             >
               <IconFont 
                 name='io-close'
@@ -208,6 +238,9 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>Carta d'identità</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Nome: </Text>
@@ -216,34 +249,60 @@ const VCIdentityCard: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalInfo}>{lastName}</Text>
           </View>
           </ScrollView>
+          {
+            isSigning &&
+            <View style={vcItem.signButtonsRow}>
+            <TouchableHighlight
+              style={[button.container, button.marginRight]}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={[button.container, {backgroundColor: variables.brandDanger}]}
+              onPress={backHome}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+            </TouchableHighlight>
+            </View>
+          }
         </Modal>
       </TouchableOpacity>
   )
 }
 
 
-const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
-  const { piva, indirizzoSedeLegale, dimensioneImpresa, expirationDate  } = info.item.vc.credentialSubject
+const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
+  const { piva, indirizzoSedeLegale, expirationDate, ragioneFiscale, eleggibilita  } = vCredential.vc.credentialSubject;
   
-  const [modalVisibile, setModalVisible] = useState(false)
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
+  const toggleCredentials = ():void => {
     // alert(JSON.stringify(info.item))
-    setModalVisible(!modalVisibile)
-  }
+   setModalVisible(!modalVisibile)
+ }
+
+ const closeAll = () => {
+   setModalVisible(false);
+   backHome();
+ }
+
 
   const showIndirizzoSL = onPress ? indirizzoSedeLegale.substr(0, 30) + '...' : indirizzoSedeLegale
 
   return (
     <TouchableOpacity
-      onPress={(onPress) ? onPress : showCredentials}>
+      onPress={(onPress) ? onPress : toggleCredentials}>
       <View style={vcItem.container}>
         { 
           onPress && (
           <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -263,7 +322,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
         <Modal visible={modalVisibile} animationType='slide'>
           <ScrollView>
           <View style={vcItem.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <TouchableOpacity onPress={isSigning? closeAll : toggleCredentials}>
               <IconFont 
                 name='io-close'
                 color={variables.colorWhite}
@@ -271,43 +330,73 @@ const VCDimensioneImpresa: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>Dimensione Impresa</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Partita IVA: </Text>
               <Text style={vcItem.modalInfo}>{piva}</Text>
             <Text style={vcItem.modalDescription}>Sede Legale: </Text>
             <Text style={vcItem.modalInfo}>{showIndirizzoSL}</Text>
-            <Text style={vcItem.modalDescription}>Dimensione Impresa: </Text>
-            <Text style={vcItem.modalInfo}>{dimensioneImpresa}</Text>
+            <Text style={vcItem.modalDescription}>Ragione Fiscale: </Text>
+            <Text style={vcItem.modalInfo}>{ragioneFiscale}</Text>
+            <Text style={vcItem.modalDescription}>Eleggibilità: </Text>
+            <Text style={vcItem.modalInfo}>{eleggibilita}</Text>
             <Text style={vcItem.modalDescription}>Scandenza: </Text>
             <Text style={vcItem.modalInfo}>{expirationDate}</Text>
           </View>
           </ScrollView>
+          {
+            isSigning &&
+            <View style={vcItem.signButtonsRow}>
+            <TouchableHighlight
+              style={[button.container, button.marginRight]}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={[button.container, {backgroundColor: variables.brandDanger}]}
+              onPress={backHome}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+            </TouchableHighlight>
+            </View>
+          }
         </Modal>
     </TouchableOpacity>
   );
 }
 
-const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
-  const { type, dateOfAchievement  } = info.item.vc.credentialSubject
+const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
   
-  const [modalVisibile, setModalVisible] = useState(false)
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+ 
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
-     // alert(JSON.stringify(info.item))
-    setModalVisible(!modalVisibile)
-  }
+  const toggleCredentials = ():void => {
+    // alert(JSON.stringify(info.item))
+   setModalVisible(!modalVisibile)
+ }
 
+ const closeAll = () => {
+   setModalVisible(false);
+   backHome();
+ }
   return (
     <TouchableOpacity
-      onPress={(onPress) ? onPress : showCredentials}>
+      onPress={(onPress) ? onPress : toggleCredentials}>
       <View style={vcItem.container}>
         { 
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
                 style={vcItem.modalCloseButton}
@@ -327,7 +416,7 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
         <Modal visible={modalVisibile} animationType='slide'>
           <ScrollView>
           <View style={vcItem.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <TouchableOpacity onPress={isSigning ? closeAll : toggleCredentials}>
               <IconFont 
                 name='io-close'
                 color={variables.colorWhite}
@@ -335,6 +424,9 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>Bachelor Degree</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Tipologia: </Text>
@@ -343,31 +435,57 @@ const VCBachelorDegree: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalInfo}>{dateOfAchievement}</Text>
           </View>
         </ScrollView>
+        {
+          isSigning &&
+          <View style={vcItem.signButtonsRow}>
+          <TouchableHighlight
+            style={[button.container, button.marginRight]}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[button.container, {backgroundColor: variables.brandDanger}]}
+            onPress={backHome}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+          </TouchableHighlight>
+          </View>
+        }
         </Modal>
     </TouchableOpacity>
   );
 }
 
-const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
-  const { type, dateOfAchievement  } = info.item.vc.credentialSubject
+const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
   
-  const [modalVisibile, setModalVisible] = useState(false)
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+  
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
+  const toggleCredentials = ():void => {
     // alert(JSON.stringify(info.item))
-    setModalVisible(!modalVisibile)
-  }
+   setModalVisible(!modalVisibile)
+ }
+
+ const closeAll = () => {
+   setModalVisible(false);
+   backHome();
+ }
 
   return (
     <TouchableOpacity
-      onPress={(onPress) ? onPress : showCredentials}>
+      onPress={(onPress) ? onPress : toggleCredentials}>
       <View style={vcItem.container}>
         { 
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -387,13 +505,16 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
         <Modal visible={modalVisibile} animationType='slide'>
           <ScrollView>
           <View style={vcItem.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <TouchableOpacity onPress={isSigning ? closeAll : toggleCredentials}>
               <IconFont 
                 name='io-close'
                 color={variables.colorWhite}
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>Master Degree</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Tipologia: </Text>
@@ -402,33 +523,58 @@ const VCMasterDegree: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalInfo}>{dateOfAchievement}</Text>
           </View>
         </ScrollView>
+        {
+          isSigning &&
+          <View style={vcItem.signButtonsRow}>
+          <TouchableHighlight
+            style={[button.container, button.marginRight]}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[button.container, {backgroundColor: variables.brandDanger}]}
+            onPress={backHome}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+          </TouchableHighlight>
+          </View>
+        }
         </Modal>
     </TouchableOpacity>
   );
 }
 
-const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
-  const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = info.item.vc.credentialSubject
+const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
+  const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = vCredential.vc.credentialSubject
   
-  const [modalVisibile, setModalVisible] = useState(false)
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
+  const toggleCredentials = ():void => {
     // alert(JSON.stringify(info.item))
-    setModalVisible(!modalVisibile)
-  }
+   setModalVisible(!modalVisibile)
+ }
+
+ const closeAll = () => {
+   setModalVisible(false);
+   backHome();
+ }
 
   const showIndirizzoSL = onPress ? indirizzoSedeLegale.substr(0, 30) + '...' : indirizzoSedeLegale
 
   return (
     <TouchableOpacity
-      onPress={(onPress) ? onPress : showCredentials}>
+      onPress={(onPress) ? onPress : toggleCredentials}>
       <View style={vcItem.container}>
         { 
           onPress && (
           <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -448,7 +594,7 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
         <Modal visible={modalVisibile} animationType='slide'>
           <ScrollView>
           <View style={vcItem.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
+            <TouchableOpacity onPress={isSigning ? closeAll : toggleCredentials}>
               <IconFont 
                 name='io-close'
                 color={variables.colorWhite}
@@ -456,6 +602,9 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>De Minimis</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Ragione Fiscale: </Text>
@@ -470,6 +619,26 @@ const VCDeMinimis: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalInfo}>{expirationDate}</Text>
           </View>
           </ScrollView>
+          {
+            isSigning &&
+            <View style={vcItem.signButtonsRow}>
+            <TouchableHighlight
+              style={[button.container, button.marginRight]}
+              onPress={() => {
+                setModalVisible(false);
+                signRequest();
+              }}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={[button.container, {backgroundColor: variables.brandDanger}]}
+              onPress={backHome}
+            >
+              <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+            </TouchableHighlight>
+            </View>
+          }
         </Modal>
     </TouchableOpacity>
   );
@@ -485,28 +654,38 @@ const Header: React.FC<{ title: string }> = ({ title }) => (
   }}>{title}</Text>
 )
 
-const VCVID: React.FC<Props> = ({ info, onPress }) => {
+const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
-  const { id, firstName, lastName, placeOfBirth, birthday,  } = info.item.vc.credentialSubject
-
-  const [modalVisibile, setModalVisible] = useState(false)
-  //  Se onPress è undefined verrà chiamata questa funzione nella vista
+  
+  const { firstName, lastName, placeOfBirth, birthday,  } = vCredential.vc.credentialSubject;
+  const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+    if (onPress){
+      console.log('onPress active', isSigning);
+      console.log('onPress modalVisible', modalVisibile);
+    }
+  
+      //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
-  const showCredentials = ():void => {
+  const toggleCredentials = ():void => {
      // alert(JSON.stringify(info.item))
     setModalVisible(!modalVisibile)
+  }
+
+  const closeAll = () => {
+    setModalVisible(false);
+    backHome();
   }
 
 
   return (
     <TouchableOpacity
-    onPress={(onPress) ? onPress : showCredentials} >
+    onPress={(onPress) ? onPress : toggleCredentials} >
         <View style={vcItem.container}>
         { 
           onPress && (
         <View style={{paddingRight: 10, justifyContent: 'center'}}>
               <IconFont
-                name={info.item.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
+                name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
               />
@@ -528,7 +707,7 @@ const VCVID: React.FC<Props> = ({ info, onPress }) => {
         <ScrollView>
           <View style={vcItem.modalHeader}>
             <TouchableOpacity 
-              onPress={() => setModalVisible(!modalVisibile)}
+              onPress={isSigning ? closeAll : toggleCredentials}
             >
               <IconFont 
                 name='io-close'
@@ -538,6 +717,9 @@ const VCVID: React.FC<Props> = ({ info, onPress }) => {
               />
             </TouchableOpacity>
             <Text style={vcItem.modalTitle}>VID</Text>
+            {
+              isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
+            }
           </View>
           <View style={vcItem.modalBody}>
             <Text style={vcItem.modalDescription}>Nome: </Text>
@@ -550,9 +732,47 @@ const VCVID: React.FC<Props> = ({ info, onPress }) => {
             <Text style={vcItem.modalInfo}>{placeOfBirth}</Text>
           </View>
           </ScrollView>
+        {
+          isSigning &&
+          <View style={vcItem.signButtonsRow}>
+          <TouchableHighlight
+            style={[button.container, button.marginRight]}
+            onPress={() => {
+              setModalVisible(false);
+              signRequest();
+            }}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.acceptButton')}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[button.container, {backgroundColor: variables.brandDanger}]}
+            onPress={backHome}
+          >
+            <Text style={button.text}>{I18n.t('ssi.signReqScreen.declineButton')}</Text>
+          </TouchableHighlight>
+          </View>
+        }
         </Modal>
       </TouchableOpacity>
   )
 }
+
+const button = StyleSheet.create({
+  container: {
+    paddingVertical: 10,
+    width: '50%',
+    backgroundColor: variables.brandPrimary,
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  text: {
+    fontSize: variables.h5FontSize,
+    color: variables.colorWhite,
+    textAlign: "center"
+  },
+  marginRight : {
+    marginRight: 5
+  }
+});
 
 export default SingleVC
