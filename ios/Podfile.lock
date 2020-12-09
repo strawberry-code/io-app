@@ -362,23 +362,23 @@ PODS:
     - React-Core
   - RNCClipboard (1.5.1):
     - React-Core
-  - RNCPushNotificationIOS (1.8.0):
+  - RNCPushNotificationIOS (1.7.3):
     - React-Core
   - RNDeviceInfo (5.6.4):
     - React
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.9.0):
-    - React-Core
+  - RNGestureHandler (1.8.0):
+    - React
   - RNI18n (2.0.15):
     - React
   - RNKeychain (3.1.3):
     - React
   - RNPermissions (2.2.2):
     - React-Core
-  - RNReanimated (1.13.2):
-    - React-Core
-  - RNScreens (2.15.0):
+  - RNReanimated (1.13.1):
+    - React
+  - RNScreens (2.14.0):
     - React-Core
   - RNSecureRandom (1.0.0):
     - React
@@ -714,15 +714,15 @@ SPEC CHECKSUMS:
   ReactNativeExceptionHandler: f1638ffd507ef1b1794af25884fa0eb30dd5c551
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
-  RNCPushNotificationIOS: 61a7c72bd1ebad3568025957d001e0f0e7b32191
+  RNCPushNotificationIOS: edeeea93b7210d2f918fc0e46e1a2a189b5fdacc
   RNDeviceInfo: a576aac2f2927eb7e0058a27dad811c8e7cd1474
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
+  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNI18n: e2f7e76389fcc6e84f2c8733ea89b92502351fd8
   RNKeychain: c658833a9cb2cbcba6423bdd6e16cce59e27da0e
   RNPermissions: 5df468064df661a4c8c017e2791ce90d7695eea5
-  RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
-  RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
+  RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
+  RNScreens: 2e278a90eb15092ed261d4f2271e3fc9b60d08d4
   RNSecureRandom: 0dcee021fdb3d50cd5cee5db0ebf583c42f5af0e
   RNSha256: ab608b2185fb806185a2cc112e0474065842e085
   RNShare: 7e22ba3bf66294ff7c122a1f2da8a8ec642091a0
