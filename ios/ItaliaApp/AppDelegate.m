@@ -24,7 +24,20 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-@import Firebase;
+/*
+#import <Firebase/Firebase.h>
+#import <FirebaseAnalytics/FIRAnalytics.h>
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#import <FirebaseMessaging/FIRMessaging.h>
+ */
+
+@import FirebaseCore;
+
+// #import <FirebaseCore/FirebaseCore.h>
+// #import <FirebaseMessaging/FIRMessaging.h>
+// #import <FirebaseCore/FIRApp.h>
+
+// @import Firebase;
 
 
 static void InitializeFlipper(UIApplication *application) {
