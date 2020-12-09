@@ -13,6 +13,51 @@ PODS:
     - React-Core (= 0.63.2)
     - React-jsi (= 0.63.2)
     - ReactCommon/turbomodule/core (= 0.63.2)
+  - Firebase/Analytics (7.2.0):
+    - Firebase/Core
+  - Firebase/Core (7.2.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 7.2.0)
+  - Firebase/CoreOnly (7.2.0):
+    - FirebaseCore (= 7.2.0)
+  - Firebase/Messaging (7.2.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 7.2.0)
+  - FirebaseAnalytics (7.2.0):
+    - FirebaseCore (~> 7.0)
+    - FirebaseInstallations (~> 7.0)
+    - GoogleAppMeasurement (= 7.2.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
+    - GoogleUtilities/MethodSwizzler (~> 7.0)
+    - GoogleUtilities/Network (~> 7.0)
+    - "GoogleUtilities/NSData+zlib (~> 7.0)"
+    - nanopb (~> 2.30906.0)
+  - FirebaseCore (7.2.0):
+    - FirebaseCoreDiagnostics (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+  - FirebaseCoreDiagnostics (7.2.0):
+    - GoogleDataTransport (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+    - nanopb (~> 2.30906.0)
+  - FirebaseInstallations (7.2.0):
+    - FirebaseCore (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/UserDefaults (~> 7.0)
+    - PromisesObjC (~> 1.2)
+  - FirebaseInstanceID (7.2.0):
+    - FirebaseCore (~> 7.0)
+    - FirebaseInstallations (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/UserDefaults (~> 7.0)
+  - FirebaseMessaging (7.2.0):
+    - FirebaseCore (~> 7.0)
+    - FirebaseInstanceID (~> 7.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Reachability (~> 7.0)
+    - GoogleUtilities/UserDefaults (~> 7.0)
   - Flipper (0.41.5):
     - Flipper-Folly (~> 2.2)
     - Flipper-RSocket (~> 1.1)
@@ -69,11 +114,43 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - GoogleAppMeasurement (7.2.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
+    - GoogleUtilities/MethodSwizzler (~> 7.0)
+    - GoogleUtilities/Network (~> 7.0)
+    - "GoogleUtilities/NSData+zlib (~> 7.0)"
+    - nanopb (~> 2.30906.0)
+  - GoogleDataTransport (8.0.1):
+    - nanopb (~> 2.30906.0)
+  - GoogleUtilities/AppDelegateSwizzler (7.1.1):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (7.1.1):
+    - PromisesObjC (~> 1.2)
+  - GoogleUtilities/Logger (7.1.1):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (7.1.1):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (7.1.1):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (7.1.1)"
+  - GoogleUtilities/Reachability (7.1.1):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.1.1):
+    - GoogleUtilities/Logger
   - instabug-reactnative (9.1.9):
     - React
   - jail-monkey (2.3.3):
     - React
   - Mixpanel (3.6.3)
+  - nanopb (2.30906.0):
+    - nanopb/decode (= 2.30906.0)
+    - nanopb/encode (= 2.30906.0)
+  - nanopb/decode (2.30906.0)
+  - nanopb/encode (2.30906.0)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
@@ -93,6 +170,7 @@ PODS:
     - RNPermissions
   - Permission-Reminders (2.2.2):
     - RNPermissions
+  - PromisesObjC (1.2.11)
   - QrCode (1.1.0):
     - React
   - RCTRequired (0.63.2)
@@ -401,6 +479,8 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
+  - Firebase/Analytics
+  - Firebase/Messaging
   - Flipper (~> 0.41.1)
   - Flipper-DoubleConversion (= 1.1.7)
   - Flipper-Folly (~> 2.2)
@@ -494,6 +574,13 @@ SPEC REPOS:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseCoreDiagnostics
+    - FirebaseInstallations
+    - FirebaseInstanceID
+    - FirebaseMessaging
     - Flipper
     - Flipper-DoubleConversion
     - Flipper-Folly
@@ -501,8 +588,13 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - Flipper-RSocket
     - FlipperKit
+    - GoogleAppMeasurement
+    - GoogleDataTransport
+    - GoogleUtilities
     - Mixpanel
+    - nanopb
     - OpenSSL-Universal
+    - PromisesObjC
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -655,6 +747,13 @@ SPEC CHECKSUMS:
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
+  Firebase: 456eeacc158d8c58586b7871619a81bb9f27d4ae
+  FirebaseAnalytics: 2673264e482b428df13786b59165ebf420881d7a
+  FirebaseCore: c959e8a598f83125c01c1700d9161b236ab3833c
+  FirebaseCoreDiagnostics: 2d508e12e77e9691ca67d1669b91ee80f0985b29
+  FirebaseInstallations: 9ab3a9a6522e687f59ff9bcfd92949ac85073f3c
+  FirebaseInstanceID: 68d2fa458c0c6adfde0007ffe35b51a37b163dec
+  FirebaseMessaging: 7091222bfac24ca89c569c3c59e58390311e487f
   Flipper: 33585e2d9810fe5528346be33bcf71b37bb7ae13
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -664,9 +763,13 @@ SPEC CHECKSUMS:
   FlipperKit: bc68102cd4952a258a23c9c1b316c7bec1fecf83
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  GoogleAppMeasurement: 57a0df93dc2feb5176b1bac06012dbd725191ba5
+  GoogleDataTransport: e4085e6762f36a6141738f46b0153473ce57fb18
+  GoogleUtilities: 3dc4ff0d5e4840e2fa8eef0889620e8c33d4218c
   instabug-reactnative: bd45cc95754521604216cf9611cf6d2931c3ce44
   jail-monkey: 80c9e34da2cd54023e5ad08bf7051ec75bd43d5b
   Mixpanel: 0e9d50ecc6398e1082e690ddedf6968e57e81935
+  nanopb: 1bf24dd71191072e120b83dd02d08f3da0d65e53
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   Permission-Calendars: 17bb6a871acc7580754be7b56cfb25537e1b57de
   Permission-Camera: 5d2aaf95592660b6dcb5e8d1d90ed5d0156cad02
@@ -676,6 +779,7 @@ SPEC CHECKSUMS:
   Permission-Notifications: 9c6b5cc4f0e6599e9fc3395b77cebddc48f1be41
   Permission-PhotoLibrary: 8227a6ed9f6a971537afe63742d54f5f23a38fe2
   Permission-Reminders: f1bddb60953645830289f9b00977b11e2b62fbf8
+  PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   QrCode: 1212ff8b8fae1a0e2c698d1c42560abcc0c9019b
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
@@ -732,6 +836,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 7013443248b98e48e32ab9d0a7172cd62a4d8eac
+PODFILE CHECKSUM: 54bf901b8319f3197ff4b2df936e48e2926c0bb0
 
 COCOAPODS: 1.10.0

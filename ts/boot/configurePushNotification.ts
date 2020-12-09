@@ -85,7 +85,10 @@ function configurePushNotifications() {
     },
 
     // GCM Sender ID
-    senderID: gcmSenderId
+    // BEFORE
+    // senderID: gcmSenderId
+    // AFTER
+    senderID: 232797350942
   });
 }
 

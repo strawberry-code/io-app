@@ -23,6 +23,12 @@ target 'ItaliaApp' do
   use_react_native!(:path => config["reactNativePath"])
 
   pod 'RNSecureRandom', :path => '../node_modules/react-native-securerandom'
+  
+  # add the Firebase pod for Google Analytics
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Messaging'
+  # add pods for any other desired Firebase products
+  # https://firebase.google.com/docs/ios/setup#available-pods
 
   target 'ItaliaAppTests' do
     inherit! :complete
