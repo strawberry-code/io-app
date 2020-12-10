@@ -68,7 +68,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: DUMMY_USER.toLowerCase()
+            userAddress: ethAddress.toLowerCase()
           })
         }
       );
@@ -81,7 +81,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
       console.log("data from transactionList from API", data);
       setTransactionList(data.docs);
     } catch (e) {
-      console.error('Error:', e);
+      console.error("Error:", e);
     }
     setisLoading(false);
   };

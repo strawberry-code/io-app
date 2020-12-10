@@ -33,10 +33,12 @@ const DUMMY_USER_3 = {
 
 const SsiWalletReceiveScreen: React.FC = () => {
   const userDID = new DID();
+  const ethAddress = userDID.getEthAddress();
+
   console.log("generating DID qrcode", userDID.getEthAddress());
 
   const shareOptions = {
-    message: `Questo è il mio indirizzo ${DUMMY_USER_3.address}`
+    message: `Questo è il mio indirizzo ${ethAddress}`
   };
 
   const shareAddressHandler = async () => {
@@ -56,7 +58,7 @@ const SsiWalletReceiveScreen: React.FC = () => {
       <Text style={styles.title}>{I18n.t("ssi.receiveIntoWallet.title")}</Text>
       <View style={{ padding: 30, justifyContent: "space-around" }}>
         <View style={styles.qrcode}>
-          <QRCode value={DUMMY_USER_3.address} size={200} />
+          <QRCode value={ethAddress} size={200} />
         </View>
         <Text style={styles.descriptionTitle}>
           {I18n.t("ssi.receiveIntoWallet.descriptionTitle")}
@@ -67,7 +69,7 @@ const SsiWalletReceiveScreen: React.FC = () => {
         <Text style={styles.descriptionTitle}>
           {I18n.t("ssi.receiveIntoWallet.addressTitle")}
         </Text>
-        <Text style={styles.addressText}>{DUMMY_USER_3.address}</Text>
+        <Text style={styles.addressText}>{ethAddress}</Text>
         <TouchableHighlight
           style={button.container}
           onPress={() => void shareAddressHandler()}
