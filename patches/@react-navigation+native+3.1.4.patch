@@ -1,0 +1,122 @@
+diff --git a/node_modules/@react-navigation/native/LICENSE.md b/node_modules/@react-navigation/native/LICENSE.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/README.md b/node_modules/@react-navigation/native/README.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/ResourceSavingSceneView.js b/node_modules/@react-navigation/native/dist/ResourceSavingSceneView.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/Scrollables.js b/node_modules/@react-navigation/native/dist/Scrollables.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/createAppContainer.js b/node_modules/@react-navigation/native/dist/createAppContainer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/createKeyboardAwareNavigator.js b/node_modules/@react-navigation/native/dist/createKeyboardAwareNavigator.js
+old mode 100644
+new mode 100755
+index ee3bf77..615e0ff
+--- a/node_modules/@react-navigation/native/dist/createKeyboardAwareNavigator.js
++++ b/node_modules/@react-navigation/native/dist/createKeyboardAwareNavigator.js
+@@ -11,7 +11,9 @@ export default ((Navigator, navigatorConfig) => class KeyboardAwareNavigator ext
+   }
+ 
+   _handleGestureBegin = () => {
+-    this._previouslyFocusedTextInput = TextInput.State.currentlyFocusedField();
++    this._previouslyFocusedTextInput = TextInput.State.currentlyFocusedInput
++      ? TextInput.State.currentlyFocusedInput()
++      : TextInput.State.currentlyFocusedField();
+     if (this._previouslyFocusedTextInput) {
+       TextInput.State.blurTextInput(this._previouslyFocusedTextInput);
+     }
+@@ -35,7 +37,9 @@ export default ((Navigator, navigatorConfig) => class KeyboardAwareNavigator ext
+     // in the case where the index did not change, I believe. We
+     // should revisit this after 2.0 release.
+     if (transitionProps.index !== prevTransitionProps.index) {
+-      const currentField = TextInput.State.currentlyFocusedField();
++      const currentField = TextInput.State.currentlyFocusedInput
++        ? TextInput.State.currentlyFocusedInput()
++        : TextInput.State.currentlyFocusedField();
+       if (currentField) {
+         TextInput.State.blurTextInput(currentField);
+       }
+diff --git a/node_modules/@react-navigation/native/dist/createNavigationAwareScrollable.js b/node_modules/@react-navigation/native/dist/createNavigationAwareScrollable.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/index.js b/node_modules/@react-navigation/native/dist/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/utils/docsUrl.js b/node_modules/@react-navigation/native/dist/utils/docsUrl.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/utils/invariant.js b/node_modules/@react-navigation/native/dist/utils/invariant.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/dist/withOrientation.js b/node_modules/@react-navigation/native/dist/withOrientation.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/ResourceSavingSceneView.js b/node_modules/@react-navigation/native/src/ResourceSavingSceneView.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/Scrollables.js b/node_modules/@react-navigation/native/src/Scrollables.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/__tests__/__snapshots__/createAppContainer-test.js.snap b/node_modules/@react-navigation/native/src/__tests__/__snapshots__/createAppContainer-test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/__tests__/__snapshots__/withOrientation-test.js.snap b/node_modules/@react-navigation/native/src/__tests__/__snapshots__/withOrientation-test.js.snap
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/__tests__/createAppContainer-test.js b/node_modules/@react-navigation/native/src/__tests__/createAppContainer-test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/__tests__/withOrientation-test.js b/node_modules/@react-navigation/native/src/__tests__/withOrientation-test.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/createAppContainer.js b/node_modules/@react-navigation/native/src/createAppContainer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/createKeyboardAwareNavigator.js b/node_modules/@react-navigation/native/src/createKeyboardAwareNavigator.js
+old mode 100644
+new mode 100755
+index e77d5fc..ec7a785
+--- a/node_modules/@react-navigation/native/src/createKeyboardAwareNavigator.js
++++ b/node_modules/@react-navigation/native/src/createKeyboardAwareNavigator.js
+@@ -20,7 +20,9 @@ export default (Navigator, navigatorConfig) =>
+     }
+ 
+     _handleGestureBegin = () => {
+-      this._previouslyFocusedTextInput = TextInput.State.currentlyFocusedField();
++      this._previouslyFocusedTextInput = TextInput.State.currentlyFocusedInput
++        ? TextInput.State.currentlyFocusedInput()
++        : TextInput.State.currentlyFocusedField();
+       if (this._previouslyFocusedTextInput) {
+         TextInput.State.blurTextInput(this._previouslyFocusedTextInput);
+       }
+@@ -44,7 +46,9 @@ export default (Navigator, navigatorConfig) =>
+       // in the case where the index did not change, I believe. We
+       // should revisit this after 2.0 release.
+       if (transitionProps.index !== prevTransitionProps.index) {
+-        const currentField = TextInput.State.currentlyFocusedField();
++        const currentField = TextInput.State.currentlyFocusedInput
++          ? TextInput.State.currentlyFocusedInput()
++          : TextInput.State.currentlyFocusedField();
+         if (currentField) {
+           TextInput.State.blurTextInput(currentField);
+         }
+diff --git a/node_modules/@react-navigation/native/src/createNavigationAwareScrollable.js b/node_modules/@react-navigation/native/src/createNavigationAwareScrollable.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/index.js b/node_modules/@react-navigation/native/src/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/utils/docsUrl.js b/node_modules/@react-navigation/native/src/utils/docsUrl.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/utils/invariant.js b/node_modules/@react-navigation/native/src/utils/invariant.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/@react-navigation/native/src/withOrientation.js b/node_modules/@react-navigation/native/src/withOrientation.js
+old mode 100644
+new mode 100755

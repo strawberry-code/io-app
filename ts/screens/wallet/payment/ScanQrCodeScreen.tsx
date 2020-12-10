@@ -24,7 +24,8 @@ import {
   navigateToPaymentManualDataInsertion,
   navigateToPaymentTransactionSummaryScreen, navigateToShareVCsList,
   navigateToSsiHome, navigateToSsiSignReq, navigateToVCsList,
-  navigateToWalletHome
+  navigateToWalletHome,
+  navigateToSsiWalletSendScreen
 } from "../../../store/actions/navigation";
 import {Dispatch} from "../../../store/actions/types";
 import {paymentInitializeState} from "../../../store/actions/wallet/payment";
@@ -232,6 +233,13 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     //this.props.navigateToScannedSsiQrCode();
   };
 
+  private handleSsiWalletRecipientScan(data: string) {
+      this.props.navigateToSsiWalletSendScreen({
+        action: 'SSI_WALLET_RECIPIENT_SCANNED',
+        data
+      });
+  }
+
   /**
    * Handles invalid pagoPA QR codes
    */
@@ -265,6 +273,11 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       const resultOrError = decodePagoPaQrCode(data);
       resultOrError.foldL<void>(this.onInvalidQrCode, this.onValidQrCode);
       return
+    }
+
+    if (this.props.navigation.state.params && this.props.navigation.state.params.action === 'SSI_WALLET_SCAN_RECIPIENT') {
+      this.handleSsiWalletRecipientScan(data);
+      return;
     }
 
     let qrType = (JSON.parse(data)).type
@@ -466,6 +479,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   navigateToVCsList: (params: any) => dispatch(navigateToVCsList(params)),
   navigateToShareVCsList: (params: any) => dispatch(navigateToShareVCsList(params)),
   navigateToSsiSignReq: (params: any) => dispatch(navigateToSsiSignReq(params)),
+  navigateToSsiWalletSendScreen: (params: any) => dispatch(navigateToSsiWalletSendScreen(params)),
   navigateToPaymentManualDataInsertion: () =>
     dispatch(navigateToPaymentManualDataInsertion()),
   runPaymentTransactionSummarySaga: (

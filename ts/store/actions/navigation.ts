@@ -28,6 +28,7 @@ import WalletHomeScreen from "../../screens/wallet/WalletHomeScreen";
 import { InferNavigationParams } from "../../types/react";
 import SsiMainScreen from "../../screens/ssi/SsiMainScreen";
 import SsiVerifiedCredentialsScreen from "../../screens/ssi/SsiVerifiedCredentialsScreen";
+import SsiWalletSendScreen from "../../screens/ssi/SsiWalletSendScreen";
 
 export const navigationRestore = createStandardAction("NAVIGATION_RESTORE")<
   NavigationState
@@ -329,5 +330,17 @@ export const navigateToCieCardReaderScreen = (
 ) =>
   NavigationActions.navigate({
     routeName: ROUTES.CIE_CARD_READER_SCREEN,
+    params
+  });
+
+/**
+ * SSI WALLET
+ */
+
+export const navigateToSsiWalletSendScreen = (
+  params?: InferNavigationParams<typeof SsiWalletSendScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_WALLET_SEND_SCREEN,
     params
   });
