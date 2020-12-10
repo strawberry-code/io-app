@@ -5,7 +5,7 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { fromEither, fromNullable } from "fp-ts/lib/Option";
 import * as t from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
-import { Alert } from "react-native";
+import {Alert, Platform} from "react-native";
 import PushNotification from "react-native-push-notification";
 
 import { store } from "../App";
@@ -44,6 +44,10 @@ function configurePushNotifications() {
 
     // Called when a remote or local notification is opened or received
     onNotification: notification => {
+
+      console.log('🎈 notifica push arrivata! ('+Platform.OS+')')
+      console.log('dettagli della push: ' + JSON.stringify(notification))
+
       if (debugRemotePushNotification) {
         Alert.alert("Notification", JSON.stringify(notification));
       }

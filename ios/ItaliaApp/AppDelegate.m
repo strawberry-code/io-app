@@ -24,21 +24,6 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-/*
-#import <Firebase/Firebase.h>
-#import <FirebaseAnalytics/FIRAnalytics.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#import <FirebaseMessaging/FIRMessaging.h>
- */
-
-@import FirebaseCore;
-
-// #import <FirebaseCore/FirebaseCore.h>
-// #import <FirebaseMessaging/FIRMessaging.h>
-// #import <FirebaseCore/FIRApp.h>
-
-// @import Firebase;
-
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -84,41 +69,10 @@ static void InitializeFlipper(UIApplication *application) {
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
-  [FIRApp configure];
-  
-  if ([UNUserNotificationCenter class] != nil) {
-    // iOS 10 or later
-    // For iOS 10 display notification (sent via APNS)
-    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-    UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
-        UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-    [[UNUserNotificationCenter currentNotificationCenter]
-        requestAuthorizationWithOptions:authOptions
-        completionHandler:^(BOOL granted, NSError * _Nullable error) {
-          // ...
-        }];
-  } else {
-    // iOS 10 notifications aren't available; fall back to iOS 8-9 notifications.
-    UIUserNotificationType allNotificationTypes =
-    (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-    UIUserNotificationSettings *settings =
-    [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-    [application registerUserNotificationSettings:settings];
-  }
 
   [application registerForRemoteNotifications];
   
   return YES;
-}
-
-- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
-    NSLog(@"FCM registration token: %@", fcmToken);
-    // Notify about received token.
-    NSDictionary *dataDict = [NSDictionary dictionaryWithObject:fcmToken forKey:@"token"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:
-     @"FCMToken" object:nil userInfo:dataDict];
-    // TODO: If necessary send token to application server.
-    // Note: This callback is fired at each app startup and whenever a new token is generated.
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
