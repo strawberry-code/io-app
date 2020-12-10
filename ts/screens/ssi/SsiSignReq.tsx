@@ -70,7 +70,7 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
       throw new Error('VC JWT could not be undefined!')
     }
 
-    let body = JSON.stringify({"verifiablePresentation": buildVerifiablePresentation([vcJwt])})
+    let body = JSON.stringify({"verifiablePresentation": await buildVerifiablePresentation([vcJwt])});
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
     setIsLoading(true);
