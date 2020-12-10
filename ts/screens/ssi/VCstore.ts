@@ -1,5 +1,9 @@
 /* eslint-disable sonarjs/prefer-immediate-return */
-import { JWT, VerifiedCredential } from "did-jwt-vc/lib/types";
+import {
+  JWT,
+  VerifiedCredential,
+  VerifiablePresentation
+} from "did-jwt-vc/lib/types";
 import AsyncStorage from "@react-native-community/async-storage";
 
 const AS_SSI_KEY = "AS_SSI_KEY";
@@ -8,9 +12,13 @@ const AS_SSI_KEY = "AS_SSI_KEY";
 const isString = (text: any): text is string =>
   typeof text === "string" || text instanceof String;
 
-const storeVC = async (VC: string) => {
+const storeVC = async (VPJwt: string) => {
+  const verifiablePresentation: VerifiablePresentation = decodeJwt(VPJwt);
+  console.log("verifiablePresentation", verifiablePresentation);
+
+  const VC = verifiablePresentation.vp.verifiableCredential;
   try {
-    const newVC: Array<string> = [VC];
+    const newVC: Array<string> = VC;
     const VCFound = await AsyncStorage.getItem(AS_SSI_KEY);
 
     if (!VCFound || !isString(VCFound)) {

@@ -214,7 +214,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     });
 
     let qrData = JSON.parse(data)
-    let jwt = qrData.verifiableCredential
+    let jwt = qrData.verifiablePresentation
 
     console.log('jwt X: ' + jwt)
 
