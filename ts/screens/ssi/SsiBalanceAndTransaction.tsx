@@ -245,7 +245,7 @@ const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   const userDID = new DID();
   const ethAddress = userDID.getEthAddress().toLowerCase();
 
-  const date = new Date(item.timestamp).toLocaleDateString();
+  const date = new Date(item.timestamp * 1000).toLocaleString();
   const valueToShow = (item.value / 100).toFixed(2);
 
   const color = item.to.toLowerCase() === userAddress ? "green" : "red";
