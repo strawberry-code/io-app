@@ -28,18 +28,28 @@ import { Asset } from "./types";
 
 const DUMMY_USER_2 = {
   address: "0x5b9839858b38c3bF19811bcdbEC09Fb95a4e6B54",
-  privKey: "84a70b263aa545e0f2cfb6cff58380ee3fb761970c1b2ab19461270be4c3f39d"
+  privateKey: "84a70b263aa545e0f2cfb6cff58380ee3fb761970c1b2ab19461270be4c3f39d"
 };
 
 const DUMMY_USER_3 = {
   address: "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51",
-  privKey: "d603b3993036898349156db1b63143c18193d6c93b20ced4f0817cf7f87662d2"
+  privateKey: "d603b3993036898349156db1b63143c18193d6c93b20ced4f0817cf7f87662d2"
 };
 
 const DUMMY_USER = {
   address: "0x7506f0045F03cC82c73341A45f190ab9A1a85A93",
-  privKey: "adac18e2cb203dde7ee4691de0a6d8fb22ca57982cabd334f4bac403794159c2"
+  privateKey: "adac18e2cb203dde7ee4691de0a6d8fb22ca57982cabd334f4bac403794159c2"
 };
+
+interface CreateTXObject {
+  userObject: {
+    address: string;
+    privateKey: string;
+  };
+  assetObject: Asset;
+  amountToSend: string;
+  recipientAddress: string;
+}
 
 interface Props {
   navigation: NavigationComponent;
@@ -82,23 +92,33 @@ const SsiWalletSendScreen: React.FC<Props> = ({
   }, [navigation.state.params]);
 
   const userDID = new DID();
-  const ethAddress = userDID.getEthAddress();
+  const user = {
+    address: userDID.getEthAddress(),
+    privateKey: userDID.getPrivateKey()
+  };
 
   const assetObjectSelected: Asset | undefined = assetList.find(
     a => a.address === assetSelected
   );
 
-  const createRawTx = async (
-    asset: Asset | undefined,
-    userAddress: string,
-    recipient: string,
-    amountToSend: string,
-    userPrivKey: string
-  ) => {
-    const amount = parseFloat(amountToSend) * 100;
-    console.log("assetSelected", asset.symbol);
+  // Oggetto che viene passato nella funzione createRawTx
+  const createTxObject: CreateTXObject = {
+    userObject: user,
+    recipientAddress: recipient,
+    assetObject: assetObjectSelected,
+    amountToSend: amount
+  };
+
+  const createRawTx = async ({
+    userObject,
+    recipientAddress,
+    amountToSend,
+    assetObject
+  }: CreateTXObject) => {
+    console.log("assetSelected", assetObject.symbol);
     console.log("amount", amount);
-    console.log("recipient", recipient);
+    console.log("recipient", recipientAddress);
+    const amount = parseFloat(amountToSend) * 100;
 
     setModalVisible(true);
     setIsLoading(true);
@@ -113,11 +133,11 @@ const SsiWalletSendScreen: React.FC<Props> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: DUMMY_USER_3.address.toLowerCase(),
-            addressTo: recipient,
             amount,
-            assetAbi: asset.abi,
-            assetAddress: asset.address
+            userAddress: userObject.address.toLowerCase(),
+            addressTo: recipientAddress,
+            assetAbi: assetObject.abi,
+            assetAddress: assetObject.address
           })
         }
       );
@@ -139,7 +159,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
 
       console.log("ethersTx", ethersFormatTx);
 
-      const privateKey = Buffer.from(DUMMY_USER_3.privKey, "hex");
+      const privateKey = Buffer.from(userObject.privateKey, "hex");
       console.log("privateKey", privateKey); // --> {{qui recuperiamo la priv Key dell'utente che per esigenze di testing possiamo aggiungere momentaneamente al Dummy_user facendolo diventare un oggetto con 2 proprietà: address e privKey}}
 
       const wallet = new ethers.Wallet(privateKey);
@@ -157,12 +177,12 @@ const SsiWalletSendScreen: React.FC<Props> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: DUMMY_USER_3.address.toLowerCase(),
-            addressTo: recipient,
             amount,
-            assetAbi: asset.abi,
-            assetAddress: asset.address,
-            signedTx
+            signedTx,
+            userAddress: userObject.address.toLowerCase(),
+            addressTo: recipientAddress,
+            assetAbi: assetObject.abi,
+            assetAddress: assetObject.address
           })
         }
       );
@@ -274,13 +294,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
               alert("Devi compilare tutti i campi");
               return;
             }
-            void createRawTx(
-              assetObjectSelected,
-              DUMMY_USER_3.address,
-              recipient,
-              amount,
-              DUMMY_USER.privKey
-            );
+            void createRawTx(createTxObject);
           }}
         >
           <Text style={button.text}>
