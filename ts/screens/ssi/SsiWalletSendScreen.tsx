@@ -115,10 +115,10 @@ const SsiWalletSendScreen: React.FC<Props> = ({
     amountToSend,
     assetObject
   }: CreateTXObject) => {
+    const amount = parseFloat(amountToSend) * 100;
     console.log("assetSelected", assetObject.symbol);
     console.log("amount", amount);
     console.log("recipient", recipientAddress);
-    const amount = parseFloat(amountToSend) * 100;
 
     setModalVisible(true);
     setIsLoading(true);
@@ -143,7 +143,11 @@ const SsiWalletSendScreen: React.FC<Props> = ({
       );
 
       if (responseOne.status !== 200) {
-        throw new Error(`Something went wrong: ${responseOne}`);
+        throw new Error(
+          `Something went wrong in creatingTx: ${JSON.stringify(
+            await responseOne.json().message
+          )}`
+        );
       }
       setLoadingMessage("Firmando la transazione");
 
@@ -160,7 +164,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
       console.log("ethersTx", ethersFormatTx);
 
       const privateKey = Buffer.from(userObject.privateKey, "hex");
-      console.log("privateKey", privateKey); // --> {{qui recuperiamo la priv Key dell'utente che per esigenze di testing possiamo aggiungere momentaneamente al Dummy_user facendolo diventare un oggetto con 2 proprietà: address e privKey}}
+      console.log("privateKey", privateKey);
 
       const wallet = new ethers.Wallet(privateKey);
       console.log("wallet.address", wallet.address);
@@ -188,7 +192,11 @@ const SsiWalletSendScreen: React.FC<Props> = ({
       );
 
       if (responseTwo.status !== 200) {
-        throw new Error(`Something went wrong: ${responseTwo}`);
+        throw new Error(
+          `Something went wrong in SignigTx: ${JSON.stringify(
+            await responseTwo.json().message
+          )}`
+        );
       }
 
       const dataTwo = await responseTwo.json();
