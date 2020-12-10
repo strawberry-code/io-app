@@ -524,7 +524,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
     // eslint-disable
     const screenContent = () => {
-      const childRef = useRef();
+      
       return (
         <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
           <NavigationEvents onWillFocus={this.scrollToTop} />
@@ -532,17 +532,13 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
           {crossMenu()}
           <View style={styles.qrButton}>{footerButton()}</View>
-          <SsiModal ref={childRef} />
-
-          <TouchableHighlight
-            onPress={() => {
-              childRef.current.changeText(true);
-            }}
-          >
-            <Text>Show Modal</Text>
-          </TouchableHighlight>
 
           <List withContentLateralPadding={true}>
+
+          <SectionHeaderComponent
+            sectionHeader={I18n.t("profile.main.accountSectionHeader")}
+          />
+
             {/* Preferences */}
             <ListItemComponent
               title={I18n.t("profile.main.preferences.title")}
@@ -551,37 +547,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                 navigation.navigate(ROUTES.PROFILE_PREFERENCES_HOME)
               }
               isFirstItem={true}
-            />
-
-            {/* Privacy */}
-            <ListItemComponent
-              title={I18n.t("profile.main.privacy.title")}
-              subTitle={I18n.t("profile.main.privacy.description")}
-              onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
-            />
-
-            {/* Privacy */}
-            <ListItemComponent
-              title={I18n.t("profile.main.privacy.title")}
-              subTitle={I18n.t("profile.main.privacy.description")}
-              onPress={() => navigation.navigate(ROUTES.PROFILE_PRIVACY_MAIN)}
-            />
-
-            {/* APP IO */}
-            <ListItemComponent
-              title={I18n.t("profile.main.appInfo.title")}
-              subTitle={I18n.t("profile.main.appInfo.description")}
-              onPress={() =>
-                showInformationModal(
-                  "profile.main.appInfo.title",
-                  "profile.main.appInfo.contextualHelpContent"
-                )
-              }
-              isLastItem={true}
-            />
-
-            <SectionHeaderComponent
-              sectionHeader={I18n.t("profile.main.accountSectionHeader")}
+              hideIcon
             />
 
             {/* Reset unlock code */}
