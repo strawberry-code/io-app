@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, TouchableHighlight, GestureResponderEvent, StyleSheet, Platform, Modal, ScrollView, Alert } from "react-native"
 import { NavigationComponent } from 'react-navigation'
+import _ from 'lodash';
 
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
 import I18n from "../../i18n";
 import variables from "../../theme/variables"
 import IconFont from "../../components/ui/IconFont";
+import IssuerComponent from './components/IssuerComponent';
 
 
 
@@ -176,6 +178,28 @@ const vcItem = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: "#E6E9F2",
     padding: 10
+  },
+  issuerContainer: {
+    backgroundColor: variables.colorWhite,
+    borderRadius: 5,
+    padding: 10,
+    shadowColor: "black",
+    elevation: 5,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5
+  },
+  issuerTitle: {
+    fontSize: variables.h4FontSize,
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Bold',
+    fontWeight: Platform.OS === 'ios' ? '600' : 'normal',
+  },
+  issuerInfo: {
+    fontSize: variables.h5FontSize,
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web' : 'TitilliumWeb-Regular'
   }
 })
 
@@ -183,6 +207,7 @@ const vcItem = StyleSheet.create({
 const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
   const { firstName, lastName, } = vCredential.vc.credentialSubject;
+  const { issuer } = vCredential;
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
@@ -243,6 +268,7 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Nome: </Text>
               <Text style={vcItem.modalInfo}>{firstName}</Text>
             <Text style={vcItem.modalDescription}>Cognome: </Text>
@@ -277,6 +303,7 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
 
 const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   const { piva, indirizzoSedeLegale, expirationDate, ragioneFiscale, eleggibilita  } = vCredential.vc.credentialSubject;
+  const { issuer } = vCredential;
   
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
@@ -335,6 +362,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Partita IVA: </Text>
               <Text style={vcItem.modalInfo}>{piva}</Text>
             <Text style={vcItem.modalDescription}>Sede Legale: </Text>
@@ -374,7 +402,8 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
 
 const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
   const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
-  
+  const { issuer } = vCredential;
+
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
  
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
@@ -429,6 +458,7 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Tipologia: </Text>
               <Text style={vcItem.modalInfo}>{type}</Text>
             <Text style={vcItem.modalDescription}>Data di conseguimento: </Text>
@@ -462,7 +492,8 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
 
 const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
   const { type, dateOfAchievement  } = vCredential.vc.credentialSubject;
-  
+  const { issuer } = vCredential;
+
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
@@ -517,6 +548,7 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Tipologia: </Text>
               <Text style={vcItem.modalInfo}>{type}</Text>
             <Text style={vcItem.modalDescription}>Data di conseguimento: </Text>
@@ -550,7 +582,8 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
 
 const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
   const { ragioneFiscale, piva, indirizzoSedeLegale, eleggibilita, expirationDate  } = vCredential.vc.credentialSubject
-  
+  const { issuer } = vCredential;
+
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
@@ -607,6 +640,7 @@ const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signReq
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Ragione Fiscale: </Text>
               <Text style={vcItem.modalInfo}>{ragioneFiscale}</Text>
             <Text style={vcItem.modalDescription}>Partita IVA: </Text>
@@ -658,6 +692,17 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
   
   
   const { firstName, lastName, placeOfBirth, birthday,  } = vCredential.vc.credentialSubject;
+  const { issuer } = vCredential;
+
+
+  // const issuerTest = {
+  //   id: "issuerId",
+  //   tradeName: "Bance d'Italia",
+  //   postalAddress: "via nazionale 91 00184 - IT",
+  //   electronicAddress: "pki@bancaditalia.it",
+  //   informationURI: "https://www.bancaditalia.it/footer/firmadigitale/index.html?com.dotmarketing.htmlpage.language=1"
+  // }
+
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
     if (onPress){
       console.log('onPress active', isSigning);
@@ -722,6 +767,7 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
             }
           </View>
           <View style={vcItem.modalBody}>
+            <IssuerComponent issuer={issuer} />
             <Text style={vcItem.modalDescription}>Nome: </Text>
               <Text style={vcItem.modalInfo}>{firstName}</Text>
             <Text style={vcItem.modalDescription}>Cognome: </Text>
