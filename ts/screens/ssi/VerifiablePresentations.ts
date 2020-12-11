@@ -1,8 +1,9 @@
 import { JwtPresentationPayload, createVerifiablePresentationJwt } from 'did-jwt-vc'
 import {DidSingleton} from "../../types/DID";
 import {JWT} from "did-jwt-vc/lib/types";
+import VCstore from "./VCstore";
 
-async function buildVerifiablePresentation(jwts: JWT[]): Promise<string> {
+async function encodeVerifiablePresentation(jwts: JWT[]): Promise<string> {
 
   let issuer = DidSingleton.getIssuer()
 
@@ -19,4 +20,16 @@ async function buildVerifiablePresentation(jwts: JWT[]): Promise<string> {
   return vpJwt
 }
 
-export {buildVerifiablePresentation}
+function decodeVerifiablePresentation(jwt: JwtPresentationPayload): Promise<string> {
+
+  //let issuer = DidSingleton.getIssuer()
+
+  let verifiablePresentation = VCstore.decodeJwt(jwt)
+
+  console.log(`la Verifiable Presentation è stata decodificata: ${JSON.stringify(verifiablePresentation)}`)
+  return verifiablePresentation
+}
+
+
+
+export {encodeVerifiablePresentation, decodeVerifiablePresentation}

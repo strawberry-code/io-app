@@ -56,7 +56,7 @@ import {CredentialPayload, JwtCredentialPayload} from "did-jwt-vc";
 import variables from "../../theme/variables";
 import VCstore from "./VCstore";
 import SingleVC from './SsiSingleVC'
-import {buildVerifiablePresentation} from "./VerifiablePresentations";
+import {encodeVerifiablePresentation} from "./VerifiablePresentations";
 import {JWT} from "did-jwt-vc/lib/types";
 
 type OwnProps = Readonly<{
@@ -208,7 +208,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     let VerifiablePresentationDaCondividere: string
     try {
       console.log(`costruisco la Verifiable Presentation da condividere`)
-      VerifiablePresentationDaCondividere = await buildVerifiablePresentation(VCsToBeShared)
+      VerifiablePresentationDaCondividere = await encodeVerifiablePresentation(VCsToBeShared)
       console.log(`la Verifiable Presentation è stata costruita`)
     } catch (errVP) {
       console.error(`impossibile costruire la Verifiable Presentation: ${JSON.stringify(errVP)}`)

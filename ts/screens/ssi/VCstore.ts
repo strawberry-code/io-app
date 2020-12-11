@@ -78,4 +78,4 @@ const clearStore = async () => {
   await AsyncStorage.removeItem(AS_SSI_KEY);
 };
 
-export default { storeVC, getVCs, clearStore, getJwts };
+export default { storeVC, getVCs, clearStore, getJwts, decodeJwt };

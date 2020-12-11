@@ -511,7 +511,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       </View>
     );
 
-    const footerButton = () => (
+    const qrButtonFooter = () => (
       <ButtonDefaultOpacity
         block={true}
         onPress={this.props.navigateToPaymentScanQrCode}
@@ -519,6 +519,17 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       >
         <IconFont name="io-qr" style={styles.white} />
         <Text>{I18n.t("ssi.scanQr")}</Text>
+      </ButtonDefaultOpacity>
+    );
+
+    const messagesButtonFooter = () => (
+      <ButtonDefaultOpacity
+        block={true}
+        onPress={this.props.navigateToPaymentScanQrCode}
+        activeOpacity={1}
+      >
+        <IconFont name="io-messages" style={styles.white} />
+        <Text>{I18n.t("ssi.messages")}</Text>
       </ButtonDefaultOpacity>
     );
 
@@ -532,6 +543,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
           {crossMenu()}
           <View style={styles.qrButton}>{footerButton()}</View>
+          <!--<View style={styles.qrButton}>{messagesButtonFooter()}</View>-->
 
           <List withContentLateralPadding={true}>
 

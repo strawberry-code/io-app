@@ -18,7 +18,7 @@ import ROUTES from "../../navigation/routes";
 import {DidSingleton} from "../../types/DID";
 import {SsiCustomGoBack} from "./components/SsiCustomGoBack";
 import SingleVC from "./SsiSingleVC";
-import {buildVerifiablePresentation} from "./VerifiablePresentations";
+import {encodeVerifiablePresentation} from "./VerifiablePresentations";
 
 interface Props {
   navigation: NavigationComponent;
@@ -70,7 +70,7 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
       throw new Error('VC JWT could not be undefined!')
     }
 
-    let body = JSON.stringify({"verifiablePresentation": await buildVerifiablePresentation([vcJwt])});
+    let body = JSON.stringify({"verifiablePresentation": await encodeVerifiablePresentation([vcJwt])})
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
     setIsLoading(true);
