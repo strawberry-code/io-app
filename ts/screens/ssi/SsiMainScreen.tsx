@@ -535,15 +535,15 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
     // eslint-disable
     const screenContent = () => {
-      
+
       return (
         <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
           <NavigationEvents onWillFocus={this.scrollToTop} />
           <View spacer={true} />
 
           {crossMenu()}
-          <View style={styles.qrButton}>{footerButton()}</View>
-          <!--<View style={styles.qrButton}>{messagesButtonFooter()}</View>-->
+          <View style={styles.qrButton}>{qrButtonFooter()}</View>
+          {false && <View style={styles.qrButton}>{messagesButtonFooter()}</View>}
 
           <List withContentLateralPadding={true}>
 
