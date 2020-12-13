@@ -35,7 +35,6 @@ import { SessionToken } from "../../types/SessionToken";
 import { getIdpLoginUri, onLoginUriChanged } from "../../utils/login";
 import { getSpidErrorCodeDescription } from "../../utils/spidErrorCode";
 import { getUrlBasepath } from "../../utils/url";
-import {DidSingleton} from "../../types/DID";
 
 type Props = NavigationScreenProps &
   ReturnType<typeof mapStateToProps> &
@@ -137,10 +136,6 @@ class IdpLoginScreen extends React.Component<Props, State> {
 
   private handleLoginSuccess = (token: SessionToken) => {
     instabugLog(`login success`, TypeLogs.DEBUG, "login");
-    console.warn('⚠️ generato un nuovo DID! (eventuale DID prcedente è stato svorascritto)')
-    DidSingleton.generateEthWallet().then(() => {
-      DidSingleton.saveDidOnKeychain()
-    })
     Instabug.resetTags();
     this.props.dispatchLoginSuccess(token);
   };
@@ -263,7 +258,6 @@ class IdpLoginScreen extends React.Component<Props, State> {
       return <LoadingSpinnerOverlay isLoading={true} />;
     }
     const loginUri = getIdpLoginUri(loggedOutWithIdpAuth.idp.entityID);
-
     return (
       <BaseScreenComponent
         goBack={true}
