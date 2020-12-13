@@ -16,6 +16,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { createDIDSuccess } from "../../store/actions/didset";
 import { DidSingleton } from "../../types/DID";
 import variables from "../../theme/variables";
+import I18n from "../../i18n";
 import IconFont from "../../components/ui/IconFont";
 
 interface Props {
@@ -48,18 +49,28 @@ const RecoverIdentityModal: React.FC<Props> = ({
     console.log(" ⚠️RECUPERANDOO LA TUA IDENTITA....");
 
     try {
-      changeLoadingStates(true, "Recuperando identità", "", true);
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.recoveringIdentity"),
+        "",
+        true
+      );
       const recoveredWallet = await DidSingleton.recoverEthWallet(recoveryKey);
 
       if (!recoveredWallet) {
         throw new Error("Non è possibile recuperare l'identità");
       }
 
-      changeLoadingStates(true, "Salvando identità", "", true);
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.savingIdentity"),
+        "",
+        true
+      );
       await DidSingleton.saveDidOnKeychain();
       changeLoadingStates(
         true,
-        "Recuperata l'identità con successo",
+        I18n.t("ssi.onboarding.recoveringIdentityCompleted"),
         "completed",
         false
       );
@@ -69,7 +80,7 @@ const RecoverIdentityModal: React.FC<Props> = ({
       console.error("Errore:", e);
       changeLoadingStates(
         true,
-        "Errore recupero dell'identità",
+        I18n.t("ssi.onboarding.recoveringError"),
         "error",
         false
       );
@@ -97,16 +108,21 @@ const RecoverIdentityModal: React.FC<Props> = ({
           </TouchableOpacity>
           <IconFont
             name="io-lombardia"
-            size={35}
+            size={30}
             color={variables.colorWhite}
+            style={{ marginRight: 15 }}
           />
         </View>
         <View style={main.container}>
           <View style={textBox.container}>
-            <Text style={textBox.title}>Digita la chiave di recupero</Text>
+            <Text style={textBox.title}>
+              {I18n.t("ssi.onboarding.recoverIdentityTitle")}
+            </Text>
           </View>
 
-          <Text style={input.label}>Chiave:</Text>
+          <Text style={input.label}>
+            {I18n.t("ssi.onboarding.recoverIdenityLabel")}:
+          </Text>
           <TextInput
             onChangeText={handleRecoveryInput}
             style={input.container}
@@ -121,7 +137,7 @@ const RecoverIdentityModal: React.FC<Props> = ({
             <Text
               style={isPress ? buttonPrimary.textPress : buttonPrimary.text}
             >
-              Recupera identità
+              {I18n.t("ssi.onboarding.recoverIdentity")}
             </Text>
           </TouchableHighlight>
         </View>
@@ -135,7 +151,8 @@ const topbar = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 20,
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    alignItems: "center"
   }
 });
 
@@ -182,7 +199,7 @@ const textBox = StyleSheet.create({
 const buttonPrimary = StyleSheet.create({
   container: {
     width: "100%",
-    backgroundColor: variables.colorWhite,
+    backgroundColor: variables.brandPrimaryDark,
     borderRadius: 5,
     alignItems: "center",
     paddingVertical: 8,
@@ -190,7 +207,7 @@ const buttonPrimary = StyleSheet.create({
   },
   containerPress: {
     width: "100%",
-    backgroundColor: variables.brandPrimaryDark,
+    backgroundColor: variables.brandPrimaryLight,
     borderRadius: 5,
     alignItems: "center",
     paddingVertical: 8,
@@ -201,7 +218,7 @@ const buttonPrimary = StyleSheet.create({
     fontFamily:
       Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
     fontWeight: Platform.OS === "ios" ? "500" : "normal",
-    color: variables.brandPrimary
+    color: variables.colorWhite
   },
   textPress: {
     fontSize: variables.fontSize3,

@@ -59,11 +59,21 @@ const DidSetterScreen: React.FC<Props> = ({
       "⚠️ GENERANDO un nuovo DID! (eventuale DID precedente è stato sovrascritto)"
     );
     try {
-      changeLoadingStates(true, "Generando identità", "", true);
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.generatingIdentity"),
+        "",
+        true
+      );
 
       await DidSingleton.generateEthWallet();
 
-      changeLoadingStates(true, "Salvando identità", "", true);
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.savingIdentity"),
+        "",
+        true
+      );
       const savedOnKeychain = await DidSingleton.saveDidOnKeychain();
 
       if (!savedOnKeychain) {
@@ -72,7 +82,7 @@ const DidSetterScreen: React.FC<Props> = ({
 
       changeLoadingStates(
         true,
-        "Indetità creata con successo",
+        I18n.t("ssi.onboarding.generatingIdentityCompleted"),
         "completed",
         false
       );
@@ -81,7 +91,7 @@ const DidSetterScreen: React.FC<Props> = ({
       console.error(e);
       changeLoadingStates(
         true,
-        "Creazione identità non riuscita",
+        I18n.t("ssi.onboarding.generatingError"),
         "error",
         false
       );
@@ -134,21 +144,23 @@ const DidSetterScreen: React.FC<Props> = ({
           />
         </View>
         <View style={textBox.container}>
-          <Text style={textBox.title}>SSI</Text>
+          <Text style={textBox.title}>{I18n.t("ssi.title")}</Text>
           <Text style={textBox.subtitle}>
-            Prendi il controllo della tua identità
+            {I18n.t("ssi.onboarding.subtitle")}
           </Text>
         </View>
         <TouchableHighlight {...touchProps}>
           <Text style={isPress ? buttonPrimary.textPress : buttonPrimary.text}>
-            Crea nuova identità
+            {I18n.t("ssi.onboarding.createIdentity")}
           </Text>
         </TouchableHighlight>
         <TouchableOpacity
           style={buttonSecondary.container}
           onPress={() => setModalVisible(!modalVisible)}
         >
-          <Text style={buttonSecondary.text}>Recupera identità</Text>
+          <Text style={buttonSecondary.text}>
+            {I18n.t("ssi.onboarding.recoverIdentity")}
+          </Text>
         </TouchableOpacity>
       </View>
       <RecoverIdentityModal

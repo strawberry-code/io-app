@@ -304,6 +304,7 @@ ssi:
   vcslist:
     title: Credenziali Verificate
     subtitle: Queste sono le tue Credenziali Verificate associate al tuo SPID
+    button: "Credenziali\nVerificate"
   balanceAndTransaction:
     title: Bilancio & Transazioni
     balanceTitle: Bilancio
@@ -312,6 +313,13 @@ ssi:
     receiveButton: Ricevi
   sendFromWallet:
     title: Invia dal Wallet
+    sendToLabel: "Invia a:"
+    amount: "Importo:"
+    creatingTransaction: Creando la transazione
+    signingTransaction: Firmando la transazione
+    sendingTransaction: Inviando la transazione
+    completedTransaction: Transazione completata
+    errorTransaction: Transazione non riuscita
   receiveIntoWallet:
     title: Ricevi nel Wallet
     descriptionTitle: Descrizione
@@ -322,6 +330,20 @@ ssi:
     saveQuestion: Vuoi firmare questa Credenziale Verificata?
     acceptButton: Firma
     declineButton: Non firmare
+  onboarding:
+    subtitle: Prendi il controllo della tua identità
+    createIdentity: Crea nuova Identità
+    recoverIdentity: Recupera Identità
+    generatingIdentity: Generando Identità
+    generatingIdentityCompleted: Identità creata con successo
+    savingIdentity: Salvando Identità
+    generatingError: Creazione Identità non riuscita
+    recoverIdentityTitle: Digita la tua chiave di recupero
+    recoverIdenityLabel: Chiave
+    recoveringIdentity: Recuperando Identità
+    recoveringIdentityCompleted: Recupero Identità avvenuto con successo
+    recoveringError: Recupero Identità non riuscito
+    retry: Riprova
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

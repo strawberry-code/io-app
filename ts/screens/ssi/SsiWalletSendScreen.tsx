@@ -68,9 +68,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
   // TRANSACTION LOADING STATE MANAGEMENT
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loadingMessage, setLoadingMessage] = useState<string>(
-    "Transazione non riuscita"
-  );
+  const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [transactionResult, setTransactionResult] = useState<
     "error" | "completed" | ""
   >("");
@@ -122,7 +120,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
 
     setModalVisible(true);
     setIsLoading(true);
-    setLoadingMessage("Creando la transazione");
+    setLoadingMessage(I18n.t("ssi.sendFromWallet.creatingTransaction"));
 
     try {
       const responseOne = await fetch(
@@ -149,7 +147,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
           )}`
         );
       }
-      setLoadingMessage("Firmando la transazione");
+      setLoadingMessage(I18n.t("ssi.sendFromWallet.signingTransaction"));
 
       const unsignedTx = await responseOne.json();
       console.log("response data", unsignedTx);
@@ -172,7 +170,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
       const signedTx = await wallet.signTransaction(ethersFormatTx);
       console.log("signedTx", signedTx);
 
-      setLoadingMessage("Inviando la transazione");
+      setLoadingMessage(I18n.t("ssi.sendFromWallet.sendingTransaction"));
       const responseTwo = await fetch(
         `https://tokenization.pub.blockchaincc.ga/api/user/app/sendTx`,
         {
@@ -204,14 +202,14 @@ const SsiWalletSendScreen: React.FC<Props> = ({
 
       if (dataTwo.status) {
         setIsLoading(false);
-        setLoadingMessage("Transazione effettuata");
+        setLoadingMessage(I18n.t("ssi.sendFromWallet.completedTransaction"));
         setTransactionResult("completed");
       }
     } catch (e) {
       console.error("Error: ", e);
 
       setIsLoading(false);
-      setLoadingMessage("Transazione non riuscita");
+      setLoadingMessage(I18n.t("ssi.sendFromWallet.errorTransaction"));
       setTransactionResult("error");
     }
   };
@@ -241,7 +239,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
     >
       <View style={{ flex: 1, justifyContent: "space-between", padding: 20 }}>
         <View style={{ justifyContent: "space-between" }}>
-          <Text style={title.text}>Invia dal Wallet</Text>
+          <Text style={title.text}>{I18n.t("ssi.sendFromWallet.title")}</Text>
         </View>
 
         <View>
@@ -254,7 +252,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                   fontSize: 20
                 }}
               >
-                Inviare a:
+                {I18n.t("ssi.sendFromWallet.sendToLabel")}
               </Label>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <TextInput
@@ -283,7 +281,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
             </Item>
             <Item stackedLabel>
               <Label style={{ color: variables.brandPrimary, fontSize: 20 }}>
-                Importo
+                {I18n.t("ssi.sendFromWallet.amount")}
               </Label>
               <TextInput
                 onChangeText={handleAmount}

@@ -469,7 +469,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             false,
             true,
             "io-service-list",
-            "Verified\nCredentials",
+            I18n.t('ssi.vcslist.button'),
             async () => {
               navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
               //alert('clicked A')

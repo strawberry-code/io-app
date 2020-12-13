@@ -302,6 +302,7 @@ ssi:
   vcslist:
     title: Verified Credentials
     subtitle: These are your Verified Credentials related to your SPID
+    button: "Verified\nCredentials"
   balanceAndTransaction:
     title: Balance & Transactions
     balanceTitle: Balance
@@ -310,6 +311,13 @@ ssi:
     receiveButton: Receive
   sendFromWallet:
     title: Send from Wallet
+    sendToLabel: "Send to:"
+    amount: "Amount:"
+    creatingTransaction: Creating the Transaction
+    signingTransaction: Signing the Transaction
+    sendingTransaction: Sending the Transaction
+    completedTransaction: Transaction completed
+    errorTransaction: Transaction Failed
   receiveIntoWallet:
     title: Receive in the Wallet
     descriptionTitle: Description
@@ -320,6 +328,20 @@ ssi:
     saveQuestion: Want to sign this Verifiable Credential?
     acceptButton: Sign
     declineButton: Decline
+  onboarding:
+    subtitle: Take control of your own identity
+    createIdentity: Create new Identity
+    recoverIdentity: Retrieve Identity
+    generatingIdentity: Generating Identity
+    savingIdentity: Saving Identity
+    generatingIdentityCompleted: Identity created successfully
+    generatingError: Identity creation failed
+    recoverIdentityTitle: Type in your Recovery Key
+    recoverIdenityLabel: Key
+    recoveringIdentity: Recovering Identity
+    recoveringIdentityCompleted: Identity recovery was successful
+    recoveringError: Identity retrieval failed
+    retry: Retry
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
