@@ -163,12 +163,12 @@ export class DID {
     this.setRecoverKey(unmarshalled.recoverKey)
   }
 
-  public async loadDidFromKeychain(): Promise<any> {
-    await getDidFromKeychain()
+  public async loadDidFromKeychain(): Promise<boolean> {
+    return await getDidFromKeychain();
   }
 
-  public async saveDidOnKeychain(): Promise<void> {
-    await setDidOnKeychain()
+  public async saveDidOnKeychain(): Promise<boolean> {
+    return await setDidOnKeychain();
   }
 
   public getIssuer(): Issuer {
