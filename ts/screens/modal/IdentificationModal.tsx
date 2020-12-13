@@ -38,7 +38,7 @@ import customVariables from "../../theme/variables";
 import { setAccessibilityFocus } from "../../utils/accessibility";
 import { authenticateConfig } from "../../utils/biometric";
 import { maybeNotNullyString } from "../../utils/strings";
-import {DidSingleton} from "../../types/DID";
+import { DidSingleton } from "../../types/DID";
 
 type Props = ReturnType<typeof mapDispatchToProps> &
   ReturnType<typeof mapStateToProps>;
@@ -318,10 +318,14 @@ class IdentificationModal extends React.PureComponent<Props, State> {
     if (identificationSuccessData) {
       identificationSuccessData.onSuccess();
     }
-    console.log('🟢🟢🟢🟢 YYYYYY - mettere qui il recupero del DID dal portachiavi')
-    if(!(await DidSingleton.loadDidFromKeychain())) {
-      await DidSingleton.generateEthWallet()
-      await DidSingleton.saveDidOnKeychain()
+    console.log(
+      "🟢🟢🟢🟢 YYYYYY - mettere qui il recupero del DID dal portachiavi"
+    );
+    const loadedDidFromKeychain = await DidSingleton.loadDidFromKeychain();
+
+    if (!loadedDidFromKeychain) {
+      await DidSingleton.generateEthWallet();
+      await DidSingleton.saveDidOnKeychain();
     }
     this.props.onIdentificationSuccess();
   };
@@ -482,7 +486,7 @@ class IdentificationModal extends React.PureComponent<Props, State> {
               compareWithCode={pin as string}
               activeColor={defaultColor}
               inactiveColor={defaultColor}
-              buttonType={!isValidatingTask? "light": "primary"}
+              buttonType={!isValidatingTask ? "light" : "primary"}
               delayOnFailureMillis={1000}
               onFulfill={(_: string, __: boolean) =>
                 this.onPinFullfill(
