@@ -16,6 +16,7 @@ export class DID {
   private ethAddress: string | undefined
   private publicKey: string | undefined
   private privateKey: string | undefined
+  private recoverKey: string | undefined
 
   constructor() {
     if(DidSingleton) {
@@ -30,6 +31,7 @@ export class DID {
     this.didAddress = ''
     this.publicKey = ''
     this.privateKey = ''
+    this.recoverKey = ''
   }
 
   private setDidAddress(potDidAddress: string): void {
@@ -55,6 +57,11 @@ export class DID {
     this.privateKey = privateKey
   }
 
+  public setRecoverKey(recoverKey: string): void {
+    // extendedKey dal HD Wallet per il recupero del Wallet
+    this.recoverKey = recoverKey;
+  }
+
   public getDidAddress(): string {
     return <string>this.didAddress
   }
@@ -72,6 +79,11 @@ export class DID {
     return <string>this.privateKey
   }
 
+  public getRecoverKey(): string {
+    // FIXME: attenzione, implementare qui la verifica biometrica oppure quella del PIN
+    return <string>this.recoverKey
+  }
+
   public async generateEthWallet(): Promise<void> {
     let secureRandomSeed: Uint8Array = await generateSecureRandom(64) // FIXME: adesso stiamo usando un seed generato a random, ma per il recupero poi come si fa?
     console.log("secure random seed: " + secureRandomSeed)
@@ -81,6 +93,7 @@ export class DID {
     this.setDidAddress(`did:ethr:${hdnode.address}`)
     this.setEthAddress(hdnode.address)
     this.setPublicKey(hdnode.publicKey)
+    this.setRecoverKey(hdnode.extendedKey);
 
     let potPrivateKey = hdnode.privateKey
     if(potPrivateKey.startsWith('0x')) {
@@ -90,12 +103,40 @@ export class DID {
   }
 
 
+  public async recoverEthWallet(recoverKey: string): Promise<boolean> {
+    
+    try {
+      const hdnode = ethers.utils.HDNode.fromExtendedKey(recoverKey);
+      if (!hdnode) {
+        throw new Error(`Recupero Wallet non riuscito ${hdnode}`);
+      }
+      
+      this.setDidAddress(`did:ethr:${hdnode.address}`);
+      this.setEthAddress(hdnode.address);
+      this.setPublicKey(hdnode.publicKey);
+      this.setRecoverKey(hdnode.extendedKey);
+  
+      // eslint-disable-next-line functional/no-let
+      let potPrivateKey = hdnode.privateKey
+      if(potPrivateKey.startsWith('0x')) {
+        potPrivateKey = potPrivateKey.replace('0x', '')
+      }
+      this.setPrivateKey(potPrivateKey);
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+
+
   public marshal(): string {
-    let DidData = {
+    const DidData = {
       didAddress: this.getDidAddress(),
-      ethAddress: this.getDidAddress(),
+      ethAddress: this.getEthAddress(),
       publicKey: this.getPublicKey(),
-      privateKey: this.getPrivateKey()
+      privateKey: this.getPrivateKey(),
+      recoverKey: this.getRecoverKey()
     }
     return JSON.stringify(DidData)
   }
@@ -113,11 +154,13 @@ export class DID {
     if(!unmarshalled.ethAddress) throw new Error('could not unmarshal ethAddress')
     if(!unmarshalled.publicKey) throw new Error('could not unmarshal publicKey')
     if(!unmarshalled.privateKey) throw new Error('could not unmarshal privateKey')
+    if(!unmarshalled.recoverKey) throw new Error('could not unmarshal recoverKey')
 
     this.setDidAddress(unmarshalled.didAddress)
     this.setEthAddress(unmarshalled.ethAddress)
     this.setPublicKey(unmarshalled.publicKey)
     this.setPrivateKey(unmarshalled.privateKey)
+    this.setRecoverKey(unmarshalled.recoverKey)
   }
 
   public async loadDidFromKeychain(): Promise<any> {
