@@ -43,6 +43,7 @@ import {
   loadServiceMetadata
 } from "../actions/content";
 import { instabugReportClosed, instabugReportOpened } from "../actions/debug";
+import { createDIDSuccess, recoverDID } from "../actions/didset";
 import {
   identificationCancel,
   identificationFailure,
@@ -317,6 +318,8 @@ const trackAction = (mp: NonNullable<typeof mixpanel>) => (
     case getType(analyticsOnboardingStarted):
     case getType(createPinSuccess):
     case getType(updatePin):
+    case getType(createDIDSuccess):
+    case getType(recoverDID):
     // profile
     case getType(profileUpsert.success):
     // userMetadata

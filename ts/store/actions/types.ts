@@ -22,6 +22,7 @@ import { CieAuthenticationActions } from "./cie";
 import { ContentActions } from "./content";
 import { DebugActions } from "./debug";
 import { DeepLinkActions } from "./deepLink";
+import { DIDSetActions } from "./didset";
 import { IdentificationActions } from "./identification";
 import { InstabugInfoActions } from "./instabug";
 import { InstallationActions } from "./installation";
@@ -52,6 +53,7 @@ export type Action =
   | CieAuthenticationActions
   | BackendInfoActions
   | DeepLinkActions
+  | DIDSetActions
   | MessagesActions
   | NavigationActions
   | NotificationsActions
