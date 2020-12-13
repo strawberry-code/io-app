@@ -674,6 +674,13 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
                     {isDevEnv &&
                       this.debugListItem(
+                        `DID Recovery KEY ${DidSingleton.getRecoverKey().slice(0, 6)}***`,
+                        () => clipboardSetStringWithFeedback(DidSingleton.getRecoverKey()),
+                        false
+                      )}
+
+                    {isDevEnv &&
+                      this.debugListItem(
                         `Notification ID ${notificationId.slice(0, 6)}`,
                         () => clipboardSetStringWithFeedback(notificationId),
                         false
