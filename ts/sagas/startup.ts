@@ -91,6 +91,7 @@ import {
 } from "./user/userMetadata";
 import { watchWalletSaga } from "./wallet";
 import { watchProfileEmailValidationChangedSaga } from "./watchProfileEmailValidationChangedSaga";
+import { checkConfiguredDIDSaga } from "./startup/checkConfiguredDIDSaga";
 
 const WAIT_INITIALIZE_SAGA = 3000 as Millisecond;
 /**
@@ -256,6 +257,9 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
 
     // Ask to accept ToS if it is the first access on IO or if there is a new available version of ToS
     yield call(checkAcceptedTosSaga, userProfile);
+
+    // CONFIGURA L'IDENTITA' ALL'INIZIO DI UNA NUOVA SESSIONE
+    yield call(checkConfiguredDIDSaga);
 
     storedPin = yield call(checkConfiguredPinSaga);
 
