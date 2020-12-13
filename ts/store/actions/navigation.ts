@@ -73,6 +73,12 @@ export const navigateToIdpSelectionScreenAction = NavigationActions.navigate({
   })
 });
 
+// ONBOARDING FOR DID SCREEN RECOVERY OR SETTER
+export const navigateToOnboardingDIDScreenAction = NavigationActions.navigate({
+  routeName: ROUTES.ONBOARDING,
+  action: NavigationActions.navigate({ routeName: ROUTES.ONBOARDING_DID })
+});
+
 export const navigateToOnboardingPinScreenAction = NavigationActions.navigate({
   routeName: ROUTES.ONBOARDING,
   action: NavigationActions.navigate({ routeName: ROUTES.ONBOARDING_PIN })
