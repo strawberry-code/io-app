@@ -114,32 +114,37 @@ const RecoverIdentityModal: React.FC<Props> = ({
           />
         </View>
         <View style={main.container}>
-          <View style={textBox.container}>
+          <View>
             <Text style={textBox.title}>
               {I18n.t("ssi.onboarding.recoverIdentityTitle")}
             </Text>
+            <Text style={textBox.subtitle}>
+              {I18n.t("ssi.onboarding.recoverIdentitySubtitle")}
+            </Text>
           </View>
 
-          <Text style={input.label}>
-            {I18n.t("ssi.onboarding.recoverIdenityLabel")}:
-          </Text>
-          <TextInput
-            onChangeText={handleRecoveryInput}
-            style={input.container}
-            value={recoveryKey}
-          />
-          <TouchableHighlight
-            {...touchProps}
-            style={
-              isPress ? buttonPrimary.containerPress : buttonPrimary.container
-            }
-          >
-            <Text
-              style={isPress ? buttonPrimary.textPress : buttonPrimary.text}
-            >
-              {I18n.t("ssi.onboarding.recoverIdentity")}
+          <View style={input.group}>
+            <Text style={input.label}>
+              {I18n.t("ssi.onboarding.recoverIdenityLabel")}:
             </Text>
-          </TouchableHighlight>
+            <TextInput
+              onChangeText={handleRecoveryInput}
+              style={input.container}
+              value={recoveryKey}
+            />
+            <TouchableHighlight
+              {...touchProps}
+              style={
+                isPress ? buttonPrimary.containerPress : buttonPrimary.container
+              }
+            >
+              <Text
+                style={isPress ? buttonPrimary.textPress : buttonPrimary.text}
+              >
+                {I18n.t("ssi.onboarding.recoverIdentity")}
+              </Text>
+            </TouchableHighlight>
+          </View>
         </View>
       </LinearGradient>
     </Modal>
@@ -160,11 +165,16 @@ const main = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     alignItems: "center",
-    flex: 1
+    flex: 1,
+    justifyContent: "space-around"
   }
 });
 
 const input = StyleSheet.create({
+  group: {
+    width: "100%",
+    flex: 0.85
+  },
   container: {
     backgroundColor: variables.colorWhite,
     width: "100%",
@@ -184,13 +194,18 @@ const input = StyleSheet.create({
 });
 
 const textBox = StyleSheet.create({
-  container: {
-    marginBottom: "20%"
-  },
   title: {
     fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-Bold",
     fontWeight: Platform.OS === "ios" ? "600" : "normal",
     fontSize: variables.h2FontSize,
+    color: variables.colorWhite,
+    textAlign: "center",
+    marginBottom: 10
+  },
+  subtitle: {
+    fontFamily:
+      Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-Regular",
+    fontSize: variables.h5FontSize,
     color: variables.colorWhite,
     textAlign: "center"
   }
