@@ -18,10 +18,11 @@ import { DidSingleton } from "../../types/DID";
 import variables from "../../theme/variables";
 import IconFont from "../../components/ui/IconFont";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
+import { clipboardSetStringWithFeedback } from "../../utils/clipboard";
 import I18n from "../../i18n";
 import RecoverIdentityModal from "./RecoverIdentityModal";
 
-type ResultStatus = "completed" | "error" | "";
+type ResultStatus = "completed" | "error" | "show_recovery_key" | "";
 
 type Props = ReturnType<typeof mapDispatchToProps>;
 
@@ -34,6 +35,9 @@ const DidSetterScreen: React.FC<Props> = ({
   const [loadingMessage, setLoadingMessage] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [loadingVisible, setLoadingVisible] = React.useState<boolean>(false);
+
+  // RECOVERY KEY VALUE TO COPY TO CLIPBOARD WITH BUTTON
+  const [recoveryKey, setRecoveryKey] = React.useState<string>("");
 
   // visibility of Recover Identity Modal
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
@@ -86,7 +90,15 @@ const DidSetterScreen: React.FC<Props> = ({
         "completed",
         false
       );
-      setTimeout(() => createDIDSuccess(), 2000);
+      setTimeout(() => {
+        setRecoveryKey(DidSingleton.getRecoverKey());
+        changeLoadingStates(
+          true,
+          "Questa è la tua chiave privata",
+          "show_recovery_key",
+          false
+        );
+      }, 2000);
     } catch (e) {
       console.error(e);
       changeLoadingStates(
@@ -186,6 +198,30 @@ const DidSetterScreen: React.FC<Props> = ({
                 color={variables.brandPrimary}
               />
             )}
+            {!isLoading && result === "show_recovery_key" && (
+              <>
+                <Text style={loading.recoveryKeyText}>
+                  Copiala in un posto sicuro!
+                </Text>
+                <Text style={loading.recoveryKeyText}>
+                  {recoveryKey.substr(0, 19) + "***"}
+                </Text>
+                <TouchableOpacity
+                  style={[loadingButton.round, loadingButton.copyToClipboard]}
+                  onPress={() => clipboardSetStringWithFeedback(recoveryKey)}
+                >
+                  <Text style={loadingButton.textSmall}>
+                    <IconFont name="io-paste" />
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={loadingButton.container}
+                  onPress={() => createDIDSuccess()}
+                >
+                  <Text style={loadingButton.textSmall}>Continua</Text>
+                </TouchableOpacity>
+              </>
+            )}
             {isLoading && <RefreshIndicator />}
             {!isLoading && result === "error" && (
               <TouchableOpacity
@@ -217,7 +253,7 @@ const loading = StyleSheet.create({
   card: {
     backgroundColor: variables.colorWhite,
     width: "80%",
-    height: "50%",
+    height: "60%",
     borderRadius: 5,
     alignItems: "center",
     padding: 30,
@@ -235,6 +271,14 @@ const loading = StyleSheet.create({
   },
   cardNotLoading: {
     justifyContent: "space-evenly"
+  },
+  recoveryKeyText: {
+    fontSize: variables.fontSize2,
+    color: variables.colorBlack,
+    fontFamily:
+      Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-Regular",
+    textAlign: "center",
+    marginBottom: 20
   }
 });
 
@@ -245,10 +289,25 @@ const loadingButton = StyleSheet.create({
     backgroundColor: variables.brandPrimary,
     borderRadius: 5
   },
+  round: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    backgroundColor: variables.brandPrimary
+  },
   text: {
     fontSize: variables.h4FontSize,
     color: variables.colorWhite,
     textAlign: "center"
+  },
+  textSmall: {
+    fontSize: variables.h5FontSize,
+    color: variables.colorWhite,
+    textAlign: "center"
+  },
+  copyToClipboard: {
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
