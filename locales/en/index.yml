@@ -337,6 +337,7 @@ ssi:
     generatingIdentityCompleted: Identity created successfully
     generatingError: Identity creation failed
     recoverIdentityTitle: Type in your Recovery Key
+    recoverIdentitySubtitle: Enter private key to regain access to your DID
     recoverIdenityLabel: Key
     recoveringIdentity: Recovering Identity
     recoveringIdentityCompleted: Identity recovery was successful

@@ -339,6 +339,7 @@ ssi:
     savingIdentity: Salvando Identità
     generatingError: Creazione Identità non riuscita
     recoverIdentityTitle: Digita la tua chiave di recupero
+    recoverIdentitySubtitle: Inserisci chiave privata per recuperare accesso al tuo DID
     recoverIdenityLabel: Chiave
     recoveringIdentity: Recuperando Identità
     recoveringIdentityCompleted: Recupero Identità avvenuto con successo
