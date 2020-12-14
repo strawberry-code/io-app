@@ -299,6 +299,14 @@ profile:
 ssi:
   title: SSI
   scanQr: Scan a QR code
+  linkText: Visit
+  issuer:
+    unknown: Unknown Signer
+    fields:
+      tradeName: Trade Name
+      postalAddress: Postal Address
+      electronicAddress: Electronic Address
+      informationUri: Information URI
   vcslist:
     title: Verified Credentials
     subtitle: These are your Verified Credentials related to your SPID

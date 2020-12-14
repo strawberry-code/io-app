@@ -301,6 +301,14 @@ profile:
 ssi:
   title: SSI
   scanQr: Scansiona codice QR
+  linkText: Visita
+  issuer:
+    unknown: Firmatario Sconosciuto
+    fields:
+      tradeName: Nome Depositato
+      postalAddress: Indirizzo Postale
+      electronicAddress: Indirizzo elettronico
+      informationUri: URI della informazioni
   vcslist:
     title: Credenziali Verificate
     subtitle: Queste sono le tue Credenziali Verificate associate al tuo SPID
