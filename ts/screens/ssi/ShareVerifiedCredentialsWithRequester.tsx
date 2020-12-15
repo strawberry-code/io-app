@@ -188,6 +188,10 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
   private shareVCnow = async () => {
 
+    this.setState(prevState => ({
+      modalVisible: true,
+      modalStates: {...prevState.modalStates, sharing: true}
+    }));
 
     if (this.state.callbackUrl === undefined) {
       throw new TypeError("La callbackUrl da QR Code non può essere undefined!")
@@ -270,22 +274,6 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     }
   };
 
-  // XXX
-  // //FIXME: @Pedro: hai scritto tu questo? Non ricordo, se sì, sembra non essere utilizzato, potremmo toglierlo?
-  // private textHeader = (headerTitle: string) => {
-  //   return (
-  //     <Text
-  //       style={{
-  //         color: variables.colorWhite,
-  //         fontWeight: "bold",
-  //         textAlign: "center"
-  //       }}
-  //     >
-  //       {headerTitle}
-  //     </Text>
-  //   );
-  // };
-  // YYY
 
   // Funzione che verra passata alla SingleVC View per fare il toggle della checkbox
   private checkSelectedVC = (info: JwtCredentialPayload) => {
@@ -402,7 +390,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
               {this.state.modalStates.sharing && (
                 <>
                   <Text style={styles.modalText}>Sharing credential...</Text>
-                  <ActivityIndicator/>
+                  <ActivityIndicator color={variables.brandPrimary} />
                 </>
               )}
 
