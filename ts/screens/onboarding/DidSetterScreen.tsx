@@ -20,22 +20,23 @@ import IconFont from "../../components/ui/IconFont";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { clipboardSetStringWithFeedback } from "../../utils/clipboard";
 import I18n from "../../i18n";
-import RecoverIdentityModal from "./RecoverIdentityModal";
 import NetCode from "../ssi/NetCode";
-import {GlobalState} from "../../store/reducers/types";
-import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
-import {LightModalContextInterface} from "../../components/ui/LightModal";
-import {withLightModalContext} from "../../components/helpers/withLightModalContext";
+import VCstore from "../ssi/VCstore";
+import { GlobalState } from "../../store/reducers/types";
+import { notificationsInstallationSelector } from "../../store/reducers/notifications/installation";
+import { LightModalContextInterface } from "../../components/ui/LightModal";
+import { withLightModalContext } from "../../components/helpers/withLightModalContext";
+import RecoverIdentityModal from "./RecoverIdentityModal";
 
 type ResultStatus = "completed" | "error" | "show_recovery_key" | "";
 
 type Props = ReturnType<typeof mapDispatchToProps> &
   ReturnType<typeof mapStateToProps>;
 
-
 const DidSetterScreen: React.FC<Props> = ({
   abortOnboarding,
-  createDIDSuccess, notificationToken
+  createDIDSuccess,
+  notificationToken
 }) => {
   // LOADING STATUS MANAGEMENT
   const [result, setResult] = React.useState<ResultStatus>("");
@@ -79,11 +80,15 @@ const DidSetterScreen: React.FC<Props> = ({
 
       await DidSingleton.generateEthWallet();
 
-      if(!notificationToken) {
-        console.log(`[DidSetterScreen][handleLogin]: impossibile creare l'user nel backend perchè manca il push device token`)
+      if (!notificationToken) {
+        console.log(
+          `[DidSetterScreen][handleLogin]: impossibile creare l'user nel backend perchè manca il push device token`
+        );
       }
-      await NetCode.createNewUser(DidSingleton.getDidAddress(), notificationToken)
-
+      await NetCode.createNewUser(
+        DidSingleton.getDidAddress(),
+        notificationToken
+      );
 
       changeLoadingStates(
         true,
@@ -107,7 +112,7 @@ const DidSetterScreen: React.FC<Props> = ({
         setRecoveryKey(DidSingleton.getRecoverKey());
         changeLoadingStates(
           true,
-          "Questa è la tua chiave privata",
+          I18n.t("ssi.onboarding.yourRecoverKey"),
           "show_recovery_key",
           false
         );
@@ -117,6 +122,38 @@ const DidSetterScreen: React.FC<Props> = ({
       changeLoadingStates(
         true,
         I18n.t("ssi.onboarding.generatingError"),
+        "error",
+        false
+      );
+    }
+  };
+
+  const generateVC = async () => {
+    try {
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.generatingVC"),
+        "",
+        true
+      );
+      await VCstore.storeVC(
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGc1TURNeU1UTTBOU3dpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklrbEVNU0lzSW1acGNuTjBUbUZ0WlNJNkltNWhiV1V4SWl3aWJHRnpkRTVoYldVaU9pSnNZWE15SWl3aVltbHlkR2hrWVhraU9pSXlNREl3TFRBNExUQXpJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2laSE5oWm1SblptUm9aeUo5ZlN3aWMzVmlJam9pWkdsa09tVjBhSEk2TUhnMlJUSTNPR0V4WlRBMk1USm1Na1EzTlVFelF6QkdOV0kzWkRrd01EVXpNVEk0TldNeU5UWTNJaXdpYW5ScElqb2lhSFIwY0RvdkwyVjRZVzF3YkdVdVpXUjFMMk55WldSbGJuUnBZV3h6THpNM016SWlMQ0pwYzNOMVpYSWlPbnNpYVdRaU9pSWlmU3dpYVhOeklqb2laR2xrT21WMGFISTZNSGcyUlRJM09HRXhaVEEyTVRKbU1rUTNOVUV6UXpCR05XSTNaRGt3TURVek1USTROV015TlRZM0lpd2libUptSWpveE5UUXhORGt6TnpJMExDSnViMjVqWlNJNklqWTJNQ0UyTXpRMVJsTmxjaUlzSW1OeVpXUmxiblJwWVd4VGRHRjBkWE1pT25zaWFXUWlPaUlpTENKMGVYQmxJam9pSW4wc0ltTnlaV1JsYm5ScFlXeFRZMmhsYldFaU9uc2lhV1FpT2lKRFlYSjBZVWxrWlc1MGFYUmhJaXdpZEhsd1pTSTZJbEpsWjJsdmJtVk1iMjFpWVhKa2FXRWlmU3dpYVdRaU9pSTVZVGRoWWpZMk1DMDBZMlJpTFRRNU4yWXRPRGRpWlMwM09UTm1NakV4TldFMllUa2lmUS42WVB0OHNrYWtQZjdIZ0NqSUszaUxBMmxMRWZmZU1QQ2NDdldDbFBPdGRvOThkTEhHLUdKS3cxVmcwNzdiemZRYUVRV0E2SjFvdmpzUFZQZkdXSEw0ZyJdfSwiaXNzIjoiZGlkOmV0aHI6MHg2RTI3OGExZTA2MTJmMkQ3NUEzQzBGNWI3ZDkwMDUzMTI4NWMyNTY3In0.eN5LkPTZgfvbBN052Ews0JW7xlOxOXAernPV0VfUlz5AA6VFztTty4mkEto-iBLFsnC2kI9QsAfAaninLGO7wg"
+      );
+      setTimeout(() => {
+        changeLoadingStates(
+          true,
+          I18n.t("ssi.onboarding.generatingVCCompleted"),
+          "completed",
+          false
+        );
+      }, 2000);
+
+      setTimeout(() => createDIDSuccess(), 2000);
+    } catch (e) {
+      console.error("Credenziale verificata non generata", e);
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.generatingVCError"),
         "error",
         false
       );
@@ -214,7 +251,7 @@ const DidSetterScreen: React.FC<Props> = ({
             {!isLoading && result === "show_recovery_key" && (
               <>
                 <Text style={loading.recoveryKeyText}>
-                  Copiala in un posto sicuro!
+                  {I18n.t("ssi.onboarding.saveYourRecoverKey")}
                 </Text>
                 <Text style={loading.recoveryKeyText}>
                   {recoveryKey.substr(0, 19) + "***"}
@@ -229,7 +266,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={loadingButton.container}
-                  onPress={() => createDIDSuccess()}
+                  onPress={generateVC}
                 >
                   <Text style={loadingButton.textSmall}>Continua</Text>
                 </TouchableOpacity>
@@ -415,15 +452,12 @@ const buttonSecondary = StyleSheet.create({
 });
 
 const mapStateToProps = (state: GlobalState) => ({
-  notificationToken: notificationsInstallationSelector(state).token,
+  notificationToken: notificationsInstallationSelector(state).token
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   createDIDSuccess: () => dispatch(createDIDSuccess()),
-  abortOnboarding: () => dispatch(abortOnboarding()),
+  abortOnboarding: () => dispatch(abortOnboarding())
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DidSetterScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(DidSetterScreen);
