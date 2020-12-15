@@ -13,6 +13,7 @@ import variables from "../../../theme/variables";
 import IconFont from "../../../components/ui/IconFont";
 import I18n from "../../../i18n";
 import { TranslationKeys } from "../../../../locales/locales";
+import { DidSingleton } from "../../../types/DID";
 
 interface Props {
   issuer: {
@@ -22,6 +23,8 @@ interface Props {
 
 const IssuerComponent: React.FC<Props> = ({ issuer }) => {
   const [visible, setVisible] = useState<"none" | "flex">("none");
+
+  if (issuer.id === DidSingleton.getDidAddress()) return null;
 
   const handleOpen = () => {
     if (visible === "none") setVisible("flex");
