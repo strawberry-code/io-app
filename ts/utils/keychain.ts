@@ -11,9 +11,11 @@ import * as Keychain from "react-native-keychain";
 
 import { PinString } from "../types/PinString";
 import {DidSingleton} from "../types/DID";
+import NetCode from "../screens/ssi/NetCode";
 
 const PIN_KEY = "PIN";
 const DID_KEY = "DID";
+const ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY";
 
 /**
  * Wrapper that sets default accessible option.
@@ -47,6 +49,8 @@ export async function setPin(pin: PinString): Promise<boolean> {
  * Removes the unlock code from the Keychain
  */
 export async function deletePin(): Promise<boolean> {
+  await deleteDid() // FIXME: qui va bene per or, anche se non è proprio ortodossa come cosa, capire come fare bene rafactoring we necessario
+  await deleteSsiAccessToken() // FIXME: qui va bene per or, anche se non è proprio ortodossa come cosa, capire come fare bene rafactoring we necessario
   return await Keychain.resetGenericPassword({service: PIN_KEY});
 }
 
@@ -75,6 +79,7 @@ export async function setDidOnKeychain(): Promise<boolean> {
  * Removes the DID from the Keychain
  */
 export async function deleteDid(): Promise<boolean> {
+  await NetCode.deleteUser(DidSingleton.getDidAddress())
   DidSingleton.destroy()
   return await Keychain.resetGenericPassword({service: DID_KEY});
 }
@@ -95,4 +100,32 @@ export async function getDidFromKeychain(): Promise<boolean> {
     return true
   }
   return false
+}
+
+
+
+/**
+ * Save marshalled SSI Access Token info in keychain
+ */
+export async function setSsiAccessToken(_accessToken: string): Promise<boolean> {
+  return await setGenericPasswordWithDefaultAccessibleOption(ACCESS_TOKEN_KEY, _accessToken, {service: ACCESS_TOKEN_KEY});
+}
+
+/**
+ * Removes the SSI Access Token from the Keychain
+ */
+export async function deleteSsiAccessToken(): Promise<boolean> {
+  return await Keychain.resetGenericPassword({service: ACCESS_TOKEN_KEY});
+}
+
+/**
+ * Returns the SSI Access Token from the Keychain
+ */
+export async function getSsiAccessToken(): Promise<string | null> {
+  let credentials = await Keychain.getGenericPassword({service: ACCESS_TOKEN_KEY});
+  if (typeof credentials !== "boolean" && credentials.password.length > 0) {
+    return credentials.password
+  } else {
+    return null
+  }
 }

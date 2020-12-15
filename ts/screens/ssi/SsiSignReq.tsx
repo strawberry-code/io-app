@@ -7,11 +7,11 @@ import {
   TouchableHighlight,
   Platform
 } from "react-native";
-import { NavigationComponent } from 'react-navigation';
+import {NavigationComponent} from 'react-navigation';
 import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
 
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
-import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
+import {RefreshIndicator} from "../../components/ui/RefreshIndicator";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
@@ -19,12 +19,19 @@ import {DidSingleton} from "../../types/DID";
 import {SsiCustomGoBack} from "./components/SsiCustomGoBack";
 import SingleVC from "./SsiSingleVC";
 import {encodeVerifiablePresentation} from "./VerifiablePresentations";
+import {setSsiAccessToken} from "../../utils/keychain";
+import NetCode from "./NetCode";
+import {GlobalState} from "../../store/reducers/types";
+import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
+import {connect} from "react-redux";
 
-interface Props {
+interface NavigationProps {
   navigation: NavigationComponent;
 }
 
-const SsiSignReq: React.FC<Props> = ({ navigation }) => {
+type Props = NavigationProps & ReturnType<typeof mapStateToProps>;
+
+const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
   const [VC, setVC] = useState(undefined)
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -66,15 +73,28 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
       alert('codice type QR è sbagliato')
     }
 
-    if(vcJwt === undefined) {
+    if (vcJwt === undefined) {
       throw new Error('VC JWT could not be undefined!')
     }
 
-    let body = JSON.stringify({"verifiablePresentation": await encodeVerifiablePresentation([vcJwt])})
+    let body = {"verifiablePresentation": await encodeVerifiablePresentation([vcJwt])}
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
     setIsLoading(true);
 
+    let response = await NetCode.doAuthenticatedCallbackUrlFromQr({body: body, url: callback, method: callbackMethod})
+
+    // TODO: Implementare la gestione della risposta della response
+
+    setIsLoading(false);
+
+    navigation.navigate(ROUTES.SSI_SUCCESS, {
+      message: 'Firma della Credenziale Verificata avvenuta con successo!'
+    });
+
+
+
+    /*
     fetch(callback, {
       method: callbackMethod.toUpperCase(),
       headers: {
@@ -85,13 +105,22 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
       .then(response => response.json())
       .then(data => {
         console.log('Success:', data);
+        if(data.access_token) {
+          setSsiAccessToken(data.access_token)
+          console.log(`[SsiSignReq][signRequest] success: è stato salvato l'access token di ssi nel keychain del device`)
+        } else {
+          console.log(`[SsiSignReq][signRequest] errored: impossibile ottenere il token di accesso, i dati della risposta sono ${JSON.stringify(data)}`)
+        }
+        setIsLoading(false)
         navigation.navigate(ROUTES.SSI_SUCCESS, {
           message: 'Firma della Credenziale Verificata avvenuta con successo!'
         });
       })
       .catch((error) => {
+        setIsLoading(false)
         console.error('Error:', error);
       });
+     */
   }
 
   const VCtoPass = VC ? VC.payload : undefined;
@@ -102,15 +131,15 @@ const SsiSignReq: React.FC<Props> = ({ navigation }) => {
     <TopScreenComponent
       faqCategories={["profile", "privacy", "authentication_SPID"]}
       headerTitle={I18n.t("ssi.title")}
-      customGoBack={<SsiCustomGoBack cb={() => navigation.navigate('SSI_HOME')} />}
+      customGoBack={<SsiCustomGoBack cb={() => navigation.navigate('SSI_HOME')}/>}
     >
-      <View style={{ flex: 1, justifyContent: "space-between", padding: 20 }}>
-      {isLoading && (
-        <View style={loading.overlay}>
-          <RefreshIndicator />
-        </View>
-      )}
-        <View style={{ justifyContent: "space-between" }}>
+      <View style={{flex: 1, justifyContent: "space-between", padding: 20}}>
+        {isLoading && (
+          <View style={loading.overlay}>
+            <RefreshIndicator/>
+          </View>
+        )}
+        <View style={{justifyContent: "space-between"}}>
           <Text style={title.text}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>
         </View>
 
@@ -184,4 +213,9 @@ const title = StyleSheet.create({
   }
 });
 
-export default SsiSignReq;
+
+const mapStateToProps = (state: GlobalState) => ({
+  notificationToken: notificationsInstallationSelector(state).token,
+});
+
+export default connect(mapStateToProps)(SsiSignReq);

@@ -353,6 +353,10 @@ ssi:
     recoveringIdentityCompleted: Recupero Identità avvenuto con successo
     recoveringError: Recupero Identità non riuscito
     retry: Riprova
+  copyDID:
+    title: Copia DID
+    subtitle: Il tuo DID verrà copiato negli appunti del tuo device
+    prompt: Il tuo DID verrà copiato negli appunti del tuo device, vuoi procedere?
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

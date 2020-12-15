@@ -58,6 +58,10 @@ import VCstore from "./VCstore";
 import SingleVC from './SsiSingleVC'
 import {encodeVerifiablePresentation} from "./VerifiablePresentations";
 import {JWT} from "did-jwt-vc/lib/types";
+import NetCode from "./NetCode";
+import {DidSingleton} from "../../types/DID";
+import {getSsiAccessToken, setSsiAccessToken} from "../../utils/keychain";
+import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -79,6 +83,7 @@ type State = {
   shareable: boolean;
   callbackUrl?: RequestInfo;
   method?: string;
+  notificationToken: string;
 };
 
 /**
@@ -186,6 +191,23 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     });
   }
 
+  private salvaAccessTokeNelKeychain = async (response: any) => {
+    if (typeof response === 'boolean' && !response) {
+      // HTTP Failure
+      console.log('la chiamata http per la sign request è fallita...')
+    } else {
+      // HTTP Success
+      if (response.hasOwnProperty('access_token')) {
+        // Nella risposta c'è l'access_token
+        await setSsiAccessToken(response.access_token)
+      } else {
+        // Forma della risposta non corretta
+        console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
+        throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
+      }
+    }
+  }
+
   private shareVCnow = async () => {
 
     this.setState(prevState => ({
@@ -221,7 +243,9 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
     console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita')
 
-    let headers = {"Content-Type": "application/json"}
+    let headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    headers.append("authorization", "Bearer " + await getSsiAccessToken())
     let body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere})
     console.log('metodo della richiesta (preso da QR): ' + method)
     console.log('callback url: ' + callbackUrl)
@@ -235,7 +259,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       body: body
     })
       .then(response => response.json())
-      .then(data => {
+      .then(async data => {
         console.info("Response received:", JSON.stringify(data));
         this.setState({
           modalVisible: true,
@@ -246,6 +270,24 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
             sharedFail: false
           }
         });
+
+        if(callbackUrl.toString().includes('/auth/VID')) {
+          await this.salvaAccessTokeNelKeychain(data)
+        }
+
+        console.log('PROPS: ' + JSON.stringify(this.props))
+
+        let userCreationResponse = await NetCode.createNewUser(DidSingleton.getDidAddress(), this.props.notificationToken)
+
+        if (!userCreationResponse) {
+          // Fail
+          console.log('unable to create user in the backned service')
+        } else {
+          // Success
+          console.log(`l'utente è stato correttamente creato nel servizio backend`)
+        }
+
+
       })
       .catch(error => {
         console.info("Error:", error);
@@ -512,7 +554,8 @@ function mapStateToProps(state: GlobalState) {
     isFingerprintEnabled: state.persistedPreferences.isFingerprintEnabled,
     preferredCalendar: state.persistedPreferences.preferredCalendar,
     hasProfileEmail: hasProfileEmailSelector(state),
-    optionMobilePhone: profileMobilePhoneSelector(state)
+    optionMobilePhone: profileMobilePhoneSelector(state),
+    notificationToken: notificationsInstallationSelector(state).token,
   };
 }
 

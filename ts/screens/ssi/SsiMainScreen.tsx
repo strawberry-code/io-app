@@ -177,7 +177,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJleHAiOjEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6IklkZW50aXR5IGNhcmQiLCJudW1iZXIiOiJBQjEyMzQ1NjciLCJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImlzcyI6ImRpZDpldGhyOjB4OWZlMTQ2Y2Q5NWI0ZmY2YWEwMzliZjA3NWM4ODllNmU0N2Y4YmQxOCJ9fSwiaXNzIjoiZGlkOmV0aHI6MHhFNkNFNDk4OTgxYjRiYTllODNlMjA5ZjhFMDI2Mjk0OTRGQzMxYmM5Iiwic3ViIjoiZGlkOmV0aHI6MHg0NSIsIm5iZiI6MTYwMzk2ODIyMSwiYXVkIjoiIiwianRpIjoiIn0.qF5QFn6o2opxdrpZ8Ue0-dKABK28fU58pqBgv-BGxoTfGhRZkg6EH2rrkcxwoqGWg1YmuOdtHz4gPcp6cpm4VA"
     //await VCstore.clearStore()
     //await VCstore.storeVC(hardcodedJwt)
-    //await VCstore.storeVC(hardcodedJwt)
+    await VCstore.storeVC("eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGMzTXpBeU9UY3lNeXdpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklqRXlNelFpTENKbWFYSnpkRTVoYldVaU9pSkVZVzVwWld4bElpd2liR0Z6ZEU1aGJXVWlPaUpTYjNOemFTSXNJbUpwY25Sb1pHRjVJam9pTVRrNU1TMHdPQzB5TlZReE56b3lPVG95TUM0eU56bGFJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2lVbTl0WlNKOWZTd2lZM0psWkdWdWRHbGhiRk5qYUdWdFlTSTZleUpwWkNJNklrTmhjblJoU1dSbGJuUnBkR0VpTENKMGVYQmxJam9pVW1WbmFXOXVaVXh2YldKaGNtUnBZUzFpYkdGaWJHRWlmU3dpYzNWaUlqb2laR2xrT21WNFlXMXdiR1U2WldKbVpXSXhaamN4TW1WaVl6Wm1NV015TnpabE1USmxZekl4SWl3aWFuUnBJam9pYUhSMGNEb3ZMMlY0WVcxd2JHVXVaV1IxTDJOeVpXUmxiblJwWVd4ekx6TTNNeklpTENKdVltWWlPakUxTkRFME9UTTNNalFzSW01dmJtTmxJam9pTmpZd0lUWXpORFZHVTJWeUlpd2lhV1FpT2lJMk5qVTVOVFF6TUMwME5EVTRMVFJtTUdFdE9ERTFPUzAyWVdNeE1EUmhPVFEzTkRjaUxDSnBjM01pT2lKa2FXUTZaWFJvY2pvd2VHWXhNak15WmpnME1HWXpZV1EzWkRJelptTmtZV0U0TkdRMll6WTJaR0ZqTWpSbFptSXhPVGdpZlEucE5WU1RLTTNfYk1wT3FUZmdUNE9BRDlkSjgweUlCS0pxVVJuMmVRNzN4TDFUVURvVlZhTjZXQllRMFF2NURjT1NmT1JHRlUzRDlnMDF3aE43NERNZ2ciXX0sImlzcyI6ImRpZDpldGhyOjB4ZjEyMzJmODQwZjNhZDdkMjNmY2RhYTg0ZDZjNjZkYWMyNGVmYjE5OCJ9.pYdzifkZOucNKeuybtw9jahfLSRE-oHAU1f3-VWHBtzzy41fI6nVA2FXNMmCbNRVqYjHi1FBdsi_UMmEDq8l4w")
     this.verifiedCredentials = await VCstore.getVCs();
     this.setState({ isLoading: false });
     console.log(
@@ -562,6 +562,20 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               hideIcon
             />
 
+            {/* Codpy DID to clipboard */}
+            <ListItemComponent
+              title={I18n.t("ssi.copyDID.title")}
+              subTitle={I18n.t("ssi.copyDID.subtitle")}
+              onPress={() => {
+                Alert.alert(I18n.t("ssi.copyDID.title"),I18n.t("ssi.copyDID.prompt") + '\n\n' + DidSingleton.getDidAddress(),[
+                  {text: I18n.t("rooted.continueAlert.confirmText"), onPress: () => {clipboardSetStringWithFeedback(DidSingleton.getDidAddress())}},
+                  {text: I18n.t("rooted.continueAlert.cancelText"), style: 'destructive', onPress: () => {}}
+                ])
+
+              }}
+              hideIcon={true}
+            />
+
             {/* Reset unlock code */}
             <ListItemComponent
               title={I18n.t("identification.unlockCode.reset.button_short")}
@@ -666,6 +680,16 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                       )}
 
                     {isDevEnv &&
+                    walletToken &&
+                    this.debugListItem(
+                      `Mnemonics`,
+                      async () => {
+                        console.log(await DidSingleton.getMnemonics())
+                      },
+                      false
+                    )}
+
+                    {isDevEnv &&
                     this.debugListItem(
                       `Pulisci VCs store`,
                       () => VCstore.clearStore(),
@@ -765,6 +789,7 @@ const mapStateToProps = (state: GlobalState) => ({
   isExperimentalFeaturesEnabled:
     state.persistedPreferences.isExperimentalFeaturesEnabled
 });
+
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   // hard-logout

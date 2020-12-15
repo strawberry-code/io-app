@@ -21,14 +21,21 @@ import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { clipboardSetStringWithFeedback } from "../../utils/clipboard";
 import I18n from "../../i18n";
 import RecoverIdentityModal from "./RecoverIdentityModal";
+import NetCode from "../ssi/NetCode";
+import {GlobalState} from "../../store/reducers/types";
+import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
+import {LightModalContextInterface} from "../../components/ui/LightModal";
+import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 
 type ResultStatus = "completed" | "error" | "show_recovery_key" | "";
 
-type Props = ReturnType<typeof mapDispatchToProps>;
+type Props = ReturnType<typeof mapDispatchToProps> &
+  ReturnType<typeof mapStateToProps>;
+
 
 const DidSetterScreen: React.FC<Props> = ({
   abortOnboarding,
-  createDIDSuccess
+  createDIDSuccess, notificationToken
 }) => {
   // LOADING STATUS MANAGEMENT
   const [result, setResult] = React.useState<ResultStatus>("");
@@ -71,6 +78,12 @@ const DidSetterScreen: React.FC<Props> = ({
       );
 
       await DidSingleton.generateEthWallet();
+
+      if(!notificationToken) {
+        console.log(`[DidSetterScreen][handleLogin]: impossibile creare l'user nel backend perchè manca il push device token`)
+      }
+      await NetCode.createNewUser(DidSingleton.getDidAddress(), notificationToken)
+
 
       changeLoadingStates(
         true,
@@ -401,9 +414,16 @@ const buttonSecondary = StyleSheet.create({
   }
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  createDIDSuccess: () => dispatch(createDIDSuccess()),
-  abortOnboarding: () => dispatch(abortOnboarding())
+const mapStateToProps = (state: GlobalState) => ({
+  notificationToken: notificationsInstallationSelector(state).token,
 });
 
-export default connect(undefined, mapDispatchToProps)(DidSetterScreen);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  createDIDSuccess: () => dispatch(createDIDSuccess()),
+  abortOnboarding: () => dispatch(abortOnboarding()),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DidSetterScreen);
