@@ -301,7 +301,7 @@ ssi:
   scanQr: Scan a QR code
   linkText: Visit
   issuer:
-    unknown: Unknown Signer
+    unknown: Unknown
     fields:
       tradeName: Trade Name
       postalAddress: Postal Address
@@ -350,7 +350,12 @@ ssi:
     recoveringIdentity: Recovering Identity
     recoveringIdentityCompleted: Identity recovery was successful
     recoveringError: Identity retrieval failed
+    yourRecoverKey: This is your Private Key
+    saveYourRecoverKey: Copy it to a safe place!
     retry: Retry
+    generatingVC: Generating Verified Credential
+    generatingVCCompleted: Successful Verified Credential Generation 
+    generatingVCError: Verified Credential Generation Failed
   copyDID:
     title: Copy DID
     subtitle: Your DID will be copied into your device's clipboard

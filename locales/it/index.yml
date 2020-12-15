@@ -303,7 +303,7 @@ ssi:
   scanQr: Scansiona codice QR
   linkText: Visita
   issuer:
-    unknown: Firmatario Sconosciuto
+    unknown: Sconosciuto
     fields:
       tradeName: Nome Depositato
       postalAddress: Indirizzo Postale
@@ -352,7 +352,12 @@ ssi:
     recoveringIdentity: Recuperando Identità
     recoveringIdentityCompleted: Recupero Identità avvenuto con successo
     recoveringError: Recupero Identità non riuscito
+    yourRecoverKey: Questa è la tua chiave privata
+    saveYourRecoverKey: Copiala in un posto sicuro!
     retry: Riprova
+    generatingVC: Generando Credenziale Verificata
+    generatingVCCompleted: Generazione Credenziale Verificata avvenuta con succeesso 
+    generatingVCError: Generazione Credenziale Verificata non riuscita 
   copyDID:
     title: Copia DID
     subtitle: Il tuo DID verrà copiato negli appunti del tuo device
