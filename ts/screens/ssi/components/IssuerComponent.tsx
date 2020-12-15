@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import _ from "lodash";
 import {
   Text,
@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
-  Linking
+  Linking,
+  ActivityIndicator
 } from "react-native";
 
 import variables from "../../../theme/variables";
@@ -14,71 +15,119 @@ import IconFont from "../../../components/ui/IconFont";
 import I18n from "../../../i18n";
 import { TranslationKeys } from "../../../../locales/locales";
 import { DidSingleton } from "../../../types/DID";
+import { IssuerInfo } from "../types";
 
 interface Props {
   issuer: {
-    [param: string]: string;
+    id: string;
   };
 }
 
 const IssuerComponent: React.FC<Props> = ({ issuer }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [visible, setVisible] = useState<"none" | "flex">("none");
+  const [issuerInfo, setIssuerInfo] = useState<IssuerInfo | undefined>(
+    undefined
+  );
+
+  // const testSuccessIssuerId =
+  //   "did:ethr:0x6968F2E335eF8ba1ee240023b91AA426707FF6cE";
 
   if (issuer.id === DidSingleton.getDidAddress()) return null;
+
+  useEffect(() => {
+    const fetchIssuerInfo = async (id: string): void => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://ssi-aria-backend.herokuapp.com/issuers/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        console.log("response from get fetchIssuer", response);
+
+        if (response.status === 204) {
+          throw new Error("Unknown Issuer");
+        }
+
+        const data = await response.json();
+
+        console.log("data from get fetchIssuer", data);
+        setIssuerInfo(data);
+      } catch (e) {
+        console.error("error:", e);
+      }
+      setIsLoading(false);
+    };
+    if (!issuer.id) {
+      setIssuerInfo(undefined);
+      setIsLoading(false);
+      return;
+    }
+    void fetchIssuerInfo(issuer.id);
+  }, [issuer.id]);
 
   const handleOpen = () => {
     if (visible === "none") setVisible("flex");
     else setVisible("none");
   };
 
-  const fieldElement = Object.keys(issuer).map(field => {
-    if (field === "id") return null;
+  const fieldElement = issuerInfo
+    ? [...Object.keys(issuerInfo)].reverse().map(field => {
+        if (field === "name" || field === "did") return null;
 
-    if (field === "informationUri") {
-      return (
-        <View
-          style={[
-            styles.issuerField,
-            { flexDirection: "row", alignItems: "center" }
-          ]}
-        >
-          <Text style={styles.issuerFieldText}>
-            {I18n.t(`ssi.issuer.fields.${field}` as TranslationKeys)}
-          </Text>
-          <TouchableOpacity
-            style={styles.issuerInfoLink}
-            onPress={() => Linking.openURL(issuer[field])}
-          >
-            <Text style={styles.issuerFieldTextLink}>
-              {I18n.t("ssi.linkText")}
+        if (field === "informationUri") {
+          return (
+            <View
+              style={[
+                styles.issuerField,
+                { flexDirection: "row", alignItems: "center" }
+              ]}
+            >
+              <Text style={styles.issuerFieldText}>
+                {I18n.t(`ssi.issuer.fields.${field}` as TranslationKeys)}
+              </Text>
+              <TouchableOpacity
+                style={styles.issuerInfoLink}
+                onPress={() => Linking.openURL(issuerInfo[field])}
+              >
+                <Text style={styles.issuerFieldTextLink}>
+                  {I18n.t("ssi.linkText")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }
+
+        return (
+          <View key={field} style={styles.issuerField}>
+            <Text style={styles.issuerFieldText}>
+              {I18n.t(`ssi.issuer.fields.${field}` as TranslationKeys)}
             </Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
-    return (
-      <View key={field} style={styles.issuerField}>
-        <Text style={styles.issuerFieldText}>
-          {I18n.t(`ssi.issuer.fields.${field}` as TranslationKeys)}
-        </Text>
-        <Text style={styles.issuerInfo}>{issuer[field]}</Text>
-      </View>
-    );
-  });
+            <Text style={styles.issuerInfo}>{issuerInfo[field]}</Text>
+          </View>
+        );
+      })
+    : undefined;
 
   return (
     <View style={styles.issuerContainer}>
       <View style={styles.issuerTitleContainer}>
         <Text style={styles.issuerTitle}>
           Issuer:{" "}
-          {Object.keys(issuer).length === 1 ? (
+          {isLoading && <ActivityIndicator color={variables.brandPrimary} />}
+          {!isLoading && !issuerInfo && (
             <IconFont name="io-notice" color={variables.brandDanger} />
-          ) : (
+          )}
+          {!isLoading && Boolean(issuerInfo) && (
             <Text>
-              {issuer.tradeName.length >= 18
-                ? issuer.tradeName.substr(0, 16) + "..."
-                : issuer.tradeName}
+              {(issuerInfo && issuerInfo?.name.length) >= 18
+                ? issuerInfo.name.substr(0, 16) + "..."
+                : issuerInfo.name}
             </Text>
           )}
         </Text>
@@ -87,10 +136,10 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
         </TouchableOpacity>
       </View>
       <View style={{ display: visible }}>
-        {Object.keys(issuer).length <= 1 && (
+        {!issuerInfo && (
           <Text style={styles.issuerInfo}>{I18n.t("ssi.issuer.unknown")}</Text>
         )}
-        {Object.keys(issuer).length > 1 && fieldElement}
+        {fieldElement}
       </View>
     </View>
   );
