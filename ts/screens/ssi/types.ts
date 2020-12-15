@@ -25,3 +25,12 @@ export interface Transaction {
     fullname: string;
   };
 }
+
+export interface IssuerInfo {
+  did: string;
+  name: string;
+  tradeName: string;
+  postalAddress: string;
+  electronicAddress: string;
+  informationUri: string;
+}
