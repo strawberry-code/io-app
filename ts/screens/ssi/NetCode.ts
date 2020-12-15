@@ -81,9 +81,9 @@ class __NetCode {
 
     console.log('rawResponse.status: ' + rawResponse.status)
 
-    console.log('response final: ' + JSON.stringify(await rawResponse.json()))
+    //console.log('response final: ' + JSON.stringify(await rawResponse.json()))
 
-    if (rawResponse.status === 201) {
+    if (rawResponse.status === 201 || rawResponse.status === 200) {
       return true
     } else {
       return false
