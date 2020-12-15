@@ -71,9 +71,9 @@ interface DeMinimis extends JwtCredentialPayload {
   }
   select?: boolean;  
 }
-interface VID extends JwtCredentialPayload {
+interface CartaIdentita extends JwtCredentialPayload {
   vc: JwtCredentialPayload['vc'] & {
-    type: ['VerifiedCredential', '/VID']
+    type: ['VerifiedCredential', 'CartaIdentita'];
     credentialSubject: {
       id: string;
       firtName: string;
@@ -86,7 +86,7 @@ interface VID extends JwtCredentialPayload {
 }
 
 
-type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | VID;
+type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | CartaIdentita;
 
 interface Props {
   vCredential: VCType;
@@ -117,8 +117,8 @@ const SingleVC: React.FC<Props> = ({ vCredential, onPress, backHome, isSigning, 
     return (<VCMasterDegree vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else if (VCtype.includes('DeMinimis')) {
     return (<VCDeMinimis vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
-  } else if (VCtype.includes('/VID')) {
-    return (<VCVID vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
+  } else if (VCtype.includes('CartaIdentita')) {
+    return (<VCCartaIdentita vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest}/>)
   } else {
     // COSA FARE NEL CASO IN CUI NON CORRISPONDE A NESSUNA DI QUESTE VISTE?
     return (
@@ -688,7 +688,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => (
   }}>{title}</Text>
 )
 
-const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
+const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
   
   
   const { firstName, lastName, placeOfBirth, birthday,  } = vCredential.vc.credentialSubject;
@@ -697,10 +697,10 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
 
   // const issuerTest = {
   //   id: "issuerId",
-  //   tradeName: "Bance d'Italia",
+  //   tradeName: "Banca d'Italia",
   //   postalAddress: "via nazionale 91 00184 - IT",
   //   electronicAddress: "pki@bancaditalia.it",
-  //   informationURI: "https://www.bancaditalia.it/footer/firmadigitale/index.html?com.dotmarketing.htmlpage.language=1"
+  //   informationUri: "https://www.bancaditalia.it/footer/firmadigitale/index.html?com.dotmarketing.htmlpage.language=1"
   // }
 
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
@@ -737,7 +737,7 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
           </View>
           )
         }
-            <Header title="Carta d'identità" />
+            <Header title="Carta d'Identità" />
             <TouchableOpacity 
               onPress={() => setModalVisible(!modalVisibile)}
             >
@@ -761,7 +761,7 @@ const VCVID: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, sig
                 style={vcItem.modalCloseButton}
               />
             </TouchableOpacity>
-            <Text style={vcItem.modalTitle}>VID</Text>
+            <Text style={vcItem.modalTitle}>Carta d'Identità</Text>
             {
               isSigning && (<Text style={vcItem.signingTitle}>{I18n.t('ssi.signReqScreen.saveQuestion')}</Text>)
             }
