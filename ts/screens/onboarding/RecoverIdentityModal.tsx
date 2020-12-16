@@ -44,17 +44,22 @@ const RecoverIdentityModal: React.FC<Props> = ({
     setRecoveryKey(text);
   };
 
+  // DELAY FUNCTION FOR SHOWING LOADING SPINNER WHEN CREATNG CREDENTIAL
+  const delay = (seconds: number): Promise<void> =>
+    new Promise(r => setTimeout(() => void r(), seconds * 1000));
+
   const handleRecovery = async () => {
-    close();
     console.log(" ⚠️RECUPERANDOO LA TUA IDENTITA....");
+    changeLoadingStates(
+      true,
+      I18n.t("ssi.onboarding.recoveringIdentity"),
+      "",
+      true
+    );
+    close();
+    await delay(1);
 
     try {
-      changeLoadingStates(
-        true,
-        I18n.t("ssi.onboarding.recoveringIdentity"),
-        "",
-        true
-      );
       const recoveredWallet = await DidSingleton.recoverEthWallet(recoveryKey);
 
       if (!recoveredWallet) {
