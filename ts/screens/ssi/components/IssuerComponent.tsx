@@ -18,9 +18,7 @@ import { DidSingleton } from "../../../types/DID";
 import { IssuerInfo } from "../types";
 
 interface Props {
-  issuer: {
-    id: string;
-  };
+  issuer: string | undefined | { id: string };
 }
 
 const IssuerComponent: React.FC<Props> = ({ issuer }) => {
@@ -32,8 +30,9 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
 
   // const testSuccessIssuerId =
   //   "did:ethr:0x6968F2E335eF8ba1ee240023b91AA426707FF6cE";
+  const issuerId = issuer?.id ? issuer.id : issuer;
 
-  if (issuer.id === DidSingleton.getDidAddress()) return null;
+  if (issuerId === DidSingleton.getDidAddress()) return null;
 
   useEffect(() => {
     const fetchIssuerInfo = async (id: string): void => {
@@ -63,13 +62,13 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
       }
       setIsLoading(false);
     };
-    if (!issuer.id) {
+    if (!issuerId) {
       setIssuerInfo(undefined);
       setIsLoading(false);
       return;
     }
-    void fetchIssuerInfo(issuer.id);
-  }, [issuer.id]);
+    void fetchIssuerInfo(issuerId);
+  }, [issuerId]);
 
   const handleOpen = () => {
     if (visible === "none") setVisible("flex");
