@@ -79,7 +79,10 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
     ? [...Object.keys(issuerInfo)].reverse().map(field => {
         if (field === "name" || field === "did") return null;
 
-        if (field === "informationUri") {
+        if (
+          issuerInfo[field].startsWith("https://") ||
+          issuerInfo[field].startsWith("http://")
+        ) {
           return (
             <View
               style={[
