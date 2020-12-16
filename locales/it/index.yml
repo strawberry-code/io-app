@@ -334,6 +334,15 @@ ssi:
     descriptionContent: Potrai ricevere transazioni condividendo l'indirizzo attraverso il QRcode oppure premendo il tasto Ricevi.
     addressTitle: Indirizzo
     receiveButton: Ricevi
+  shareReqScreen:
+    question: Vuoi condividere queste Credenziali?
+    buttonYes: Sì
+    buttonNo: "No"
+    continueButton: Continua
+    tryAgainButton: Riprova
+    loadingText: "Condividendo le credenziali..."
+    successShare: Credenziali condivise!
+    failedShare: Condivisione credenziali non riuscita
   signReqScreen:
     saveQuestion: Vuoi firmare questa Credenziale Verificata?
     acceptButton: Firma

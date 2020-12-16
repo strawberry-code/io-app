@@ -332,6 +332,15 @@ ssi:
     descriptionContent: You can receive transactions by sharing the address through QRcode or by pressing the Receive button.
     addressTitle: Address
     receiveButton: Receive
+  shareReqScreen:
+    question: Do you want to share this credentials?
+    buttonYes: "Yes"
+    buttonNo: "No"
+    continueButton: Continue
+    tryAgainButton: Try again
+    loadingText: "Sharing credentials..."
+    successShare: Credentials shared!
+    failedShare: Failed to share the credentials
   signReqScreen:
     saveQuestion: Want to sign this Verifiable Credential?
     acceptButton: Sign

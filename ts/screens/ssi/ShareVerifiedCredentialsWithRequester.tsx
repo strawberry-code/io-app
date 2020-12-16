@@ -62,6 +62,7 @@ import NetCode from "./NetCode";
 import {DidSingleton} from "../../types/DID";
 import {getSsiAccessToken, setSsiAccessToken} from "../../utils/keychain";
 import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
+import IconFont from "../../components/ui/IconFont";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -362,8 +363,8 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
-          <Text style={{padding: 20}}>
-            Do you want to share this credentials?
+          <Text style={styles.header}>
+            {I18n.t("ssi.shareReqScreen.question")}
           </Text>
 
           <View style={{flexDirection: "row", justifyContent: "center"}}>
@@ -391,7 +392,9 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                 this.shareVCnow();
               }}
             >
-              <Text style={styles.textStyle}>Yes</Text>
+              <Text style={styles.textStyle}>
+                {I18n.t("ssi.shareReqScreen.buttonYes")}
+              </Text>
             </TouchableHighlight>
 
             <TouchableHighlight
@@ -405,7 +408,9 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                 this.props.navigateToSsiHome();
               }}
             >
-              <Text style={styles.textStyle}>No</Text>
+              <Text style={styles.textStyle}>
+              {I18n.t("ssi.shareReqScreen.buttonNo")}
+              </Text>
             </TouchableHighlight>
           </View>
 
@@ -428,24 +433,27 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           visible={this.state.modalVisible}
         >
           <View style={styles.centeredView}>
+            {/* BLACK OPACHE BACKGROUND */}
+            <View style={styles.bgOpacity}></View>
             <View style={styles.modalView}>
               {this.state.modalStates.sharing && (
                 <>
-                  <Text style={styles.modalText}>Sharing credential...</Text>
-                  <ActivityIndicator color={variables.brandPrimary} />
+                  <Text style={styles.modalText}>
+                    {I18n.t("ssi.shareReqScreen.loadingText")}
+                  </Text>
+                  <ActivityIndicator size="large" color={variables.brandPrimary} />
                 </>
               )}
 
               {this.state.modalStates.sharedSuccess && (
                 <>
-                  <Text style={styles.modalText}>Credential shared!</Text>
-                  <Text style={styles.modalText}>✅</Text>
+                  <Text style={styles.modalText}>
+                  {I18n.t("ssi.shareReqScreen.successShare")}
+                  </Text>
+                  <IconFont size={60} color={variables.brandPrimary} name="io-complete"/>
 
                   <TouchableHighlight
-                    style={{
-                      ...styles.openButton,
-                      backgroundColor: variables.brandPrimary
-                    }}
+                    style={styles.openButton}
                     onPress={() => {
                       this.setState({modalVisible: false});
                       this.setState({
@@ -459,21 +467,27 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                       this.props.navigateToSsiHome()
                     }}
                   >
-                    <Text style={styles.textStyle}>Ok, thanks</Text>
+                    <Text style={styles.buttonText}>
+                      {I18n.t("ssi.shareReqScreen.continueButton")}
+                    </Text>
                   </TouchableHighlight>
                 </>
               )}
 
               {this.state.modalStates.sharedFail && <>
-                <Text style={styles.modalText}>Failed to share the credential</Text>
-                <Text style={styles.modalText}>🚫</Text>
+                <Text style={styles.modalText}>
+                  {I18n.t("ssi.shareReqScreen.failedShare")}
+                </Text>
+                <IconFont size={60} color={variables.brandDanger} name="io-notice"/>
                 <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
+                  style={styles.openButton}
                   onPress={() => {
                     this.setState({modalVisible: false});
                   }}
                 >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
+                  <Text style={styles.buttonText}>
+                    {I18n.t("ssi.shareReqScreen.tryAgainButton")}
+                  </Text>
                 </TouchableHighlight>
               </>}
             </View>
@@ -492,9 +506,12 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         </TouchableHighlight>
  */
 interface Style {
+  header: TextStyle;
   centeredView: ViewStyle;
+  bgOpacity: ViewStyle;
   modalView: ViewStyle;
   openButton: ViewStyle;
+  buttonText: TextStyle;
   textStyle: TextStyle;
   modalText: TextStyle;
 }
@@ -502,18 +519,36 @@ interface Style {
 const ItemSeparator = () => <ItemSeparatorComponent noPadded={true}/>;
 
 const styles = StyleSheet.create<Style>({
+  header: {
+    fontSize: variables.h4FontSize,
+    padding: 20,
+    textAlign: "center",
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
+  },
+  bgOpacity: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: "black",
+    width: "100%",
+    height: "100%",
+    opacity: 0.5
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22
   },
   modalView: {
-    margin: 20,
+    width: "80%",
+    height: "45%",
     backgroundColor: "white",
     borderRadius: 5,
     padding: 35,
     alignItems: "center",
+    justifyContent: "space-around",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -524,11 +559,18 @@ const styles = StyleSheet.create<Style>({
     elevation: 5
   },
   openButton: {
-    backgroundColor: "#F194FF",
+    backgroundColor: variables.brandPrimary,
     borderRadius: 5,
     padding: 10,
+    width: "100%",
     elevation: 2,
-    height: 40
+  },
+  buttonText: {
+    color: variables.colorWhite,
+    fontSize: variables.fontSize2,
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
+    textAlign: "center"
   },
   textStyle: {
     color: "white",
@@ -536,8 +578,10 @@ const styles = StyleSheet.create<Style>({
     textAlign: "center"
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: variables.fontSize3,
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
   }
 });
 
