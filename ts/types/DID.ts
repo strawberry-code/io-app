@@ -184,6 +184,13 @@ export class DID {
     return await setDidOnKeychain();
   }
 
+  public exportRecoveryKey(): string {
+    if(typeof this.recoverKey !== 'string') {
+      throw new Error('il contenuto di esportazione del wallet deve essere una stringa!')
+    }
+    return this.recoverKey
+  }
+
   public getIssuer(): Issuer {
     let address = DidSingleton.getEthAddress()
     let potPrivateKey = DidSingleton.getPrivateKey()
