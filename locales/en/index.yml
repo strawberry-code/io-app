@@ -363,12 +363,13 @@ ssi:
     saveYourRecoverKey: Copy it to a safe place!
     retry: Retry
     generatingVC: Generating Verified Credential
-    generatingVCCompleted: Successful Verified Credential Generation 
+    generatingVCCompleted: Successful Verified Credential Generation
     generatingVCError: Verified Credential Generation Failed
   copyDID:
     title: Copy DID
     subtitle: Your DID will be copied into your device's clipboard
     prompt: Your DID will be copied into your device's clipboard, do you want proceed?
+  exportVcs: Export Credentials
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version

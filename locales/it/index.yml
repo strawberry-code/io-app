@@ -365,12 +365,13 @@ ssi:
     saveYourRecoverKey: Copiala in un posto sicuro!
     retry: Riprova
     generatingVC: Generando Credenziale Verificata
-    generatingVCCompleted: Generazione Credenziale Verificata avvenuta con succeesso 
-    generatingVCError: Generazione Credenziale Verificata non riuscita 
+    generatingVCCompleted: Generazione Credenziale Verificata avvenuta con succeesso
+    generatingVCError: Generazione Credenziale Verificata non riuscita
   copyDID:
     title: Copia DID
     subtitle: Il tuo DID verrà copiato negli appunti del tuo device
     prompt: Il tuo DID verrà copiato negli appunti del tuo device, vuoi procedere?
+  exportVcs: Esporta Credenziali
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione
