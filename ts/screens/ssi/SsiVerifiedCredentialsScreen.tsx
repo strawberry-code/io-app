@@ -53,6 +53,12 @@ import VCstore from "./VCstore";
 import {showToast} from "../../utils/showToast";
 import SingleVC from './SsiSingleVC'
 import IconFont from "../../components/ui/IconFont";
+import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
+import * as RNFS from "react-native-fs";
+import {DidSingleton} from "../../types/DID";
+import Share from "react-native-share";
+import base64 from 'react-native-base64'
+import {exportCredentials} from "./SsiUtils";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -199,16 +205,31 @@ class PreferencesScreen extends React.Component<Props, State> {
     //console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-      <SingleVC vCredential={VC} />
+      <SingleVC vCredential={VC}/>
     )
   }
+
+
+
+  ExportVCs = () => (
+    <ButtonDefaultOpacity
+      block={true}
+      onPress={exportCredentials}
+      activeOpacity={1}
+    >
+      <IconFont name="io-carta" style={{color: 'white'}}/>
+      <Text style={{color: 'white', fontWeight: '800'}}>{I18n.t("ssi.exportVcs")}</Text>
+    </ButtonDefaultOpacity>
+  );
 
   public render() {
     return (
       <TopScreenComponent
         faqCategories={["profile", "privacy", "authentication_SPID"]}
         headerTitle={I18n.t("ssi.title")}
-        customGoBack={<TouchableHighlight onPress={() => {this.props.navigateToSsiHome()}}><IconFont name={"io-back"} style={{ color: variables.colorBlack }}/></TouchableHighlight>}
+        customGoBack={<TouchableHighlight onPress={() => {
+          this.props.navigateToSsiHome()
+        }}><IconFont name={"io-back"} style={{color: variables.colorBlack}}/></TouchableHighlight>}
       >
         <ScreenContent
           title={I18n.t("ssi.vcslist.title")}
@@ -221,6 +242,9 @@ class PreferencesScreen extends React.Component<Props, State> {
             renderItem={this.renderItem}
           />
         </ScreenContent>
+        <View style={{marginHorizontal: 20, marginBottom: 15}}>
+          <this.ExportVCs/>
+        </View>
         <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
         <Modal
           animationType="slide"

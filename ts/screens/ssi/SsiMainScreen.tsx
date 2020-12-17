@@ -69,12 +69,16 @@ import { DidSingleton } from "../../types/DID";
 import { VerifiedCredential } from "did-jwt-vc";
 import { withLoadingSpinner } from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
+import Share from 'react-native-share';
+import base64 from 'react-native-base64'
+import * as RNFS from "react-native-fs";
 import SsiModal from "./SsiModal";
 import { useRef } from "react";
 import AnimatedScreenContent from "../../components/screens/AnimatedScreenContent";
 import PushNotification from "react-native-push-notification";
 import {store} from "../../App";
 import {updateNotificationsInstallationToken} from "../../store/actions/notifications";
+import {exportCredentials} from "./SsiUtils";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -283,7 +287,28 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         },
         {
           text: I18n.t("profile.logout.exit"),
-          onPress: this.props.logout
+          onPress: () => {
+            Alert.alert(
+              'Vuoi salvare le tue Credenziali?',
+              'Effettuando il logout le tue credenziali verranno perse, vuoi esportarle prima di procedere?',
+              [
+                {
+                  text: 'Sì',
+                  onPress: async () => {
+                    await exportCredentials()
+                    await VCstore.clearStore()
+                    this.props.logout()
+                  }
+                },
+                {
+                  text: 'No',
+                  style: 'destructive',
+                  onPress: this.props.logout
+                }
+              ],
+              { cancelable: true }
+            );
+          }
         }
       ],
       { cancelable: true }
@@ -692,6 +717,15 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     this.debugListItem(
                       `Pulisci VCs store`,
                       () => VCstore.clearStore(),
+                      false
+                    )}
+
+                    {isDevEnv &&
+                    this.debugListItem(
+                      `Share masterkey`,
+                      async () => {
+                        await exportCredentials()
+                      },
                       false
                     )}
 
