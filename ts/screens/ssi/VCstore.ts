@@ -42,6 +42,10 @@ const getJwts = async (): Promise<Array<JWT>> => {
   return JSON.parse((await AsyncStorage.getItem(AS_SSI_KEY)) as string);
 };
 
+const getRawJwts = async (): Promise<string> => {
+  return await AsyncStorage.getItem(AS_SSI_KEY) as string;
+};
+
 const getVCs = async (): Promise<Array<VerifiedCredential> | undefined> => {
   const Jwts: Array<JWT> = await getJwts();
   if (!Jwts) {
@@ -78,4 +82,4 @@ const clearStore = async () => {
   await AsyncStorage.removeItem(AS_SSI_KEY);
 };
 
-export default { storeVC, getVCs, clearStore, getJwts, decodeJwt };
+export default { storeVC, getVCs, clearStore, getJwts, decodeJwt, getRawJwts };
