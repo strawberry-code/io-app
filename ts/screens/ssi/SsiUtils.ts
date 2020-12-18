@@ -4,6 +4,8 @@ import VCstore from "./VCstore";
 import Share from "react-native-share";
 // @ts-ignore
 import base64 from "react-native-base64";
+import DocumentPicker from "react-native-document-picker";
+import {JWT} from "did-jwt-vc/lib/types";
 
 const exportCredentials = async () => {
   let filePath = RNFS.DocumentDirectoryPath + `/${DidSingleton.getEthAddress()}-${formatDateYYYYMMDDhhmmss(new Date())}.txt`
@@ -82,9 +84,9 @@ const decodeBase64 = (payload: string) => {
  * Legge file da filePath (utf8 required)
  * @param filePath
  */
-const readFile = async (filePath: string) => {
+const readFile = async (filePath: string): Promise<string> => {
   try {
-    await RNFS.readFile(filePath,'utf8')
+    return await RNFS.readFile(filePath,'utf8')
   } catch(e) {
     console.error(`impossibile leggere il file: ${e}`)
     throw new Error(`impossibile leggere il file: ${e}`)
@@ -96,13 +98,87 @@ const readFile = async (filePath: string) => {
  * @param filePath
  * @param payload (utf8 required)
  */
-const writeFile = async (filePath: string, payload: string) => {
+const writeFile = async (filePath: string, payload: string): Promise<boolean> => {
   try {
     await RNFS.writeFile(filePath, payload, `utf8`)
+    return true
   } catch(e) {
     console.error(`impossibile leggere il file: ${e}`)
     throw new Error(`impossibile leggere il file: ${e}`)
   }
 }
 
-export {exportCredentials, exportCredentialsAndroid, isJwt, encodeBase64, decodeBase64, readFile, writeFile};
+interface DocumentPickerResponse {
+  uri: string,
+  type: string,
+  name: string,
+  size: number
+}
+
+/**
+ * Ottiene un file da OS FS. Restituisce un oggetto (impossibile da tipizzare in DocumentPickerResponse a causa del plugin, per cui è object) in caso di successo. Restituisce undefined se utente cambia idea e chiude il picker. Lancia eccezione in caso di errori.
+ */
+const pickSingleFile = async (): Promise<DocumentPickerResponse | undefined> => {
+  try {
+    const res = await DocumentPicker.pick({
+      type: [DocumentPicker.types.allFiles],
+    });
+    console.log(
+      res.uri,
+      res.type, // mime type
+      res.name,
+      res.size
+    );
+    return res
+  } catch (err) {
+    if (DocumentPicker.isCancel(err)) {
+      // User cancelled the picker, exit any dialogs or menus and move on
+      return undefined
+    } else {
+      throw err;
+    }
+  }
+}
+
+const pickSingleFileAndReadItsContent = async (): Promise<string | undefined> => {
+  try {
+    let file = await pickSingleFile()
+    if(file && file.uri) {
+      return await readFile(file.uri)
+    } else {
+      return undefined
+    }
+  } catch (err) {
+    throw new Error('impossibile leggere il file preso dal picker: ' + err)
+  }
+}
+
+const restoreVcsBackup = async () => {
+  let rawFileContent = await pickSingleFileAndReadItsContent()
+
+  if (rawFileContent != null) {
+    let AsyncStorageBackupString = decodeBase64(rawFileContent)
+    let JWTs: JWT[] = JSON.parse(AsyncStorageBackupString)
+    console.log(`rawFileContent: ${rawFileContent}`)
+    console.log(`AsyncStorageBackupString: ${AsyncStorageBackupString}`)
+    console.log(`JWTs: ${JWTs}`)
+    JWTs.forEach(jwt => {
+      VCstore.storeVC(jwt)
+    })
+  } else {
+    console.log('errore nel picking del file')
+  }
+}
+
+export {
+  exportCredentials,
+  exportCredentialsAndroid,
+  isJwt,
+  encodeBase64,
+  decodeBase64,
+  readFile,
+  writeFile,
+  pickSingleFile,
+  pickSingleFileAndReadItsContent,
+  restoreVcsBackup
+};

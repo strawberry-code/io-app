@@ -70,6 +70,7 @@ import { DidSingleton } from "../../types/DID";
 import { VerifiedCredential } from "did-jwt-vc";
 import { withLoadingSpinner } from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
+import DocumentPicker from 'react-native-document-picker';
 import Share from 'react-native-share';
 import base64 from 'react-native-base64'
 import * as RNFS from "react-native-fs";
@@ -79,7 +80,14 @@ import AnimatedScreenContent from "../../components/screens/AnimatedScreenConten
 import PushNotification from "react-native-push-notification";
 import {store} from "../../App";
 import {updateNotificationsInstallationToken} from "../../store/actions/notifications";
-import {exportCredentials, exportCredentialsAndroid} from "./SsiUtils";
+import {
+  decodeBase64,
+  exportCredentials,
+  exportCredentialsAndroid,
+  pickSingleFileAndReadItsContent,
+  readFile, restoreVcsBackup
+} from "./SsiUtils";
+import {JWT} from "did-jwt-vc/lib/types";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -180,8 +188,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJleHAiOjEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsiMCI6IkoiLCIxIjoidyIsIjIiOiJ0IiwiMyI6IkMiLCI0IjoiciIsIjUiOiJlIiwiNiI6ImQiLCI3IjoiZSIsIjgiOiJuIiwiOSI6InQiLCIxMCI6ImkiLCIxMSI6ImEiLCIxMiI6ImwiLCIxMyI6IlMiLCIxNCI6InUiLCIxNSI6ImIiLCIxNiI6ImoiLCIxNyI6ImUiLCIxOCI6ImMiLCIxOSI6InQifX0sImlzcyI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsInN1YiI6ImRpZDpldGhyOjB4NDUiLCJuYmYiOjE2MDM4ODg4OTMsImF1ZCI6IiIsImp0aSI6IiJ9.u_f-dxW2_mZU0YqlZ0EY6c2wTGJczMqs6Kkh8lD3RVCuD2VXMVVQ3ulWiC4GtxEJpp3hwjxyoUoUrGucUBajcQ"
     //let hardcodedJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJleHAiOjEsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6IklkZW50aXR5IGNhcmQiLCJudW1iZXIiOiJBQjEyMzQ1NjciLCJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImlzcyI6ImRpZDpldGhyOjB4OWZlMTQ2Y2Q5NWI0ZmY2YWEwMzliZjA3NWM4ODllNmU0N2Y4YmQxOCJ9fSwiaXNzIjoiZGlkOmV0aHI6MHhFNkNFNDk4OTgxYjRiYTllODNlMjA5ZjhFMDI2Mjk0OTRGQzMxYmM5Iiwic3ViIjoiZGlkOmV0aHI6MHg0NSIsIm5iZiI6MTYwMzk2ODIyMSwiYXVkIjoiIiwianRpIjoiIn0.qF5QFn6o2opxdrpZ8Ue0-dKABK28fU58pqBgv-BGxoTfGhRZkg6EH2rrkcxwoqGWg1YmuOdtHz4gPcp6cpm4VA"
-    //await VCstore.clearStore()
+    await VCstore.clearStore()
     //await VCstore.storeVC(hardcodedJwt)
+    await VCstore.storeVC("eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGc1TURNeU1UTTBOU3dpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklrbEVNU0lzSW1acGNuTjBUbUZ0WlNJNkltNWhiV1V4SWl3aWJHRnpkRTVoYldVaU9pSnNZWE15SWl3aVltbHlkR2hrWVhraU9pSXlNREl3TFRBNExUQXpJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2laSE5oWm1SblptUm9aeUo5ZlN3aWMzVmlJam9pWkdsa09tVjBhSEk2TUhnMlJUSTNPR0V4WlRBMk1USm1Na1EzTlVFelF6QkdOV0kzWkRrd01EVXpNVEk0TldNeU5UWTNJaXdpYW5ScElqb2lhSFIwY0RvdkwyVjRZVzF3YkdVdVpXUjFMMk55WldSbGJuUnBZV3h6THpNM016SWlMQ0pwYzNOMVpYSWlPbnNpYVdRaU9pSWlmU3dpYVhOeklqb2laR2xrT21WMGFISTZNSGcyUlRJM09HRXhaVEEyTVRKbU1rUTNOVUV6UXpCR05XSTNaRGt3TURVek1USTROV015TlRZM0lpd2libUptSWpveE5UUXhORGt6TnpJMExDSnViMjVqWlNJNklqWTJNQ0UyTXpRMVJsTmxjaUlzSW1OeVpXUmxiblJwWVd4VGRHRjBkWE1pT25zaWFXUWlPaUlpTENKMGVYQmxJam9pSW4wc0ltTnlaV1JsYm5ScFlXeFRZMmhsYldFaU9uc2lhV1FpT2lKRFlYSjBZVWxrWlc1MGFYUmhJaXdpZEhsd1pTSTZJbEpsWjJsdmJtVk1iMjFpWVhKa2FXRWlmU3dpYVdRaU9pSTVZVGRoWWpZMk1DMDBZMlJpTFRRNU4yWXRPRGRpWlMwM09UTm1NakV4TldFMllUa2lmUS42WVB0OHNrYWtQZjdIZ0NqSUszaUxBMmxMRWZmZU1QQ2NDdldDbFBPdGRvOThkTEhHLUdKS3cxVmcwNzdiemZRYUVRV0E2SjFvdmpzUFZQZkdXSEw0ZyJdfSwiaXNzIjoiZGlkOmV0aHI6MHg2RTI3OGExZTA2MTJmMkQ3NUEzQzBGNWI3ZDkwMDUzMTI4NWMyNTY3In0.eN5LkPTZgfvbBN052Ews0JW7xlOxOXAernPV0VfUlz5AA6VFztTty4mkEto-iBLFsnC2kI9QsAfAaninLGO7wg")
     this.verifiedCredentials = await VCstore.getVCs();
     this.setState({ isLoading: false });
     console.log(
@@ -605,6 +614,27 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               hideIcon={true}
             />
 
+            {/* Recupera VCs */}
+            <ListItemComponent
+              title={I18n.t("ssi.recoverVCs.title")}
+              subTitle={I18n.t("ssi.recoverVCs.subtitle")}
+              onPress={() => {
+                Alert.alert(I18n.t("ssi.recoverVCs.title"), I18n.t("ssi.recoverVCs.prompt"), [
+                  {
+                    text: I18n.t("rooted.continueAlert.confirmText"), onPress: async () => {
+                      await restoreVcsBackup()
+                    }
+                  },
+                  {
+                    text: I18n.t("rooted.continueAlert.cancelText"), style: 'destructive', onPress: () => {
+                    }
+                  }
+                ])
+
+              }}
+              hideIcon={true}
+            />
+
             {/* Reset unlock code */}
             <ListItemComponent
               title={I18n.t("identification.unlockCode.reset.button_short")}
@@ -693,10 +723,31 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                       )}
 
                     {isDevEnv &&
-                    walletToken &&
+                    notificationToken &&
                     this.debugListItem(
                       `Push token ${notificationToken}`,
                       () => clipboardSetStringWithFeedback(notificationToken),
+                      false
+                    )}
+
+
+                    {isDevEnv &&
+                    this.debugListItem(
+                      `Document picker`,
+                      async () => {
+                        let rawFileContent = await pickSingleFileAndReadItsContent()
+
+                        if (rawFileContent != null) {
+                          let AsyncStorageBackupString = decodeBase64(rawFileContent)
+                          let JWTs: JWT[] = JSON.parse(AsyncStorageBackupString)
+                          console.log(`rawFileContent: ${rawFileContent}`)
+                          console.log(`AsyncStorageBackupString: ${AsyncStorageBackupString}`)
+                          console.log(`JWTs: ${JWTs}`)
+                        } else {
+                          console.log('errore nel picking del file')
+                        }
+
+                      },
                       false
                     )}
 
