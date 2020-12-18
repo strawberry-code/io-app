@@ -2,6 +2,7 @@ import * as RNFS from "react-native-fs";
 import {DidSingleton} from "../../types/DID";
 import VCstore from "./VCstore";
 import Share from "react-native-share";
+// @ts-ignore
 import base64 from "react-native-base64";
 
 const exportCredentials = async () => {
@@ -11,7 +12,7 @@ const exportCredentials = async () => {
 
   try {
     console.log(`[exportCredentials]: scrivo le VCs in un file temporaneo...`)
-    await RNFS.writeFile(filePath, base64.encode(payload), `utf8`)
+    await writeFile(filePath, encodeBase64(payload))
     console.log(`[exportCredentials]: le VCs sono state scritte in: ` + filePath)
   } catch (e) {
     console.log(e)
@@ -41,7 +42,7 @@ const exportCredentials = async () => {
 const exportCredentialsAndroid = async () => {
 
   try {
-    const payload = base64.encode(base64.encode(await VCstore.getRawJwts()))
+    const payload = encodeBase64(encodeBase64(await VCstore.getRawJwts()))
     console.log(`[exportCredentials]: condivido il file con le VCs tramite la share del'OS...`);
     const res = await Share.open({
       url: `data:text/plain;base64,${payload}`,
@@ -55,15 +56,53 @@ const exportCredentialsAndroid = async () => {
 };
 
 const formatDateYYYYMMDDhhmmss = (date: Date) => {
-  let date_ob = date;
-  let day = ("0" + date_ob.getDate()).slice(-2);
-  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-  let year = date_ob.getFullYear();
-  let hours = date_ob.getHours();
-  let minutes = date_ob.getMinutes();
-  let seconds = date_ob.getSeconds();
-
+  let day = ("0" + date.getDate()).slice(-2);
+  let month = ("0" + (date.getMonth() + 1)).slice(-2);
+  let year = date.getFullYear();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
   return [year, month, day, hours, minutes, seconds].join('-');
 }
 
-export {exportCredentials, exportCredentialsAndroid};
+const isJwt = (potJwt: string) => {
+  const regex = /^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/gm;
+  return regex.exec(potJwt)
+}
+
+const encodeBase64 = (payload: string) => {
+  return base64.encode(payload)
+}
+
+const decodeBase64 = (payload: string) => {
+  return base64.decode(payload)
+}
+
+/**
+ * Legge file da filePath (utf8 required)
+ * @param filePath
+ */
+const readFile = async (filePath: string) => {
+  try {
+    await RNFS.readFile(filePath,'utf8')
+  } catch(e) {
+    console.error(`impossibile leggere il file: ${e}`)
+    throw new Error(`impossibile leggere il file: ${e}`)
+  }
+}
+
+/**
+ * Scrive payload in filePath
+ * @param filePath
+ * @param payload (utf8 required)
+ */
+const writeFile = async (filePath: string, payload: string) => {
+  try {
+    await RNFS.writeFile(filePath, payload, `utf8`)
+  } catch(e) {
+    console.error(`impossibile leggere il file: ${e}`)
+    throw new Error(`impossibile leggere il file: ${e}`)
+  }
+}
+
+export {exportCredentials, exportCredentialsAndroid, isJwt, encodeBase64, decodeBase64, readFile, writeFile};
