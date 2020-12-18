@@ -16,17 +16,16 @@ import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { GlobalState } from "../../store/reducers/types";
-import { Dispatch } from "../../store/actions/types";
 import { Transaction, Asset } from "./types";
 import AssetListPicker from "./components/AssetListPicker";
-import { DID } from "../../types/DID";
+import {DidSingleton} from "../../types/DID";
 
 /* Dummy Users
  "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
  '0x7506f0045f03cc82c73341a45f190ab9a1a85a93'
   0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51
 */
-const DUMMY_USER = "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51";
+//const DUMMY_USER = "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51";
 
 interface BalanceAndTransactionProps {
   navigation: NavigationComponent;
@@ -54,8 +53,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   // console.log('assetList=', assets)
   //  console.log("transactionList=", transactionList);
   // console.log("ssiAssetList", ssiAssetList);
-  const userDID = new DID();
-  const ethAddress = userDID.getEthAddress();
+  const userAddress = DidSingleton.getEthAddress().toLowerCase();
 
   const fetchTransactionList = async (assetAddress: string | undefined) => {
     setisLoading(true);
@@ -68,7 +66,7 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: ethAddress.toLowerCase()
+            userAddress: userAddress
           })
         }
       );
@@ -241,9 +239,7 @@ interface TransactionProps {
 
 const TransactionComponent: React.FC<TransactionProps> = ({ item }) => {
   // console.log('transaction item', item)
-  const userAddress = DUMMY_USER.toLowerCase();
-  const userDID = new DID();
-  const ethAddress = userDID.getEthAddress().toLowerCase();
+  const userAddress = DidSingleton.getEthAddress().toLowerCase();
 
   const date = new Date(item.timestamp * 1000).toLocaleString();
   const valueToShow = (item.value / 100).toFixed(2);
@@ -283,9 +279,7 @@ interface BalanceProps {
 }
 
 const BalanceComponent: React.FC<BalanceProps> = ({ transactions, symbol }) => {
-  const userAddress = DUMMY_USER.toLowerCase();
-  const userDID = new DID();
-  const ethAddress = userDID.getEthAddress().toLowerCase();
+  const userAddress = DidSingleton.getEthAddress().toLowerCase();
 
   const balanceCalculation = transactions.reduce(
     (total: number, transaction) => {
