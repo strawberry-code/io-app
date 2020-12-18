@@ -10,7 +10,8 @@ import {
   Animated,
   TouchableHighlight,
   ViewStyle,
-  TextStyle
+  TextStyle,
+  Platform
 } from "react-native";
 import {
   NavigationEvents,
@@ -78,7 +79,7 @@ import AnimatedScreenContent from "../../components/screens/AnimatedScreenConten
 import PushNotification from "react-native-push-notification";
 import {store} from "../../App";
 import {updateNotificationsInstallationToken} from "../../store/actions/notifications";
-import {exportCredentials} from "./SsiUtils";
+import {exportCredentials, exportCredentialsAndroid} from "./SsiUtils";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -295,7 +296,11 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                 {
                   text: 'Sì',
                   onPress: async () => {
-                    await exportCredentials()
+                    if (Platform.OS === 'ios') {
+                      await exportCredentials();
+                    } else {
+                      await exportCredentialsAndroid();
+                    }
                     await VCstore.clearStore()
                     this.props.logout()
                   }

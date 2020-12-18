@@ -58,7 +58,7 @@ import * as RNFS from "react-native-fs";
 import {DidSingleton} from "../../types/DID";
 import Share from "react-native-share";
 import base64 from 'react-native-base64'
-import {exportCredentials} from "./SsiUtils";
+import {exportCredentials, exportCredentialsAndroid} from "./SsiUtils";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -214,7 +214,7 @@ class PreferencesScreen extends React.Component<Props, State> {
   ExportVCs = () => (
     <ButtonDefaultOpacity
       block={true}
-      onPress={exportCredentials}
+      onPress={Platform.OS === 'ios' ? exportCredentials: exportCredentialsAndroid}
       activeOpacity={1}
     >
       <IconFont name="io-carta" style={{color: 'white'}}/>

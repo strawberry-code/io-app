@@ -38,4 +38,24 @@ const exportCredentials = async () => {
   }
 }
 
-export {exportCredentials}
+const exportCredentialsAndroid = async () => {
+  
+  try {
+    const payload = await VCstore.getRawJwts();
+    console.log(
+      "[exportCredentials]: condivido il file con le VCs tramite la share dell'OS..."
+    );
+    const res = await Share.open({
+      url: `data:text/plain;base64,${base64.encode(payload)}`,
+      cache: true,
+      type: "text/plain",
+      filename: `backup-${DidSingleton.getEthAddress()}-${new Date()}.ssikey`
+    });
+    console.log("[exportCredentials]: processo di condivisione terminato");
+    console.log("[exportCredentials]: " + JSON.stringify(res));
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export {exportCredentials, exportCredentialsAndroid};
