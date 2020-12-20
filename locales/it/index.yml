@@ -299,7 +299,7 @@ profile:
       local_calendar: Calendario locale
       birthday_calendar: Compleanni
 ssi:
-  title: SSI
+  title: WALLET
   scanQr: Scansiona codice QR
   linkText: Visita
   issuer:
@@ -313,6 +313,22 @@ ssi:
     title: Credenziali Verificate
     subtitle: Queste sono le tue Credenziali Verificate associate al tuo SPID
     button: "Credenziali\nVerificate"
+  singleVC:
+    types:
+      CartaIdentita: "Carta d'Identita"
+      DimensioneImpresa: Dimensione Impresa
+    fields:
+      firstName: Nome
+      lastName: Cognome
+      birthday: Data di Nascita
+      placeOfBirth: Luogo di Nascita
+      ragioneFiscale: ragioneFiscale
+      piva: Partita IVA
+      indirizzoSedeLegale: Indirizzo Sede Legale
+      eleggibilita: eleggibilita
+      expirationDate: Scadenza
+      dateOfAchievement: Data di conseguimento
+      type: Tipologia
   balanceAndTransaction:
     title: Bilancio & Transazioni
     balanceTitle: Bilancio
@@ -335,9 +351,10 @@ ssi:
     addressTitle: Indirizzo
     receiveButton: Ricevi
   shareReqScreen:
-    question: Vuoi condividere queste Credenziali?
-    buttonYes: Sì
-    buttonNo: "No"
+    title: Condividi Credenziali
+    question: Scegli le credenziali da condividere.
+    buttonYes: Condividi
+    buttonNo: Annulla
     continueButton: Continua
     tryAgainButton: Riprova
     loadingText: "Condividendo le credenziali..."
@@ -372,6 +389,10 @@ ssi:
     subtitle: Il tuo DID verrà copiato negli appunti del tuo device
     prompt: Il tuo DID verrà copiato negli appunti del tuo device, vuoi procedere?
   exportVcs: Esporta Credenziali
+  notifications:
+    verifiableCredential:
+      accept: Accetta
+      refuse: Rifiuta
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione

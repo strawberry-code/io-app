@@ -297,7 +297,7 @@ profile:
       local_calendar: Local calendar
       birthday_calendar: Birthdays
 ssi:
-  title: SSI
+  title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
   issuer:
@@ -311,6 +311,22 @@ ssi:
     title: Verified Credentials
     subtitle: These are your Verified Credentials related to your SPID
     button: "Verified\nCredentials"
+  singleVC:
+    types:
+      CartaIdentita: Identity Card
+      DimensioneImpresa:  Dimensions of Enterprise
+    fields:
+      firstName: Name
+      lastName: Surname
+      birthday: Birthday
+      placeOfBirth: Place of Birth
+      ragioneFiscale: Tax reason
+      piva: VAT number
+      indirizzoSedeLegale: Registered office address
+      eleggibilita: Eligibility
+      expirationDate: Expiration Date
+      dateOfAchievement: Date of Achievement
+      type: Type
   balanceAndTransaction:
     title: Balance & Transactions
     balanceTitle: Balance
@@ -333,9 +349,10 @@ ssi:
     addressTitle: Address
     receiveButton: Receive
   shareReqScreen:
-    question: Do you want to share this credentials?
-    buttonYes: "Yes"
-    buttonNo: "No"
+    title: Share Credentials
+    question: Choose the credentials to share.
+    buttonYes: Share
+    buttonNo: Cancel
     continueButton: Continue
     tryAgainButton: Try again
     loadingText: "Sharing credentials..."
@@ -370,6 +387,10 @@ ssi:
     subtitle: Your DID will be copied into your device's clipboard
     prompt: Your DID will be copied into your device's clipboard, do you want proceed?
   exportVcs: Export Credentials
+  notifications:
+    verifiableCredential:
+      accept: Accetta
+      refuse: Rifiuta
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version

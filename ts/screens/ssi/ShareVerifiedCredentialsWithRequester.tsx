@@ -359,7 +359,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         goBack={true}
       >
         <ScreenContent
-          title={I18n.t("ssi.vcslist.title")}
+          title={I18n.t("ssi.shareReqScreen.title")}
           subtitle={I18n.t("ssi.vcslist.subtitle")}
           icon={require("../../../img/icons/gears.png")}
         >
