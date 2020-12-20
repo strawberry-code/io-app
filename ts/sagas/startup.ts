@@ -59,7 +59,10 @@ import {
   watchIdentification
 } from "./identification";
 import { previousInstallationDataDeleteSaga } from "./installation";
-import { updateInstallationSaga } from "./notifications";
+import {
+  updateInstallationSaga,
+  loadSsiNotificationsSaga
+} from "./notifications";
 import {
   loadProfile,
   watchProfile,
@@ -340,6 +343,9 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
     backendClient.getUserDataProcessingRequest,
     backendClient.postUserDataProcessingRequest
   );
+
+  // Load Notifications when requested
+  yield fork(loadSsiNotificationsSaga);
 
   // Load visible services and service details from backend when requested
   yield fork(watchLoadServicesSaga, backendClient);
