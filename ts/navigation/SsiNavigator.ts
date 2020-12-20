@@ -4,6 +4,7 @@ import SsiWalletSendScreen from "../screens/ssi/SsiWalletSendScreen";
 import SsiWalletReceiveScreen from "../screens/ssi/SsiWalletReceiveScreen";
 import SsiSignReq from "../screens/ssi/SsiSignReq";
 import SsiSuccess from "../screens/ssi/SsiSuccess";
+import SsiNotificationScreen from "../screens/ssi/SsiNotificationScreen";
 import SsiBalanceAndTransactionScreen from "../screens/ssi/SsiBalanceAndTransaction";
 import SsiVerifiedCredentials from "../screens/ssi/SsiVerifiedCredentialsScreen";
 import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlayground";
@@ -46,6 +47,9 @@ const ProfileNavigator = createStackNavigator(
     },
     [ROUTES.SSI_SUCCESS]: {
       screen: SsiSuccess
+    },
+    [ROUTES.SSI_NOTIFICATIONS]: {
+      screen: SsiNotificationScreen
     }
   },
   {

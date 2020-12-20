@@ -600,6 +600,14 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               hideIcon
             />
 
+             {/* SSI NOTIFICATIONS */}
+             <ListItemComponent
+              title="Notifiche"
+              subTitle="Potrai vedere la lista delle notifiche arrivate"
+              onPress={() => this.props.navigation.navigate(ROUTES.SSI_NOTIFICATIONS)}
+              hideIcon={true}
+            />
+
             {/* Codpy DID to clipboard */}
             <ListItemComponent
               title={I18n.t("ssi.copyDID.title")}

@@ -29,6 +29,7 @@ import { InferNavigationParams } from "../../types/react";
 import SsiMainScreen from "../../screens/ssi/SsiMainScreen";
 import SsiVerifiedCredentialsScreen from "../../screens/ssi/SsiVerifiedCredentialsScreen";
 import SsiWalletSendScreen from "../../screens/ssi/SsiWalletSendScreen";
+import SsiNotificationScreen from "../../screens/ssi/SsiNotificationScreen";
 
 export const navigationRestore = createStandardAction("NAVIGATION_RESTORE")<
   NavigationState
@@ -336,6 +337,17 @@ export const navigateToCieCardReaderScreen = (
 ) =>
   NavigationActions.navigate({
     routeName: ROUTES.CIE_CARD_READER_SCREEN,
+    params
+  });
+
+/**
+ * SSI
+ */
+export const navigateToSsiNotificationScreen = (
+  params?: InferNavigationParams<typeof SsiNotificationScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_NOTIFICATIONS,
     params
   });
 
