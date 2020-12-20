@@ -2,7 +2,6 @@
  * Notification message reducer
  */
 import { getType } from "typesafe-actions";
-import VCstore from "../../../screens/ssi/VCstore";
 
 import {
   loadSsiNotifications,
@@ -29,8 +28,6 @@ const reducer = (
   state: VerifiedCredentialNotifications = INITIAL_STATE,
   action: Action
 ): VerifiedCredentialNotifications => {
-  console.log("SSI NOTIFICATIONS", state);
-  console.log("ACTION", action);
   switch (action.type) {
     case getType(loadSsiNotifications.success):
       return action.payload;
@@ -63,8 +60,6 @@ const reducer = (
       if (!notificationToAccept) {
         return state;
       }
-
-      void VCstore.storeVC(notificationToAccept.VPjwt);
 
       return state.filter(notication => notication.id !== acceptedId);
 

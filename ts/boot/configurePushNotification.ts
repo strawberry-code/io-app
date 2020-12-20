@@ -12,13 +12,17 @@ import { store } from "../App";
 import { debugRemotePushNotification, gcmSenderId } from "../config";
 import { loadMessages } from "../store/actions/messages";
 import {
+  loadSsiNotifications,
+  updateSsiNotifications,
   updateNotificationsInstallationToken,
   updateNotificationsPendingMessage
 } from "../store/actions/notifications";
 import { isDevEnv } from "../utils/environment";
 import {JwtPresentationPayload} from "did-jwt-vc";
 import VCstore from "../screens/ssi/VCstore";
+import notificationStore from "../screens/ssi/notificationStore";
 import {decodeVerifiablePresentation} from "../screens/ssi/VerifiablePresentations";
+import { navigateToVCsList, navigateToSsiNotificationScreen } from "../store/actions/navigation";
 
 /**
  * Helper type used to validate the notification payload.
@@ -68,8 +72,8 @@ function configurePushNotifications() {
       let ssiPushType = ssiNotificationPayload.type
 
       if(ssiPushType === 'ssi-issuedVC') {
-        console.log('sto gestendo una notifica push SSI del tipo: ' + ssiPushType)
-        handleIssuedVC(ssiNotificationPayload.verifiablePresentation)
+        console.log('sto gestendo una notifica push SSI del tipo: ' + ssiPushType);
+        handleIssuedVCNotification(ssiNotificationPayload.verifiablePresentation, notification.foreground);
       } else {
         console.log('⚠️ attenzione: il tipo di notifica push SSI ('+ssiPushType+') non è ancora gestito')
       }
@@ -133,20 +137,36 @@ function configurePushNotifications() {
   });
 }
 
-function handleIssuedVC(VPjwt: JwtPresentationPayload) {
-  console.log('VP JWT: ' + VPjwt)
-  let VP = decodeVerifiablePresentation(VPjwt)
-  console.log('VP decoded: ' + JSON.stringify(VP))
-
-  // Nella issuedVC si assume che le VC dentro alla VP sia solo una, quindi la si pesca con VCs[0]
-  let issuedVCjwt = VP.vp.verifiableCredential[0]
-  let issuedVC = VCstore.decodeJwt(issuedVCjwt)
-
-  console.log('issuedVC: ' + JSON.stringify(issuedVC))
-  VCstore.storeVC(issuedVCjwt).then(() => {
-    console.log('issued VC')
-    // TODO Implementare qui la navigation verso la lista delle VCs
-  })
+function handleIssuedVCNotification(VPjwt: string, foreground: boolean) {
+  
+  Alert.alert(
+    'Nuova notifica',
+    'Hai ricevuto una richiesta di accettazione per la credenziale firmata',
+    [
+      {
+        text: 'Notifiche',
+        onPress: () => {
+          if (foreground) {
+            store.dispatch(updateSsiNotifications(VPjwt));
+            PushNotification.cancelAllLocalNotifications();
+            store.dispatch(navigateToSsiNotificationScreen());
+            console.log('salvando push SSI nel redux persist store');
+          } else {
+            // FIXME: LE NOTIFICHE SU ANDROID NON VENGONO SALVATE NEL NOTIFICATION CENTRE QUANDO IN BACKGROUND
+            store.dispatch(updateSsiNotifications( VPjwt ));
+            store.dispatch(navigateToSsiNotificationScreen());
+          }
+         return true;
+        }
+      },
+      {
+        text: 'Chiudi',
+        style: 'destructive',
+        onPress: undefined
+      }
+    ],
+    { cancelable: true }
+  );
 }
 
 export default configurePushNotifications;
