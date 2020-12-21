@@ -38,7 +38,7 @@ const storeVC = async (JWT: string) => {
     throw new Error('token jwt non riconosciuto: non è nè una VP nè una VC')
   }
 
-  console.log(`[storeVC] ho tutti i JWT di tipo VC che mi servono per salvarli nello store del device: ${verifiableCredentials.toString()}`)
+  console.log(`[storeVC] ho tutti i JWT di tipo VC che mi servono per salvarli nello store del device: ${JSON.stringify(verifiableCredentials)}`)
 
   for(let i = 0; i < verifiableCredentials.length; i++) {
     console.log(`[storeVC] iterazione di store [${i}]`)
