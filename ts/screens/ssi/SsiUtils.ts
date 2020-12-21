@@ -211,7 +211,7 @@ const asyncPrompt = (title, message, resolveCallback, rejectCallback) => new Pro
 })
 
 const copyDidAddress = () => {
-  Alert.alert(I18n.t('ssi.copyDidAddress.title'), I18n.t('ssi.copyDidAddress.subtitle'), [
+  Alert.alert(I18n.t('ssi.copyDidAddress.title'), '\n' + DidSingleton.getDidAddress() + '\n\n' + I18n.t('ssi.copyDidAddress.subtitle'), [
     {
       text: I18n.t('global.yes'),
       onPress: () => {
