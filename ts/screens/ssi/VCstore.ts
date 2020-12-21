@@ -124,4 +124,19 @@ const clearStore = async () => {
   await AsyncStorage.removeItem(AS_SSI_KEY);
 };
 
-export default { storeVC, getVCs, clearStore, getJwts, decodeJwt, getRawJwts };
+const deleteSingVCByIndex = async (index: number) => {
+  let oldVCs = JSON.parse(await getRawJwts())
+  let newVCs = []
+  for(let i = 0; i < oldVCs.length; i++) {
+    if(index !== i) {
+      newVCs.push(oldVCs[i])
+    }
+  }
+  await AsyncStorage.setItem(
+    AS_SSI_KEY,
+    JSON.stringify(newVCs)
+  );
+}
+
+export default { storeVC, getVCs, clearStore, getJwts, decodeJwt, getRawJwts, deleteSingVCByIndex
+};

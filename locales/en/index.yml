@@ -300,6 +300,8 @@ ssi:
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
+  deleteVC:
+    toastTitleSuccess: Your VC has been deleted
   exportVCs:
     toastTitleSuccess: Verifiable Credentials have been exported
     toastTitleFailure: Could not export Verifiable Credentials

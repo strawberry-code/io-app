@@ -5,6 +5,7 @@
 import {fromNullable} from "fp-ts/lib/Option";
 import * as React from "react";
 import {
+  Animated,
   ActivityIndicator,
   FlatList,
   ListRenderItemInfo,
@@ -49,16 +50,14 @@ import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
 import {JwtCredentialPayload} from "did-jwt-vc";
 import variables from "../../theme/variables";
 import VCstore from "./VCstore";
-import {showToast} from "../../utils/showToast";
 import SingleVC from './SsiSingleVC'
 import IconFont from "../../components/ui/IconFont";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
-import * as RNFS from "react-native-fs";
-import {DidSingleton} from "../../types/DID";
-import Share from "react-native-share";
-import base64 from 'react-native-base64'
 import {exportVCsIos, exportVCsAndroid} from "./SsiUtils";
 import {Toast} from "native-base";
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {RectButton} from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-community/async-storage";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -96,6 +95,7 @@ type State = {
  */
 
 class PreferencesScreen extends React.Component<Props, State> {
+  private refsArray: any[];
 
   constructor(props: Props) {
     super(props);
@@ -106,6 +106,7 @@ class PreferencesScreen extends React.Component<Props, State> {
       modalVisible: false,
       modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}
     };
+    this.refsArray = []
   }
 
   public shareVCfromQrScan = async (qrData) => {
@@ -198,14 +199,92 @@ class PreferencesScreen extends React.Component<Props, State> {
     return (<Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{headerTitle}</Text>)
   }
 
-  private renderVC = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
-    const VC = info.item;
+  deleteVCaction = (progress, dragX, listItem) => {
+    const trans = dragX.interpolate({
+      inputRange: [0, 50, 100, 101],
+      outputRange: [-20, 0, 0, 1],
+    });
+    console.log('aaa')
+    return (
+      <RectButton style={styles.leftAction} onPress={async () => await this.deleteVC(listItem.index)}>
+        <Animated.Text
+          style={[
+            styles.actionText,
+            {
+              transform: [{ translateX: trans }],
+            },
+          ]}>
+          {I18n.t('global.buttons.delete')}
+        </Animated.Text>
+      </RectButton>
+    );
+  };
+
+  _swipeableRow = undefined
+  updateRef = ref => {
+    this._swipeableRow = ref;
+  };
+  close = () => {
+    if(this._swipeableRow !== undefined) this._swipeableRow.close();
+  };
+
+  deleteVC = async (index) => {
+    console.log(`deleted! ${index}`)
+
+    this.refsArray[index].close();
+    setTimeout(async () => {
+      let VCs = [...this.state.data]
+      console.log(`this.refsArray: ${this.refsArray.length}`)
+      //this.refsArray = this.refsArray.splice(index, 1);
+      let newRefArray = []
+      for(let i = 0; i < newRefArray.length; i++) {
+        if(index !== i) {
+          newRefArray.push(this.refsArray[i])
+        }
+      }
+      this.refsArray = newRefArray
+      console.log(`this.refsArray: ${this.refsArray.length}`)
+      console.log(`VCs: ${JSON.stringify(VCs)}`)
+      let newVCs = []
+      for(let i = 0; i < VCs.length; i++) {
+        if(index !== i) {
+          newVCs.push(VCs[i])
+        }
+      }
+      await VCstore.deleteSingVCByIndex(index)
+      console.log(`VCs: ${JSON.stringify(newVCs)}`)
+      this.setState({
+        data: newVCs
+      },() => {
+        Toast.show({text: I18n.t('ssi.deleteVC.toastTitleSuccess'), duration: 3000, position: 'bottom'})
+      })
+    }, 500)
+  }
+
+  private renderVC = (flatListItem: ListRenderItemInfo<JwtCredentialPayload>) => {
+    const VerifiedCredentialJson = flatListItem.item;
     // console.log(JSON.stringify(VC))
     console.log('devo renderizzare')
     //console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-        <SingleVC vCredential={VC}/>
+      <Swipeable
+        ref={ref => {
+          console.log(`ricostruisco l'array dei riferimenti ${flatListItem.index}`)
+          this.refsArray[flatListItem.index] = ref; //or this.refsArray[item.id]
+          console.log(`l'array è lungo: ${this.refsArray.length}`)
+        }}
+        friction={2}
+        leftThreshold={40}
+        renderLeftActions={(progress, dragX) => {
+          console.log(`list item index: ${JSON.stringify(flatListItem.index)}`);
+          console.log(`🎈🎈🎈reference debug:`)
+          console.log(this.refsArray)
+          return this.deleteVCaction(progress, dragX, flatListItem)
+        }}
+      >
+        <View style={styles.itemContainer}><SingleVC vCredential={VerifiedCredentialJson}/></View>
+      </Swipeable>
     )
   }
 
@@ -269,6 +348,13 @@ class PreferencesScreen extends React.Component<Props, State> {
             renderItem={this.renderVC}
           />
         </ScreenContent>
+        <View>
+          <TouchableHighlight onPress={async () => {
+            alert(JSON.parse(await AsyncStorage.getItem("AS_SSI_KEY")).length)
+          }}>
+            <Text>AsyncStorage</Text>
+          </TouchableHighlight>
+        </View>
         <View style={{marginHorizontal: 20, marginBottom: 15}}>
           <this.ExportVCs/>
         </View>
@@ -409,6 +495,20 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center"
+  },
+  leftAction: {
+    flex: 1,
+    backgroundColor: variables.brandDanger,
+    justifyContent: 'center',
+  },
+  actionText: {
+    color: 'white',
+    fontSize: 16,
+    backgroundColor: 'transparent',
+    padding: 10,
+  },
+  itemContainer: {
+    backgroundColor: 'white'
   }
 });
 
