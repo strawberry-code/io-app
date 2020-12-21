@@ -162,9 +162,9 @@ const restoreVcsBackup = async () => {
     console.log(`rawFileContent: ${rawFileContent}`)
     console.log(`AsyncStorageBackupString: ${AsyncStorageBackupString}`)
     console.log(`JWTs: ${JWTs}`)
-    JWTs.forEach(jwt => {
-      VCstore.storeVC(jwt)
-    })
+    for(let i = 0; i < JWTs.length; i++) {
+      await VCstore.storeVC(JWTs[i])
+    }
   } else {
     console.log('errore nel picking del file')
   }
