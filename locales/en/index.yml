@@ -300,6 +300,10 @@ ssi:
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
+  recoverVCs:
+    title: Restore your Verifiable Credentials
+    subtitle: If you have a VCs backup file, you can restore your VCs from here
+    prompt: Please, select you VCs backup file
   issuer:
     unknown: Unknown
     fields:

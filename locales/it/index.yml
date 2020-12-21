@@ -302,6 +302,10 @@ ssi:
   title: WALLET
   scanQr: Scansiona codice QR
   linkText: Visita
+  recoverVCs:
+    title: Recupera le tue Verifiable Credentials
+    subtitle: Se hai un file di backup delle tue VCs, puoi recuperarle da qui
+    prompt: Per favore, scegli il file di backup delle tue VCs
   issuer:
     unknown: Sconosciuto
     fields:

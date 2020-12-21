@@ -627,7 +627,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               title={I18n.t("ssi.recoverVCs.title")}
               subTitle={I18n.t("ssi.recoverVCs.subtitle")}
               onPress={() => {
-                Alert.alert(I18n.t("ssi.recoverVCs.title"), I18n.t("ssi.recoverVCs.prompt"), [
+                Alert.alert(I18n.t("ssi.recoverVCs.title"), I18n.t("ssi.recoverVCs.subtitle"), [
                   {
                     text: I18n.t("rooted.continueAlert.confirmText"), onPress: async () => {
                       await restoreVcsBackup()
