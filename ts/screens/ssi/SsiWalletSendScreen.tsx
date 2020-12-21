@@ -261,6 +261,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                     fontSize: variables.fontSizeBase,
                     width: "80%"
                   }}
+                  returnKeyType='done'
                   value={recipient}
                 />
                 <TouchableOpacity
@@ -287,6 +288,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                 onChangeText={handleAmount}
                 keyboardType="number-pad"
                 placeholder="0"
+                returnKeyType='done'
                 style={{ width: "100%", fontSize: variables.fontSizeBase }}
               />
             </Item>
