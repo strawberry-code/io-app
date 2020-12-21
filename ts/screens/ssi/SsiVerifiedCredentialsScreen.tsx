@@ -58,7 +58,8 @@ import * as RNFS from "react-native-fs";
 import {DidSingleton} from "../../types/DID";
 import Share from "react-native-share";
 import base64 from 'react-native-base64'
-import {exportCredentials, exportCredentialsAndroid} from "./SsiUtils";
+import {exportVCsIos, exportVCsAndroid} from "./SsiUtils";
+import {Toast} from "native-base";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -210,11 +211,18 @@ class PreferencesScreen extends React.Component<Props, State> {
   }
 
 
-
   ExportVCs = () => (
     <ButtonDefaultOpacity
       block={true}
-      onPress={Platform.OS === 'ios' ? exportCredentials: exportCredentialsAndroid}
+      onPress={async () => {
+        if (Platform.OS === 'ios') {
+          let res = await exportVCsIos()
+          res ? Toast.show({text: I18n.t('ssi.exportVCs.toastTitleSuccess'), duration: 4000, type: 'success', position: 'top'}) : Toast.show({text: I18n.t('ssi.exportVCs.toastTitleFailure'), duration: 4000, type: 'danger', position: 'top'})
+        } else {
+          let res = await exportVCsAndroid()
+          res ? Toast.show({text: I18n.t('ssi.exportVCs.toastTitleSuccess'), duration: 4000, type: 'success', position: 'top'}) : Toast.show({text: I18n.t('ssi.exportVCs.toastTitleFailure'), duration: 4000, type: 'danger', position: 'top'})
+        }
+      }}
       activeOpacity={1}
     >
       <IconFont name="io-carta" style={{color: 'white'}}/>

@@ -9,7 +9,7 @@ import {JWT} from "did-jwt-vc/lib/types";
 import {Alert} from "react-native";
 import {useState} from "react";
 
-const exportCredentials = async () => {
+const exportVCsIos = async () => {
   let filePath = RNFS.DocumentDirectoryPath + `/${DidSingleton.getEthAddress()}-${formatDateYYYYMMDDhhmmss(new Date())}.txt`
   let payload = await VCstore.getRawJwts()
   console.log(`payload: ` + payload)
@@ -34,16 +34,20 @@ const exportCredentials = async () => {
     console.log(`[exportCredentials]: processo di condivisione terminato`)
     console.log(`[exportCredentials]: ` + JSON.stringify(res));
 
-    console.log(`[exportCredentials]: elimino ` + filePath + ` ...`)
-    await RNFS.unlink(filePath)
-    console.log(`[exportCredentials]: file eliminato`)
+
+    return true
 
   } catch (e) {
     console.log(e)
+    return false
+  } finally {
+    console.log(`[exportCredentials]: elimino ` + filePath + ` ...`)
+    await RNFS.unlink(filePath)
+    console.log(`[exportCredentials]: file eliminato`)
   }
 }
 
-const exportCredentialsAndroid = async () => {
+const exportVCsAndroid = async () => {
 
   try {
     const payload = encodeBase64(encodeBase64(await VCstore.getRawJwts()))
@@ -54,8 +58,10 @@ const exportCredentialsAndroid = async () => {
     });
     console.log(`[exportCredentials]: processo di condivisione terminato`);
     console.log(`[exportCredentials]: ` + JSON.stringify(res));
+    return true
   } catch (e) {
     console.log(e);
+    return false
   }
 };
 
@@ -155,7 +161,7 @@ const pickSingleFileAndReadItsContent = async (): Promise<string | undefined> =>
   }
 }
 
-const restoreVcsBackup = async (): Promise<boolean> => {
+const importVCs = async (): Promise<boolean> => {
   let rawFileContent = await pickSingleFileAndReadItsContent()
 
   if (rawFileContent != null) {
@@ -203,14 +209,14 @@ const asyncPrompt = (title, message, resolveCallback, rejectCallback) => new Pro
 })
 
 export {
-  exportCredentials,
-  exportCredentialsAndroid,
-  isJwt,
-  encodeBase64,
   decodeBase64,
-  readFile,
-  writeFile,
+  encodeBase64,
+  exportVCsAndroid,
+  exportVCsIos,
+  importVCs,
+  isJwt,
   pickSingleFile,
   pickSingleFileAndReadItsContent,
-  restoreVcsBackup
+  readFile,
+  writeFile,
 };

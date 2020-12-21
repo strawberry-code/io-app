@@ -300,6 +300,12 @@ ssi:
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
+  exportVCs:
+    toastTitleSuccess: Verifiable Credentials have been exported
+    toastTitleFailure: Could not export Verifiable Credentials
+  importVCs:
+    toastTitleSuccess: Verifiable Credentials imported
+    toastTitleFailure: Could not import Verifiable Credentials
   recoverVCs:
     title: Restore your Verifiable Credentials
     subtitle: If you have a VCs backup file, you can restore your VCs from here
