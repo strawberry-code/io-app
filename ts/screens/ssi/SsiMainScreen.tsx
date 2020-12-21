@@ -600,6 +600,10 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               title={I18n.t("ssi.copyDID.title")}
               subTitle={I18n.t("ssi.copyDID.subtitle")}
               onPress={() => {
+
+                copyDidAddress()
+
+                /*
                 Alert.alert(I18n.t("ssi.copyDID.title"), I18n.t("ssi.copyDID.prompt") + '\n\n' + DidSingleton.getDidAddress(), [
                   {
                     text: I18n.t("rooted.continueAlert.confirmText"),
@@ -612,6 +616,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     }
                   }
                 ])
+                 */
 
               }}
               hideIcon={true}
