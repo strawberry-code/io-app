@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableHighlight,
-  Platform
+  Platform, ScrollView
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import Share from "react-native-share";
@@ -55,8 +55,9 @@ const SsiWalletReceiveScreen: React.FC = () => {
       headerTitle={I18n.t("ssi.title")}
       goBack={true}
     >
+      <ScrollView>
       <Text style={styles.title}>{I18n.t("ssi.receiveIntoWallet.title")}</Text>
-      <View style={{ padding: 30, justifyContent: "space-around" }}>
+      <View style={{ padding: 25, justifyContent: "space-around" }}>
         <View style={styles.qrcode}>
           <QRCode value={ethAddress} size={200} />
         </View>
@@ -85,6 +86,7 @@ const SsiWalletReceiveScreen: React.FC = () => {
           </Text>
         </TouchableHighlight>
       </View>
+      </ScrollView>
     </TopScreenComponent>
   );
 };
@@ -110,12 +112,12 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-Bold",
     fontWeight: Platform.OS === "ios" ? "600" : "normal",
     fontSize: variables.h2FontSize,
-    padding: 20,
+    padding: 8,
     backgroundColor: variables.brandPrimary,
     color: variables.colorWhite
   },
   qrcode: {
-    marginBottom: 20,
+    marginBottom: 10,
     alignSelf: "center"
   },
   descriptionTitle: {
