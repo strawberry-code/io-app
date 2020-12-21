@@ -13,7 +13,6 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
   View
 } from "react-native";
 import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
@@ -199,14 +198,14 @@ class PreferencesScreen extends React.Component<Props, State> {
     return (<Text style={{color: variables.colorWhite, fontWeight: 'bold', textAlign: 'center'}}>{headerTitle}</Text>)
   }
 
-  private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
+  private renderVC = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
     const VC = info.item;
     // console.log(JSON.stringify(VC))
     console.log('devo renderizzare')
     //console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
 
     return (
-      <SingleVC vCredential={VC}/>
+        <SingleVC vCredential={VC}/>
     )
   }
 
@@ -217,10 +216,30 @@ class PreferencesScreen extends React.Component<Props, State> {
       onPress={async () => {
         if (Platform.OS === 'ios') {
           let res = await exportVCsIos()
-          res ? Toast.show({text: I18n.t('ssi.exportVCs.toastTitleSuccess'), duration: 4000, type: 'success', position: 'top'}) : Toast.show({text: I18n.t('ssi.exportVCs.toastTitleFailure'), duration: 4000, type: 'danger', position: 'top'})
+          res ? Toast.show({
+            text: I18n.t('ssi.exportVCs.toastTitleSuccess'),
+            duration: 4000,
+            type: 'success',
+            position: 'top'
+          }) : Toast.show({
+            text: I18n.t('ssi.exportVCs.toastTitleFailure'),
+            duration: 4000,
+            type: 'danger',
+            position: 'top'
+          })
         } else {
           let res = await exportVCsAndroid()
-          res ? Toast.show({text: I18n.t('ssi.exportVCs.toastTitleSuccess'), duration: 4000, type: 'success', position: 'top'}) : Toast.show({text: I18n.t('ssi.exportVCs.toastTitleFailure'), duration: 4000, type: 'danger', position: 'top'})
+          res ? Toast.show({
+            text: I18n.t('ssi.exportVCs.toastTitleSuccess'),
+            duration: 4000,
+            type: 'success',
+            position: 'top'
+          }) : Toast.show({
+            text: I18n.t('ssi.exportVCs.toastTitleFailure'),
+            duration: 4000,
+            type: 'danger',
+            position: 'top'
+          })
         }
       }}
       activeOpacity={1}
@@ -247,7 +266,7 @@ class PreferencesScreen extends React.Component<Props, State> {
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             data={this.state.data}
-            renderItem={this.renderItem}
+            renderItem={this.renderVC}
           />
         </ScreenContent>
         <View style={{marginHorizontal: 20, marginBottom: 15}}>
