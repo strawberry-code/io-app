@@ -303,6 +303,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
               return;
             }
             void createRawTx(createTxObject);
+            navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION)
           }}
         >
           <Text style={button.text}>
