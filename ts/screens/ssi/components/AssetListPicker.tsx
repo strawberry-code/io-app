@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Text } from "react-native";
-import { Picker, Form } from "native-base";
+import {Text, View} from "react-native";
+import {Picker, Form, Header, Content, Container, Left, Button, Icon, Title, Right, Body} from "native-base";
 import { connect } from "react-redux";
 
 import { DID } from "../../../types/DID";
@@ -66,7 +66,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
   };
 
   return (
-    <>
+    <View>
       <Text
         style={{
           marginLeft: 20,
@@ -77,8 +77,21 @@ const AssetListPicker: React.FC<AssetListProps> = ({
       </Text>
       <Form>
         <Picker
+          renderHeader={backAction =>
+            <Header style={{ backgroundColor: variables.brandPrimary }}>
+              <Left>
+                <Button transparent onPress={backAction}>
+                  <Icon name="arrow-back" style={{ color: "#fff" }} />
+                </Button>
+              </Left>
+              <Body style={{ flex: 3 }}>
+                <Title style={{ color: "#fff" }}>Asset selection</Title>
+              </Body>
+              <Right />
+            </Header>}
           note
           mode="dialog"
+          headerBackButtonText="Baaack!"
           iosIcon={<IconFont name="io-plus" />}
           style={{
             marginHorizontal: 10,
@@ -90,6 +103,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           }}
           selectedValue={assetSelected}
           onValueChange={handleChangeAssets}
+
         >
           {assetList &&
             assetList.map(asset => (
@@ -101,7 +115,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
             ))}
         </Picker>
       </Form>
-    </>
+    </View>
   );
 };
 
