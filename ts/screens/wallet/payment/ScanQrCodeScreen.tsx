@@ -152,6 +152,8 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       scanningState: "VALID"
     });
 
+
+
     //  let SignRequestHandler: SsiSignReqOld = new SsiSignReqOld(data)
     //  SignRequestHandler.handleRequest()
 
@@ -160,19 +162,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     // action: variabile fittizia che suggerisce la prossima azione da fare
     // data: oggetto JSON che rappresenta i dati del QR Code parsati
+    this.handleWillBlur() // Dovrebbe bloccare la continuazione dello scanner QR
     this.props.navigateToSsiSignReq({action: "signRequest", data: JSON.parse(data)});
 
-
-    this.scannerReactivateTimeoutHandler = setTimeout(() => {
-      // eslint-disable-next-line
-      this.scannerReactivateTimeoutHandler = undefined;
-      if (this.qrCodeScanner.current) {
-        this.qrCodeScanner.current.reactivate();
-        this.setState({
-          scanningState: "SCANNING"
-        });
-      }
-    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
   };
 
   /**
@@ -187,20 +179,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     let qrData = JSON.parse(data)
 
+    this.handleWillBlur() // Dovrebbe bloccare la continuazione dello scanner QR
     this.props.navigateToShareVCsList({action: "shareVCfromQR", data: qrData});
 
-    this.scannerReactivateTimeoutHandler = setTimeout(() => {
-      // eslint-disable-next-line
-      this.scannerReactivateTimeoutHandler = undefined;
-      if (this.qrCodeScanner.current) {
-        this.qrCodeScanner.current.reactivate();
-        this.setState({
-          scanningState: "SCANNING"
-        });
-      }
-    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
-
-    //this.props.navigateToScannedSsiQrCode();
   };
 
   /**
@@ -218,19 +199,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
 
     console.log('jwt X: ' + jwt)
 
+    this.handleWillBlur() // Dovrebbe bloccare la continuazione dello scanner QR
     this.props.navigateToVCsList({action: "saveVCinTheStore", data: jwt});
 
-    this.scannerReactivateTimeoutHandler = setTimeout(() => {
-      // eslint-disable-next-line
-      this.scannerReactivateTimeoutHandler = undefined;
-      if (this.qrCodeScanner.current) {
-        this.qrCodeScanner.current.reactivate();
-        this.setState({
-          scanningState: "SCANNING"
-        });
-      }
-    }, QRCODE_SCANNER_REACTIVATION_TIME_MS);
-    //this.props.navigateToScannedSsiQrCode();
   };
 
   private handleSsiWalletRecipientScan(data: string) {
@@ -280,7 +251,12 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       return;
     }
 
-    let qrType = (JSON.parse(data)).type
+    let qrType
+    try {
+      qrType = (JSON.parse(data)).type
+    } catch (e) {
+      console.log('non è un codice QR valido')
+    }
     console.log('qr type scansionato: ' + qrType)
 
     if (qrType === "ssi-shareReq") { // FIXME: non propriamente "safe", se pagopa includesse una stringa signReq, non si potrà scansionare con effetti imprevedibili
