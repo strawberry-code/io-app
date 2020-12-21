@@ -8,6 +8,8 @@ import DocumentPicker from "react-native-document-picker";
 import {JWT} from "did-jwt-vc/lib/types";
 import {Alert} from "react-native";
 import {useState} from "react";
+import {clipboardSetStringWithFeedback} from "../../utils/clipboard";
+import I18n from "../../i18n";
 
 const exportVCsIos = async () => {
   let filePath = RNFS.DocumentDirectoryPath + `/${DidSingleton.getEthAddress()}-${formatDateYYYYMMDDhhmmss(new Date())}.txt`
@@ -208,6 +210,22 @@ const asyncPrompt = (title, message, resolveCallback, rejectCallback) => new Pro
   ])
 })
 
+const copyDidAddress = () => {
+  Alert.alert(I18n.t('ssi.copyDidAddress.title'), I18n.t('ssi.copyDidAddress.subtitle'), [
+    {
+      text: I18n.('globals.yes'),
+      onPress: () => {
+        clipboardSetStringWithFeedback(DidSingleton.getDidAddress())
+      }
+    }, {
+      text: 'No',
+      onPress: () => {
+
+      }
+    }
+  ])
+}
+
 export {
   decodeBase64,
   encodeBase64,
@@ -219,4 +237,5 @@ export {
   pickSingleFileAndReadItsContent,
   readFile,
   writeFile,
+  copyDidAddress
 };

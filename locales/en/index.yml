@@ -1,5 +1,7 @@
 ---
 global:
+  yes: Yes
+  not: No
   password: Password
   username: Username
   disclaimer_beta: This feature is in beta. If you're having trouble signing in, please let us know!
@@ -300,6 +302,9 @@ ssi:
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
+  copyDidAddress:
+    title: This is the your DID Address
+    subtitle: Do you want to copy it in the your device's clipboard?
   deleteVC:
     toastTitleSuccess: Your VC has been deleted
   exportVCs:

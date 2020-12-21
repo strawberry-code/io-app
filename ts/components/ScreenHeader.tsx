@@ -3,7 +3,7 @@ import { View } from "native-base";
 import { connectStyle } from "native-base-shoutem-theme";
 import mapPropsToStyleNames from "native-base/src/utils/mapPropsToStyleNames";
 import * as React from "react";
-import { Image, ImageSourcePropType, StyleSheet } from "react-native";
+import {Image, ImageSourcePropType, StyleSheet, TouchableHighlight, TouchableOpacity} from "react-native";
 import { IconProps } from "react-native-vector-icons/Icon";
 import customVariables from "../theme/variables";
 import { HEADER_ICON_HEIGHT } from "../utils/constants";
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
  */
 class ScreenHeader extends React.Component<Props> {
   private getIcon = () => {
-    const { icon } = this.props;
+    const { icon, cb } = this.props;
     if (icon) {
       return <Image source={icon} style={styles.image} />;
     }
@@ -58,12 +58,16 @@ class ScreenHeader extends React.Component<Props> {
         )
       );
       return (
+        <TouchableOpacity onPress={() => {
+          if(cb) cb()
+        }}>
         <IconFont
           importantForAccessibility={"no-hide-descendants"}
           name={ic.name}
           size={Math.min(ic.size || HEADER_ICON_HEIGHT, HEADER_ICON_HEIGHT)}
           color={imageColor}
         />
+        </TouchableOpacity>
       );
     });
   };

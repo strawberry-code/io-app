@@ -71,7 +71,7 @@ import {
   exportVCsIos,
   exportVCsAndroid,
   pickSingleFileAndReadItsContent,
-  importVCs
+  importVCs, copyDidAddress
 } from "./SsiUtils";
 import {JWT} from "did-jwt-vc/lib/types";
 
@@ -868,6 +868,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             title={I18n.t("ssi.title")}
             iconFont={{name: "io-cie-card"}} // FIXME: cambiare icona
             dynamicHeight={100}
+            cb={() => {
+              copyDidAddress()
+            }}
           />
         </React.Fragment>
         {screenContent()}
