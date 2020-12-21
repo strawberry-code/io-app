@@ -199,6 +199,7 @@ dependencies {
     implementation project(':react-native-linear-gradient')
     implementation project(':react-native-share')
     implementation project(':react-native-permissions')
+    compile project(':react-native-document-picker')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"
