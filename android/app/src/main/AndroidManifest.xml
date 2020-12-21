@@ -48,7 +48,7 @@
       android:value="false"/>
 
     <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
-      android:resource="@color/white"/>
+      android:resource="@color/primary"/>
 
     <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions" />
     <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
