@@ -6,6 +6,8 @@ import Share from "react-native-share";
 import base64 from "react-native-base64";
 import DocumentPicker from "react-native-document-picker";
 import {JWT} from "did-jwt-vc/lib/types";
+import {Alert} from "react-native";
+import {useState} from "react";
 
 const exportCredentials = async () => {
   let filePath = RNFS.DocumentDirectoryPath + `/${DidSingleton.getEthAddress()}-${formatDateYYYYMMDDhhmmss(new Date())}.txt`
@@ -153,22 +155,52 @@ const pickSingleFileAndReadItsContent = async (): Promise<string | undefined> =>
   }
 }
 
-const restoreVcsBackup = async () => {
+const restoreVcsBackup = async (): Promise<boolean> => {
   let rawFileContent = await pickSingleFileAndReadItsContent()
 
   if (rawFileContent != null) {
     let AsyncStorageBackupString = decodeBase64(rawFileContent)
     let JWTs: JWT[] = JSON.parse(AsyncStorageBackupString)
-    console.log(`rawFileContent: ${rawFileContent}`)
-    console.log(`AsyncStorageBackupString: ${AsyncStorageBackupString}`)
-    console.log(`JWTs: ${JWTs}`)
-    for(let i = 0; i < JWTs.length; i++) {
-      await VCstore.storeVC(JWTs[i])
+    console.log(`[restoreVcsBackup] rawFileContent: ${rawFileContent}`)
+    console.log(`[restoreVcsBackup] AsyncStorageBackupString: ${AsyncStorageBackupString}`)
+    console.log(`[restoreVcsBackup] JWTs: ${JWTs}`)
+
+    let userChoice = await asyncPrompt('Importazione VCs',`Nel file che hai selezionato sono state trovate ${JWTs.length} Verifiable Credentials, vuoi procedere con l'importazione?`, undefined, undefined)
+
+    if(userChoice) {
+      for(let i = 0; i < JWTs.length; i++) {
+        await VCstore.storeVC(JWTs[i])
+      }
+      return true
+    } else {
+      console.log(`[restoreVcsBackup] importazione VCs interrotta: l'utente ha deciso di non importare le VCs`)
+      return false
     }
+
   } else {
-    console.log('errore nel picking del file')
+    console.log('[restoreVcsBackup] errore nel picking del file')
+    return false
   }
 }
+
+const asyncPrompt = (title, message, resolveCallback, rejectCallback) => new Promise((resolve, reject) => {
+  Alert.alert(title, message, [
+    {
+      text: `Sì`,
+      onPress: () => {
+        if(resolveCallback) resolveCallback()
+        resolve(true)
+      }
+    },
+    {
+      text: `No`,
+      onPress: () => {
+        if(rejectCallback) rejectCallback()
+        reject(false)
+      }
+    }
+  ])
+})
 
 export {
   exportCredentials,

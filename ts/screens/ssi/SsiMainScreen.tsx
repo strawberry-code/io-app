@@ -626,7 +626,13 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                   {
                     text: I18n.t("rooted.continueAlert.confirmText"),
                     onPress: async () => {
-                      await restoreVcsBackup()
+                      let backupSuccess: boolean = await restoreVcsBackup()
+                      if(backupSuccess) {
+                        console.log('[main screen] VCs importate da file con successo')
+                        navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN);
+                      } else {
+                        console.log('[main screen] non è stato possibile importare le VCs da file')
+                      }
                     }
                   },
                   {
