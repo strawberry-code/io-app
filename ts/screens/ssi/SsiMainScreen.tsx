@@ -186,8 +186,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     // eslint-disable-next-line functional/immutable-data
     this.navListener = this.props.navigation.addListener("didFocus", () => {
       setStatusBarColorAndBackground(
-        "light-content",
-        customVariables.brandDarkGray
+        "dark-content",
+        customVariables.colorWhite
       );
     }); // eslint-disable-line
   }
