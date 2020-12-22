@@ -41,6 +41,10 @@ const exportVCsIos = async () => {
 
   } catch (e) {
     console.log(e)
+    console.log('e.toString(): ' + e.toString())
+    if(e.toString().includes('User did not share')) {
+      return 'USER_DID_NOT_SHARE'
+    }
     return false
   } finally {
     console.log(`[exportCredentials]: elimino ` + filePath + ` ...`)

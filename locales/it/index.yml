@@ -312,6 +312,7 @@ ssi:
   exportVCs:
     toastTitleSuccess: Verifiable Credentials esportate
     toastTitleFailure: Impossibile esportare le Verifiable Credentials
+    toastTitleUserDidNotShare: "VCs non esportate: operazione annullata"
   importVCs:
     toastTitleSuccess: Verifiable Credentials importate
     toastTitleFailure: Impossibile importare le Verifiable Credentials

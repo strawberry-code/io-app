@@ -295,17 +295,25 @@ class PreferencesScreen extends React.Component<Props, State> {
       onPress={async () => {
         if (Platform.OS === 'ios') {
           let res = await exportVCsIos()
-          res ? Toast.show({
-            text: I18n.t('ssi.exportVCs.toastTitleSuccess'),
-            duration: 4000,
-            type: 'success',
-            position: 'top'
-          }) : Toast.show({
-            text: I18n.t('ssi.exportVCs.toastTitleFailure'),
-            duration: 4000,
-            type: 'danger',
-            position: 'top'
-          })
+          if(typeof res === 'boolean') {
+            res ? Toast.show({
+              text: I18n.t('ssi.exportVCs.toastTitleSuccess'),
+              duration: 4000,
+              type: 'success',
+              position: 'top'
+            }) : Toast.show({
+              text: I18n.t('ssi.exportVCs.toastTitleFailure'),
+              duration: 4000,
+              type: 'danger',
+              position: 'top'
+            })
+          } else {
+            Toast.show({
+              text: I18n.t('ssi.exportVCs.toastTitleUserDidNotShare'),
+              duration: 4000,
+              position: 'top'})
+          }
+
         } else {
           let res = await exportVCsAndroid()
           res ? Toast.show({

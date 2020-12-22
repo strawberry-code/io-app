@@ -310,6 +310,7 @@ ssi:
   exportVCs:
     toastTitleSuccess: Verifiable Credentials have been exported
     toastTitleFailure: Could not export Verifiable Credentials
+    toastTitleUserDidNotShare: "VCs have been not exported: operation cancelled by the user"
   importVCs:
     toastTitleSuccess: Verifiable Credentials imported
     toastTitleFailure: Could not import Verifiable Credentials
