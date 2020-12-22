@@ -39,6 +39,7 @@ export type TopScreenComponentProps = Props;
 class TopScreenComponent extends React.PureComponent<Props> {
   public render() {
     const {
+      dark,
       appLogo,
       goBack,
       headerTitle,
@@ -62,6 +63,7 @@ class TopScreenComponent extends React.PureComponent<Props> {
         }
         accessibilityLabel={accessibilityLabel}
         appLogo={appLogo}
+        dark={dark}
         goBack={goBack}
         headerTitle={goBack ? headerTitle : undefined}
         contextualHelp={contextualHelp}
