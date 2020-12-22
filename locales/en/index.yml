@@ -302,6 +302,7 @@ ssi:
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit
+  signing: Signing the VC, please wait...
   copyDidAddress:
     title: This is the your DID Address
     subtitle: Do you want to copy it in the your device's clipboard?

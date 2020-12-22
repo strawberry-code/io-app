@@ -5,7 +5,7 @@ import {
   Text,
   StyleSheet,
   TouchableHighlight,
-  Platform
+  Platform, ActivityIndicator
 } from "react-native";
 import {NavigationComponent} from 'react-navigation';
 import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
@@ -24,6 +24,7 @@ import NetCode from "./NetCode";
 import {GlobalState} from "../../store/reducers/types";
 import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
 import {connect} from "react-redux";
+import IconFont from "../../components/ui/IconFont";
 
 interface NavigationProps {
   navigation: NavigationComponent;
@@ -93,7 +94,6 @@ const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
     });
 
 
-
     /*
     fetch(callback, {
       method: callbackMethod.toUpperCase(),
@@ -136,7 +136,25 @@ const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
       <View style={{flex: 1, justifyContent: "space-between", padding: 20}}>
         {isLoading && (
           <View style={loading.overlay}>
-            <RefreshIndicator/>
+            <View style={{alignItems: 'center'}}>
+              <IconFont
+                name="quill"
+                size={35}
+                color={variables.colorWhite}
+              />
+              <Text style={{
+                fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-Bold",
+                fontSize: 20,
+                paddingVertical: 20,
+                color: variables.colorWhite
+              }}>{I18n.t('ssi.signing')}</Text>
+            </View>
+            <View style={{
+              paddingVertical: 50
+            }}>
+              <ActivityIndicator color={'light'} size={Platform.OS === 'android' ? 24 : "large"}/>
+            </View>
+
           </View>
         )}
         <View style={{justifyContent: "space-between"}}>

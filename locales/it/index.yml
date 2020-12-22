@@ -304,6 +304,7 @@ ssi:
   title: WALLET
   scanQr: Scansiona codice QR
   linkText: Visita
+  signing: Firma in corso, si prega di attendere...
   copyDidAddress:
     title: Questo è il tuo DID Address
     subtitle: Vuoi copiarlo negli appunti del tuo device?
