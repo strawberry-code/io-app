@@ -33,7 +33,6 @@ type Props = OwnProps & ReturnType<typeof mapDispatchToProps>
 type State = {
   searchText: Option<string>;
   debouncedSearchText: Option<string>;
-  notifications: []
 };
 
 class NotificationBell extends React.Component<Props, State> {
@@ -42,12 +41,11 @@ class NotificationBell extends React.Component<Props, State> {
     this.state = {
       searchText: none,
       debouncedSearchText: none,
-      notifications: []
     };
   }
 
   public render() {
-    let {notifications} = this.state
+    const {notifications} = this.props;
     return (
       <React.Fragment>
         <ButtonDefaultOpacity
