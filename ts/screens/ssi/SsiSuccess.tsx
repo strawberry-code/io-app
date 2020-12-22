@@ -29,7 +29,7 @@ const SsiSuccess: React.FC<Props> = ({ navigation }) => {
         colors={[variables.brandPrimaryLight, variables.brandPrimary]}
         style={topBox.container}
       >
-        <IconFont name="io-complete" size={130} color={variables.colorWhite} />
+        <IconFont name="io-complete" size={130} color={variables.colorWhite} style={{height: 135}}/>
       </LinearGradient>
       <View style={bottomBox.container}>
         <Text style={bottomBox.title}>{message}</Text>

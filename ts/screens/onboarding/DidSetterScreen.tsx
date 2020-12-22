@@ -234,11 +234,12 @@ const DidSetterScreen: React.FC<Props> = ({
         <View style={loading.bg}>
           <View style={loading.card}>
             <Text style={loading.stateText}>{loadingMessage}</Text>
-            {result === "error" && (
+              {result === "error" && (
               <IconFont
                 name="io-error"
                 size={70}
                 color={variables.brandDanger}
+                style={{height: 75}}
               />
             )}
             {result === "completed" && (
@@ -246,6 +247,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 name="io-complete"
                 size={70}
                 color={variables.brandPrimary}
+                style={{height: 75}}
               />
             )}
             {!isLoading && result === "show_recovery_key" && (
@@ -364,6 +366,7 @@ const loadingButton = StyleSheet.create({
 const topbar = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
+    paddingTop: 40,
     paddingVertical: 20
   }
 });

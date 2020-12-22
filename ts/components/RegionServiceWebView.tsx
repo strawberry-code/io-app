@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   textInput: { padding: 1, borderWidth: 1, height: 30 },
   contentPadding: { paddingHorizontal: customVariables.contentPadding },
   itemsCenter: { alignItems: "center" },
-  selfCenter: { alignSelf: "center" },
+  selfCenter: { alignSelf: "center", height: 125 },
   flex1: { flex: 1 },
   webViewHeight: { height: heightPercentageToDP("100%") },
   errorContainer: {

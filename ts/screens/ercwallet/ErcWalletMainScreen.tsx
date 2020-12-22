@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0
   },
   center: {
-    alignSelf: "center"
+    alignSelf: "center",
+    height: 125
   },
   end: {
     alignSelf: "flex-end"

@@ -331,6 +331,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                 name="io-complete"
                 size={70}
                 color={variables.brandPrimary}
+                style={{height: 75}}
               />
             )}
             {isLoading && <RefreshIndicator />}

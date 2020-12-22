@@ -450,7 +450,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                   <Text style={styles.modalText}>
                   {I18n.t("ssi.shareReqScreen.successShare")}
                   </Text>
-                  <IconFont size={60} color={variables.brandPrimary} name="io-complete"/>
+                  <IconFont size={60} color={variables.brandPrimary} name="io-complete" style={{height: 63}}/>
 
                   <TouchableHighlight
                     style={styles.openButton}
