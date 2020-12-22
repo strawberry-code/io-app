@@ -48,6 +48,7 @@ class TopScreenComponent extends React.PureComponent<Props> {
       contextualHelpMarkdown,
       headerBody,
       isSearchAvailable,
+      notificationBell,
       searchType,
       customRightIcon,
       customGoBack,
@@ -65,6 +66,7 @@ class TopScreenComponent extends React.PureComponent<Props> {
         appLogo={appLogo}
         dark={dark}
         goBack={goBack}
+        notificationBell={notificationBell}
         headerTitle={goBack ? headerTitle : undefined}
         contextualHelp={contextualHelp}
         contextualHelpMarkdown={contextualHelpMarkdown}

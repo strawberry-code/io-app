@@ -31,6 +31,7 @@ import Switch from "../../components/ui/Switch";
 import {bpdEnabled, isPlaygroundsEnabled} from "../../config";
 import I18n from "../../i18n";
 import ROUTES from "../../navigation/routes";
+import * as Animatable from 'react-native-animatable';
 import {
   logoutRequest,
   sessionExpired
@@ -431,6 +432,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
       text: string,
       callback: () => void
     ) => (
+
       <TouchableOpacity
         onPress={callback}
         style={{
@@ -444,42 +446,43 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           backgroundColor: inspectCss ? "cyan" : undefined
         }}
       >
-        <View
-          style={{
-            flex: 1,
-            //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
-            justifyContent: "center",
-            borderRadius: 100,
-            borderWidth: 0.6,
-            borderColor: customVariables.brandPrimary,
-            backgroundColor: "white",
-            shadowColor: "black",
-            shadowOpacity: 0.2,
-            shadowOffset: {
-              width: 0,
-              height: 2
-            },
-            elevation: 3,
-            margin: 15
-          }}
-        >
-          <IconFont
-            style={{textAlign: "center", justifyContent: "center"}}
-            name={icon}
-            size={50}
-          />
-          <Text
+          <View
             style={{
-              textAlign: "center",
+              flex: 1,
+              //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
               justifyContent: "center",
-              backgroundColor: inspectCss ? "yellow" : undefined,
-              fontSize: 13
+              borderRadius: 100,
+              borderWidth: 0.6,
+              borderColor: customVariables.colorBlack,
+              backgroundColor: "white",
+              shadowColor: "black",
+              shadowOpacity: 0.2,
+              shadowOffset: {
+                width: 0,
+                height: 2
+              },
+              elevation: 3,
+              margin: 15
             }}
           >
-            {text}
-          </Text>
-        </View>
+            <IconFont
+              style={{textAlign: "center", justifyContent: "center"}}
+              name={icon}
+              size={50}
+            />
+            <Text
+              style={{
+                textAlign: "center",
+                justifyContent: "center",
+                backgroundColor: inspectCss ? "yellow" : undefined,
+                fontSize: 13
+              }}
+            >
+              {text}
+            </Text>
+          </View>
       </TouchableOpacity>
+
     );
 
     // Define a cross menu functional component with four touchable items
@@ -517,7 +520,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             })}
         </View>
         <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "io-share", I18n.t('ssi.sendFromWallet.title'), async () => {
+          {touchableMenuItem(false, true, true, false, "inbox-upload", I18n.t('ssi.sendFromWallet.title'), async () => {
             // await DidSingleton.loadDidFromKeychain()
             // alert(DidSingleton.getDidAddress())
             navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
@@ -526,7 +529,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             //   console.log(item)
             // }))
           })}
-          {touchableMenuItem(true, false, true, false, "io-save", I18n.t('ssi.receiveIntoWallet.title'), async () => {
+          {touchableMenuItem(true, false, true, false, "inbox-download", I18n.t('ssi.receiveIntoWallet.title'), async () => {
             // VCstore.clearStore()
             // console.log(await VCstore.getVCs())
             // const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
@@ -632,14 +635,24 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     text: I18n.t("rooted.continueAlert.confirmText"),
                     onPress: async () => {
                       let backupSuccess: boolean = await importVCs()
-                      if(backupSuccess) {
+                      if (backupSuccess) {
                         console.log('[main screen] VCs importate da file con successo')
                         navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN);
                         setTimeout(() => {
-                          Toast.show({text: I18n.t('ssi.importVCs.toastTitleSuccess'), duration: 4000, type: 'success', position: 'top'})
+                          Toast.show({
+                            text: I18n.t('ssi.importVCs.toastTitleSuccess'),
+                            duration: 4000,
+                            type: 'success',
+                            position: 'top'
+                          })
                         }, 500)
                       } else {
-                        Toast.show({text: I18n.t('ssi.importVCs.toastTitleFailure'), duration: 4000, type: 'danger', position: 'top'})
+                        Toast.show({
+                          text: I18n.t('ssi.importVCs.toastTitleFailure'),
+                          duration: 4000,
+                          type: 'danger',
+                          position: 'top'
+                        })
                         console.log('[main screen] non è stato possibile importare le VCs da file')
                       }
                     }
@@ -861,8 +874,9 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     const ContainerComponent = withLoadingSpinner(() => (
       <TopScreenComponent
         headerTitle={I18n.t("messages.contentTitle")}
-        isSearchAvailable={true}
+        isSearchAvailable={false}
         searchType={"Messages"}
+        notificationBell={true}
         accessibilityLabel={I18n.t("profile.main.title")}
         appLogo={true}
         contextualHelpMarkdown={contextualHelpMarkdown}

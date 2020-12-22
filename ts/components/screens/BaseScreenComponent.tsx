@@ -189,7 +189,8 @@ class BaseScreenComponent extends React.PureComponent<Props, State> {
       onAccessibilityNavigationHeaderFocus,
       showInstabugChat,
       children,
-      faqCategories
+      faqCategories,
+      notificationBell
     } = this.props;
 
     const {
@@ -238,6 +239,7 @@ class BaseScreenComponent extends React.PureComponent<Props, State> {
           appLogo={appLogo}
           customRightIcon={customRightIcon}
           customGoBack={customGoBack}
+          notificationBell={notificationBell}
         />
         {children}
         {ch && (

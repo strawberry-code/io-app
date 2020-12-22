@@ -20,6 +20,7 @@ import ButtonDefaultOpacity from "../ButtonDefaultOpacity";
 import GoBackButton from "../GoBackButton";
 import InstabugChatsComponent from "../InstabugChatsComponent";
 import SearchButton, { SearchType } from "../search/SearchButton";
+import NotificationBell from '../notifications/NotificationBell';
 import AppHeader from "../ui/AppHeader";
 
 const styles = StyleSheet.create({
@@ -52,6 +53,7 @@ interface OwnProps {
   // A property to set a custom AppHeader body
   body?: React.ReactNode;
   isSearchAvailable?: boolean;
+  notificationBell?: boolean;
   showInstabugChat?: boolean;
   searchType?: SearchType;
   customRightIcon?: {
@@ -191,12 +193,14 @@ class BaseHeaderComponent extends React.PureComponent<Props, State> {
       onShowHelp,
       isSearchAvailable,
       searchType,
+      notificationBell,
       showInstabugChat,
       customRightIcon
     } = this.props;
 
     return (
       <Right>
+        {notificationBell && <NotificationBell color={'#bcbcbc'}/>}
         {isSearchAvailable && <SearchButton searchType={searchType} />}
         {!isSearchEnabled && showInstabugChat !== false && (
           <InstabugChatsComponent />
