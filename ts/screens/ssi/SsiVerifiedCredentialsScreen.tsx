@@ -348,13 +348,6 @@ class PreferencesScreen extends React.Component<Props, State> {
             renderItem={this.renderVC}
           />
         </ScreenContent>
-        <View>
-          <TouchableHighlight onPress={async () => {
-            alert(JSON.parse(await AsyncStorage.getItem("AS_SSI_KEY")).length)
-          }}>
-            <Text>AsyncStorage</Text>
-          </TouchableHighlight>
-        </View>
         <View style={{marginHorizontal: 20, marginBottom: 15}}>
           <this.ExportVCs/>
         </View>
