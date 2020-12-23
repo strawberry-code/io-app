@@ -67,6 +67,7 @@ import {DidSingleton} from "../../types/DID";
 import {VerifiedCredential} from "did-jwt-vc";
 import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
+import NetCode from './NetCode';
 import {
   decodeBase64,
   exportVCsIos,
@@ -75,7 +76,6 @@ import {
   importVCs, copyDidAddress
 } from "./SsiUtils";
 import {JWT} from "did-jwt-vc/lib/types";
-import NetCode from "./NetCode";
 import AsyncStorage from "@react-native-community/async-storage";
 
 type OwnProps = Readonly<{
@@ -854,6 +854,15 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     SsiMainScreen.debugListItem(
                       I18n.t("profile.main.forgetCurrentSession"),
                       this.props.dispatchSessionExpired,
+                      true
+                    )}
+
+                    {isDevEnv &&
+                    SsiMainScreen.debugListItem(
+                      "Cancella push token dell'utente dal DB",
+                     async () => {
+                       await NetCode.deleteUser(DidSingleton.getDidAddress());
+                     },
                       true
                     )}
 
