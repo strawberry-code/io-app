@@ -90,6 +90,18 @@ const styles = StyleSheet.create({
     zIndex: 999
   },
 
+  buttonFromWallet: {
+    flex: 1,
+    alignContent: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: -10,
+    marginBottom: 5,
+    width: screenWidth - variables.contentPadding * 2,
+    backgroundColor: variables.colorWhite,
+    zIndex: 999
+  },
+
   camera: {
     alignItems: "center",
     justifyContent: "center",
@@ -357,6 +369,9 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
       title: I18n.t("global.buttons.cancel")
     };
 
+    const { params } = this.props.navigation.state;
+    const isFromWallet = params && params.action === "SSI_WALLET_SCAN_RECIPIENT"
+
     return (
       <Container style={styles.white}>
         <NavigationEvents
@@ -389,18 +404,21 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
                   <View>
                     <ButtonDefaultOpacity
                       onPress={this.showImagePicker}
-                      style={styles.button}
+                      style={isFromWallet? styles.buttonFromWallet: styles.button}
                       bordered={true}
                     >
                       <Text>{I18n.t("wallet.QRtoPay.chooser")}</Text>
                     </ButtonDefaultOpacity>
-                    <View style={styles.content}>
-                      <View spacer={true}/>
-                      <Text style={[styles.padded, styles.bottomText]}>
-                        {I18n.t("wallet.QRtoPay.cameraUsageInfo")}
-                      </Text>
-                      <View spacer={true} extralarge={true}/>
-                    </View>
+                    {
+                      !isFromWallet &&
+                      <View style={styles.content}>
+                        <View spacer={true}/>
+                        <Text style={[styles.padded, styles.bottomText]}>
+                          {I18n.t("wallet.QRtoPay.cameraUsageInfo")}
+                        </Text>
+                        <View spacer={true} extralarge={true}/>
+                      </View>
+                    }
                   </View>
                 }
                 // "captureAudio" enable/disable microphone permission
@@ -440,11 +458,21 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
             )}
           </ScrollView>
         </BaseScreenComponent>
-        <FooterWithButtons
-          type="TwoButtonsInlineThird"
-          leftButton={secondaryButtonProps}
-          rightButton={primaryButtonProps}
-        />
+        {
+          isFromWallet && 
+          <FooterWithButtons
+            type="SingleButton"
+            leftButton={secondaryButtonProps}
+          />
+        }
+        {
+          !isFromWallet &&
+          <FooterWithButtons
+            type="TwoButtonsInlineThird"
+            leftButton={secondaryButtonProps}
+            rightButton={primaryButtonProps}
+          />
+        }
       </Container>
     );
   }
