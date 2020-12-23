@@ -1,5 +1,6 @@
 import {Platform} from "react-native";
 import {getSsiAccessToken} from "../../utils/keychain";
+import AsyncStorage from "@react-native-community/async-storage";
 
 
 class __NetCode {
@@ -42,6 +43,10 @@ class __NetCode {
   }
 
   public async createNewUser(didAddress: string, pushDeviceToken: string | undefined) {
+
+    if(pushDeviceToken === null || pushDeviceToken === undefined) {
+      pushDeviceToken = await AsyncStorage.getItem('PUSH_TOKEN')
+    }
 
     console.log('[NetCode][createNewUser] - did address: <'+didAddress+'> | push device token: <'+pushDeviceToken+'>')
 
@@ -93,7 +98,7 @@ class __NetCode {
   public async deleteUser(didAddress: string) {
     let apiUrl = '/users'
     let method = 'DELETE'
-    let url = this.serverBaseURL + apiUrl + encodeURI(didAddress);
+    let url = this.serverBaseURL + apiUrl + '/' + encodeURI(didAddress);
     let headers = new Headers()
     headers.append('Authorization', 'Bearer ' + <string>await getSsiAccessToken())
     let rawResponse
@@ -102,6 +107,10 @@ class __NetCode {
       rawResponse = await fetch(url, {
         method: method.toUpperCase(),
       })
+
+      console.log(`[deleteUser] raw response:  ${JSON.stringify(rawResponse)}`)
+      console.log(`[deleteUser] json response:  ${JSON.stringify(await rawResponse.json())}`)
+
     } catch (err) {
       console.log('[deleteUser] errored (string): ' + err)
       console.log('[deleteUser] errored (object): ' + JSON.stringify(err))
