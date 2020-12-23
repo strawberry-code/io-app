@@ -106,6 +106,7 @@ class __NetCode {
     try {
       rawResponse = await fetch(url, {
         method: method.toUpperCase(),
+        headers,
       })
 
       console.log(`[deleteUser] raw response:  ${JSON.stringify(rawResponse)}`)
