@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { NavigationScreenProps } from "react-navigation";
+import PushNotification from "react-native-push-notification";
 
 import { GlobalState } from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
@@ -42,6 +43,10 @@ const SsiNotificationScreen: React.FC<Props> = ({
   goToVerifiableCredetials
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    PushNotification.cancelAllLocalNotifications();
+  });
 
   const toggleCredentials = () => setModalVisible(!modalVisible);
 
