@@ -47,9 +47,6 @@ const baseRouteConfigMap = {
   [ROUTES.WALLET_CONFIRM_CARD_DETAILS]: {
     screen: ConfirmCardDetailsScreen
   },
-  [ROUTES.PAYMENT_SCAN_QR_CODE]: {
-    screen: ScanQrCodeScreen
-  },
   [ROUTES.PAYMENT_MANUAL_DATA_INSERTION]: {
     screen: ManualDataInsertionScreen
   },
