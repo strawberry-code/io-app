@@ -52,6 +52,7 @@ class NotificationBell extends React.Component<Props, State> {
           onPress={this.props.navigateToSsiNotificationScreen}
           transparent={true}
           accessibilityLabel={I18n.t("global.buttons.search")}
+          style={{ width: "auto" }}
         >
           {notifications.length > 0 &&
           <>
