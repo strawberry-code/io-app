@@ -128,6 +128,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
   private goBack = () => this.props.navigation.goBack();
   private qrCodeScanner = React.createRef<QRCodeScanner>();
 
+
   componentDidMount() {
     this.handleDidFocus()
   }
@@ -324,7 +325,7 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
     super(props);
     this.state = {
       scanningState: "SCANNING",
-      isFocused: false
+      isFocused: true
     };
   }
 
