@@ -2,27 +2,27 @@
  * Set the basic PushNotification configuration
  */
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { fromEither, fromNullable } from "fp-ts/lib/Option";
+import {fromEither, fromNullable} from "fp-ts/lib/Option";
 import * as t from "io-ts";
-import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import {NonEmptyString} from "italia-ts-commons/lib/strings";
 import {Alert, Platform} from "react-native";
 import PushNotification from "react-native-push-notification";
 import AsyncStorage from "@react-native-community/async-storage";
-import { store } from "../App";
-import { debugRemotePushNotification, gcmSenderId } from "../config";
-import { loadMessages } from "../store/actions/messages";
+import {store} from "../App";
+import {debugRemotePushNotification, gcmSenderId} from "../config";
+import {loadMessages} from "../store/actions/messages";
 import {
   loadSsiNotifications,
   updateSsiNotifications,
   updateNotificationsInstallationToken,
   updateNotificationsPendingMessage
 } from "../store/actions/notifications";
-import { isDevEnv } from "../utils/environment";
+import {isDevEnv} from "../utils/environment";
 import {JwtPresentationPayload} from "did-jwt-vc";
 import VCstore from "../screens/ssi/VCstore";
 import notificationStore from "../screens/ssi/notificationStore";
 import {decodeVerifiablePresentation} from "../screens/ssi/VerifiablePresentations";
-import { navigateToVCsList, navigateToSsiNotificationScreen } from "../store/actions/navigation";
+import {navigateToVCsList, navigateToSsiNotificationScreen} from "../store/actions/navigation";
 
 /**
  * Helper type used to validate the notification payload.
@@ -43,16 +43,17 @@ function configurePushNotifications() {
   // }
   PushNotification.configure({
     // Called when token is generated
-    onRegister: token => {
+    onRegister: async token => {
       // Dispatch an action to save the token in the store
       console.log('PUSH NOTIFICATIONS TOKEN: ' + token.token)
+      await AsyncStorage.setItem('PUSH_TOKEN', token.token)
       store.dispatch(updateNotificationsInstallationToken(token.token));
     },
 
     // Called when a remote or local notification is opened or received
     onNotification: notification => {
 
-      console.log('🎈 notifica push arrivata! ('+Platform.OS+')')
+      console.log('🎈 notifica push arrivata! (' + Platform.OS + ')')
       console.log('dettagli della push: ' + JSON.stringify(notification))
 
       if (debugRemotePushNotification) {
@@ -61,7 +62,7 @@ function configurePushNotifications() {
 
       let ssiNotificationPayload
 
-      if(Platform.OS === 'ios') {
+      if (Platform.OS === 'ios') {
         ssiNotificationPayload = notification.data.payload
       } else {
         ssiNotificationPayload = JSON.parse(notification.payload)
@@ -71,11 +72,11 @@ function configurePushNotifications() {
 
       let ssiPushType = ssiNotificationPayload.type
 
-      if(ssiPushType === 'ssi-issuedVC') {
+      if (ssiPushType === 'ssi-issuedVC') {
         console.log('sto gestendo una notifica push SSI del tipo: ' + ssiPushType);
         handleIssuedVCNotification(ssiNotificationPayload.verifiablePresentation, notification.foreground);
       } else {
-        console.log('⚠️ attenzione: il tipo di notifica push SSI ('+ssiPushType+') non è ancora gestito')
+        console.log('⚠️ attenzione: il tipo di notifica push SSI (' + ssiPushType + ') non è ancora gestito')
       }
 
       const maybeMessageId = fromEither(
@@ -137,36 +138,44 @@ function configurePushNotifications() {
   });
 }
 
+let guard = false
+
 function handleIssuedVCNotification(VPjwt: string, foreground: boolean) {
-  
-  Alert.alert(
-    'Nuova notifica',
-    'Hai ricevuto una richiesta di accettazione per la credenziale firmata',
-    [
-      {
-        text: 'Notifiche',
-        onPress: () => {
-          if (foreground) {
-            store.dispatch(updateSsiNotifications(VPjwt));
-            PushNotification.cancelAllLocalNotifications();
-            store.dispatch(navigateToSsiNotificationScreen());
-            console.log('salvando push SSI nel redux persist store');
-          } else {
-            // FIXME: LE NOTIFICHE SU ANDROID NON VENGONO SALVATE NEL NOTIFICATION CENTRE QUANDO IN BACKGROUND
-            store.dispatch(updateSsiNotifications( VPjwt ));
-            store.dispatch(navigateToSsiNotificationScreen());
+
+
+  if (!guard) {
+    guard = true
+    Alert.alert(
+      'Nuova notifica',
+      'Hai ricevuto una richiesta di accettazione per la credenziale firmata',
+      [
+        {
+          text: 'Notifiche',
+          onPress: () => {
+            guard = false
+            if (foreground) {
+              store.dispatch(updateSsiNotifications(VPjwt));
+              PushNotification.cancelAllLocalNotifications();
+              store.dispatch(navigateToSsiNotificationScreen());
+              console.log('salvando push SSI nel redux persist store');
+            } else {
+              // FIXME: LE NOTIFICHE SU ANDROID NON VENGONO SALVATE NEL NOTIFICATION CENTRE QUANDO IN BACKGROUND
+              store.dispatch(updateSsiNotifications(VPjwt));
+              store.dispatch(navigateToSsiNotificationScreen());
+            }
+            return true;
           }
-         return true;
+        },
+        {
+          text: 'Chiudi',
+          style: 'destructive',
+          onPress: () => {guard = false}
         }
-      },
-      {
-        text: 'Chiudi',
-        style: 'destructive',
-        onPress: undefined
-      }
-    ],
-    { cancelable: true }
-  );
+      ],
+      {cancelable: false}
+    );
+
+  }
 }
 
 export default configurePushNotifications;
