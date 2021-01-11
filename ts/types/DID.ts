@@ -105,7 +105,7 @@ export class DID {
 
     let hdnode
     try {
-      const seed = await generateSecureRandom(32);
+      const seed = await generateSecureRandom(SeedLength.l32);
       const language = ethers.wordlists[I18n.locale];
       const randomMnemonic = ethers.utils.entropyToMnemonic(seed, language);
       console.log('[random mnemonic generato]: ' + randomMnemonic)
@@ -224,6 +224,15 @@ export class DID {
 }
 
 let DidSingleton = new DID()
+
+// Chose the length of your mnemonic:
+const SeedLength = {
+  l16: 16, // passphrase size: 12 words
+  l20: 20, // passphrase size: 15 words
+  l24: 24, // passphrase size: 18 words
+  l28: 28, // passphrase size: 21 words
+  l32: 32, // passphrase size: 24 words
+}
 
 export {DidSingleton};
 
