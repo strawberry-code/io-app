@@ -18,6 +18,7 @@ export class DID {
   private publicKey: string | undefined
   private privateKey: string | undefined
   private recoverKey: string | undefined
+  private mnemonic: string | undefined
 
   constructor() {
     if(DidSingleton) {
@@ -33,6 +34,7 @@ export class DID {
     this.publicKey = ''
     this.privateKey = ''
     this.recoverKey = ''
+    this.mnemonic = ''
   }
 
   private setDidAddress(potDidAddress: string): void {
@@ -75,7 +77,7 @@ export class DID {
     return <string>this.publicKey
   }
 
-  public getMnemonic() {
+  public getMnemonic(): string {
     return <string>this.mnemonic.phrase
   }
 
@@ -174,7 +176,7 @@ export class DID {
       ethAddress: this.getEthAddress(),
       publicKey: this.getPublicKey(),
       privateKey: this.getPrivateKey(),
-      recoverKey: this.getMnemonicToBeExported()
+      mnemonic: this.getMnemonicToBeExported()
     }
     return JSON.stringify(DidData)
   }
@@ -192,13 +194,14 @@ export class DID {
     if(!unmarshalled.ethAddress) throw new Error('could not unmarshal ethAddress')
     if(!unmarshalled.publicKey) throw new Error('could not unmarshal publicKey')
     if(!unmarshalled.privateKey) throw new Error('could not unmarshal privateKey')
-    if(!unmarshalled.recoverKey) throw new Error('could not unmarshal recoverKey')
+    if(!unmarshalled.mnemonic) throw new Error('could not unmarshal mnemonic')
 
     this.setDidAddress(unmarshalled.didAddress)
     this.setEthAddress(unmarshalled.ethAddress)
     this.setPublicKey(unmarshalled.publicKey)
     this.setPrivateKey(unmarshalled.privateKey)
     this.setRecoverKey(unmarshalled.recoverKey)
+    this.setMnemonic(unmarshalled.mnemonic)
   }
 
   public async loadDidFromKeychain(): Promise<boolean> {
