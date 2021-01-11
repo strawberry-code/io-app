@@ -1,4 +1,4 @@
-import React, { DispatchWithoutAction, useState } from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,7 @@ import {
   Alert
 } from "react-native";
 import { Dispatch } from "redux";
-import { connect, MapDispatchToProps } from "react-redux";
+import { connect } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 
 import { abortOnboarding } from "../../store/actions/onboarding";
@@ -18,15 +18,13 @@ import { DidSingleton } from "../../types/DID";
 import variables from "../../theme/variables";
 import IconFont from "../../components/ui/IconFont";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
-import { clipboardSetStringWithFeedback } from "../../utils/clipboard";
 import I18n from "../../i18n";
 import NetCode from "../ssi/NetCode";
 import VCstore from "../ssi/VCstore";
 import { GlobalState } from "../../store/reducers/types";
 import { notificationsInstallationSelector } from "../../store/reducers/notifications/installation";
-import { LightModalContextInterface } from "../../components/ui/LightModal";
-import { withLightModalContext } from "../../components/helpers/withLightModalContext";
 import RecoverIdentityModal from "./RecoverIdentityModal";
+import PassPhraseWordList from "./components/PassPhraseWordList";
 
 type ResultStatus = "completed" | "error" | "show_recovery_key" | "";
 
@@ -39,19 +37,19 @@ const DidSetterScreen: React.FC<Props> = ({
   notificationToken
 }) => {
   // LOADING STATUS MANAGEMENT
-  const [result, setResult] = React.useState<ResultStatus>("");
-  const [loadingMessage, setLoadingMessage] = React.useState<string>("");
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [loadingVisible, setLoadingVisible] = React.useState<boolean>(false);
+  const [result, setResult] = useState<ResultStatus>("");
+  const [loadingMessage, setLoadingMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(false);
 
   // RECOVERY KEY VALUE TO COPY TO CLIPBOARD WITH BUTTON
-  const [recoveryKey, setRecoveryKey] = React.useState<string>("");
+  const [recoveryKey, setRecoveryKey] = useState<string>("");
 
   // visibility of Recover Identity Modal
-  const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   // checking if button is Pressed for changing styles
-  const [isPress, setIsPress] = React.useState<boolean>(false);
+  const [isPress, setIsPress] = useState<boolean>(false);
 
   // changing loading states helper
   const changeLoadingStates = (
@@ -110,8 +108,12 @@ const DidSetterScreen: React.FC<Props> = ({
       );
       setTimeout(() => {
         console.log(`[I18n.locale]: ${I18n.locale}`);
-        console.log(`[DidSingleton.getMnemonicToBeExported()]: ${DidSingleton.getMnemonicToBeExported()}`);
-        console.log(`[typeof DidSingleton.getMnemonicToBeExported()]: ${typeof DidSingleton.getMnemonicToBeExported()}`);
+        console.log(
+          `[DidSingleton.getMnemonicToBeExported()]: ${DidSingleton.getMnemonicToBeExported()}`
+        );
+        console.log(
+          `[typeof DidSingleton.getMnemonicToBeExported()]: ${typeof DidSingleton.getMnemonicToBeExported()}`
+        );
         setRecoveryKey(DidSingleton.getMnemonicToBeExported());
         changeLoadingStates(
           true,
@@ -235,14 +237,20 @@ const DidSetterScreen: React.FC<Props> = ({
       />
       {loadingVisible && (
         <View style={loading.bg}>
-          <View style={loading.card}>
+          <View
+            style={
+              result === "show_recovery_key"
+                ? loading.recoveryKeyCard
+                : loading.card
+            }
+          >
             <Text style={loading.stateText}>{loadingMessage}</Text>
-              {result === "error" && (
+            {result === "error" && (
               <IconFont
                 name="io-error"
                 size={70}
                 color={variables.brandDanger}
-                style={{height: 75}}
+                style={{ height: 75 }}
               />
             )}
             {result === "completed" && (
@@ -250,7 +258,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 name="io-complete"
                 size={70}
                 color={variables.brandPrimary}
-                style={{height: 75}}
+                style={{ height: 75 }}
               />
             )}
             {!isLoading && result === "show_recovery_key" && (
@@ -258,17 +266,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 <Text style={loading.recoveryKeyText}>
                   {I18n.t("ssi.onboarding.saveYourRecoverKey")}
                 </Text>
-                <Text style={loading.recoveryKeyText}>
-                  {recoveryKey.substr(0, 19) + "***"}
-                </Text>
-                <TouchableOpacity
-                  style={[loadingButton.round, loadingButton.copyToClipboard]}
-                  onPress={() => clipboardSetStringWithFeedback(recoveryKey)}
-                >
-                  <Text style={loadingButton.textSmall}>
-                    <IconFont name="io-paste" />
-                  </Text>
-                </TouchableOpacity>
+                <PassPhraseWordList passPhrase={recoveryKey} />
                 <TouchableOpacity
                   style={loadingButton.container}
                   onPress={generateVC}
@@ -312,6 +310,15 @@ const loading = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     padding: 30,
+    justifyContent: "space-evenly"
+  },
+  recoveryKeyCard: {
+    backgroundColor: variables.colorWhite,
+    width: "90%", // 80%
+    height: "80%", // 60%
+    borderRadius: 5,
+    alignItems: "center",
+    padding: 20,
     justifyContent: "space-evenly"
   },
   stateText: {
