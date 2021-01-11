@@ -3,6 +3,7 @@ import {generateSecureRandom} from "react-native-securerandom";
 import {getDidFromKeychain, setDidOnKeychain} from "../utils/keychain";
 import {Issuer} from "did-jwt-vc";
 import EthrDID from 'ethr-did'
+import I18n from "../i18n";
 
 /**
  * DID manager, built following singleton pattern
@@ -74,17 +75,12 @@ export class DID {
     return <string>this.publicKey
   }
 
-  public async getMnemonics() {
-    let secureRandomSeed: Uint8Array = await generateSecureRandom(64) // FIXME: adesso stiamo usando un seed generato a random, ma per il recupero poi come si fa?
-    console.log("secure random seed: " + secureRandomSeed)
-    //let hardCodedSecureRandomSeedForDemoPurposes = [125,1,252,123,145,224,108,133,154,148,213,119,167,68,122,39,45,91,251,239,101,175,60,237,71,220,200,245,131,143,89,169,67,156,209,210,196,195,205,152,113,226,21,30,199,176,43,123,213,232,235,38,133,129,195,158,7,130,183,37,12,55,185,212]
-    //console.log("hardcoded random seed: " + hardCodedSecureRandomSeedForDemoPurposes)
-    console.log('generating...')
-    let mnemo = ethers.utils.entropyToMnemonic(ethers.utils.randomBytes(32));
-    console.log('generated mnemo: ')
-    let hdnode = ethers.utils.HDNode.fromMnemonic(mnemo)
-    console.log('_MENMONICS: ' + hdnode.mnemonic)
-    return 'ciao'
+  public getMnemonic() {
+    return <string>this.mnemonic.phrase
+  }
+
+  public setMnemonic(mnemonic: string) {
+    this.mnemonic = mnemonic
   }
 
   public getPrivateKey(): string {
@@ -92,21 +88,43 @@ export class DID {
     return <string>this.privateKey
   }
 
-  public getRecoverKey(): string {
+  public getMnemonicToBeExported(): string {
     // FIXME: attenzione, implementare qui la verifica biometrica oppure quella del PIN
-    return <string>this.recoverKey
+    return <string>this.getMnemonic()
   }
 
   public async generateEthWallet(): Promise<void> {
+
+    /*
     let secureRandomSeed: Uint8Array = await generateSecureRandom(64) // FIXME: adesso stiamo usando un seed generato a random, ma per il recupero poi come si fa?
     console.log("secure random seed: " + secureRandomSeed)
     let hardCodedSecureRandomSeedForDemoPurposes = [125,1,252,123,145,224,108,133,154,148,213,119,167,68,122,39,45,91,251,239,101,175,60,237,71,220,200,245,131,143,89,169,67,156,209,210,196,195,205,152,113,226,21,30,199,176,43,123,213,232,235,38,133,129,195,158,7,130,183,37,12,55,185,212]
     //console.log("hardcoded random seed: " + hardCodedSecureRandomSeedForDemoPurposes)
     let hdnode = ethers.utils.HDNode.fromSeed(hardCodedSecureRandomSeedForDemoPurposes)
+    */
+
+    let hdnode
+    try {
+      const seed = await generateSecureRandom(32);
+      const language = ethers.wordlists[I18n.locale];
+      const randomMnemonic = ethers.utils.entropyToMnemonic(seed, language);
+      console.log('[random mnemonic generato]: ' + randomMnemonic)
+      hdnode = ethers.utils.HDNode.fromMnemonic(
+        randomMnemonic,
+        undefined,
+        language
+      );
+      console.log("[getMnemonics]: wallet adddress", hdnode.address);
+      console.log("[getMnemonics]: wallet mnemonic", hdnode.mnemonic);
+    } catch(e) {
+      console.log("[getMnemonics]: impossibile generare il wallet con ethers: ", e);
+    }
+
     this.setDidAddress(`did:ethr:${hdnode.address}`)
     this.setEthAddress(hdnode.address)
     this.setPublicKey(hdnode.publicKey)
     this.setRecoverKey(hdnode.extendedKey);
+    this.setMnemonic(hdnode.mnemonic);
 
     let potPrivateKey = hdnode.privateKey
     if(potPrivateKey.startsWith('0x')) {
@@ -116,30 +134,37 @@ export class DID {
   }
 
 
-  public async recoverEthWallet(recoverKey: string): Promise<boolean> {
-
+  public async recoverEthWallet(mnemonic: string): Promise<boolean> {
+    console.log(`[recoverEthWallet]: mnemonic in uso per il recupero del wallet: ${mnemonic}`)
+    let hdnode
     try {
-      const hdnode = ethers.utils.HDNode.fromExtendedKey(recoverKey);
-      if (!hdnode) {
-        throw new Error(`Recupero Wallet non riuscito ${hdnode}`);
+      console.log("provo recupero in italiano")
+      hdnode = ethers.utils.HDNode.fromMnemonic(mnemonic, undefined, ethers.wordlists["it"]);
+      console.log("[recoverEthWallet]: wallet adddress", hdnode.address);
+      console.log("[recoverEthWallet]: wallet mnemonic", hdnode.mnemonic);
+    } catch(e) {
+      try {
+        console.log("provo recupero in inglese")
+        hdnode = ethers.utils.HDNode.fromMnemonic(mnemonic, undefined, ethers.wordlists["en"]);
+        console.log("[recoverEthWallet]: wallet adddress", hdnode.address);
+        console.log("[recoverEthWallet]: wallet mnemonic", hdnode.mnemonic);
+      } catch (e) {
+        console.log("[recoverEthWallet]: impossibile generare il wallet con ethers: ", e);
+        return false
       }
-
-      this.setDidAddress(`did:ethr:${hdnode.address}`);
-      this.setEthAddress(hdnode.address);
-      this.setPublicKey(hdnode.publicKey);
-      this.setRecoverKey(hdnode.extendedKey);
-
-      // eslint-disable-next-line functional/no-let
-      let potPrivateKey = hdnode.privateKey
-      if(potPrivateKey.startsWith('0x')) {
-        potPrivateKey = potPrivateKey.replace('0x', '')
-      }
-      this.setPrivateKey(potPrivateKey);
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
     }
+    this.setDidAddress(`did:ethr:${hdnode.address}`)
+    this.setEthAddress(hdnode.address)
+    this.setPublicKey(hdnode.publicKey)
+    this.setRecoverKey(hdnode.extendedKey);
+    this.setMnemonic(hdnode.mnemonic);
+    let potPrivateKey = hdnode.privateKey
+    if(potPrivateKey.startsWith('0x')) {
+      potPrivateKey = potPrivateKey.replace('0x', '')
+    }
+    this.setPrivateKey(potPrivateKey)
+    console.log(`[recoverEthWallet]: wallet recuperato`)
+    return true
   }
 
 
@@ -149,7 +174,7 @@ export class DID {
       ethAddress: this.getEthAddress(),
       publicKey: this.getPublicKey(),
       privateKey: this.getPrivateKey(),
-      recoverKey: this.getRecoverKey()
+      recoverKey: this.getMnemonicToBeExported()
     }
     return JSON.stringify(DidData)
   }
@@ -182,13 +207,6 @@ export class DID {
 
   public async saveDidOnKeychain(): Promise<boolean> {
     return await setDidOnKeychain();
-  }
-
-  public exportRecoveryKey(): string {
-    if(typeof this.recoverKey !== 'string') {
-      throw new Error('il contenuto di esportazione del wallet deve essere una stringa!')
-    }
-    return this.recoverKey
   }
 
   public getIssuer(): Issuer {

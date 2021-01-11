@@ -799,7 +799,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     SsiMainScreen.debugListItem(
                       `Mnemonics`,
                       async () => {
-                        console.log(await DidSingleton.getMnemonics())
+                        console.log(await DidSingleton.getMnemonicToBeExported())
                       },
                       false
                     )}
@@ -822,10 +822,10 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     )}
 
                     {isDevEnv &&
-                    DidSingleton.getRecoverKey() &&
+                    DidSingleton.getMnemonicToBeExported() &&
                     SsiMainScreen.debugListItem(
-                      `DID Recovery KEY ${DidSingleton.getRecoverKey().slice(0, 6)}***`,
-                      () => clipboardSetStringWithFeedback(DidSingleton.getRecoverKey()),
+                      `DID Recovery KEY ${DidSingleton.getMnemonicToBeExported().slice(0, 6)}***`,
+                      () => clipboardSetStringWithFeedback(DidSingleton.getMnemonicToBeExported()),
                       false
                     )}
 

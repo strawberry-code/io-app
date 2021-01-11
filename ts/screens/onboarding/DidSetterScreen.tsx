@@ -109,7 +109,10 @@ const DidSetterScreen: React.FC<Props> = ({
         false
       );
       setTimeout(() => {
-        setRecoveryKey(DidSingleton.getRecoverKey());
+        console.log(`[I18n.locale]: ${I18n.locale}`);
+        console.log(`[DidSingleton.getMnemonicToBeExported()]: ${DidSingleton.getMnemonicToBeExported()}`);
+        console.log(`[typeof DidSingleton.getMnemonicToBeExported()]: ${typeof DidSingleton.getMnemonicToBeExported()}`);
+        setRecoveryKey(DidSingleton.getMnemonicToBeExported());
         changeLoadingStates(
           true,
           I18n.t("ssi.onboarding.yourRecoverKey"),
