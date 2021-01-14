@@ -18,6 +18,12 @@ import {
 } from "react-native";
 import {NavigationEvents, NavigationScreenProp, NavigationState} from "react-navigation";
 import {connect} from "react-redux";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-community/google-signin';
+
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import ScreenContent from "../../components/screens/ScreenContent";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
@@ -56,8 +62,9 @@ import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {exportVCsIos, exportVCsAndroid} from "./SsiUtils";
 import {Toast} from "native-base";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {RectButton} from "react-native-gesture-handler";
+import {RectButton, TouchableOpacity} from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
+import { setApiToken, exportBackup, configureGoogleSignIn } from "./googleDriveApi";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -77,6 +84,9 @@ type State = {
   data: [],
   modalVisible: boolean;
   modalStates: any;
+  userInfo: any;
+  isSigninInProgress: boolean;
+  isSignedIn: boolean;
 };
 
 
@@ -104,7 +114,10 @@ class PreferencesScreen extends React.Component<Props, State> {
       isFirstLoad: Platform.OS === "ios",
       data: [],
       modalVisible: false,
-      modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false}
+      modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false},
+      userInfo: undefined,
+      isSigninInProgress: false,
+      isSignedIn: false
     };
     this.refsArray = []
   }
@@ -129,6 +142,67 @@ class PreferencesScreen extends React.Component<Props, State> {
       shareTo: callback,
       VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})
     })
+  }
+
+  private exportBackupOnDrive = async () => {
+    this.setState({
+      modalVisible: true,
+      modalStates: {
+        showPrompt: true,
+        sharing: true,
+        sharedSuccess: false,
+        sharedFail: false
+      }
+    });
+    try {
+      const tokens = await GoogleSignin.getTokens();
+      setApiToken(tokens.accessToken);
+      await exportBackup();
+      setTimeout(() => {
+        this.setState({
+          modalStates: {
+            showPrompt: true,
+            sharing: false,
+            sharedSuccess: true,
+            sharedFail: false
+          }
+        });
+      }, 2000);
+    } catch (e) {
+      console.log("Couldn't export your Backup on Google Drive:", e)
+      this.setState({
+        modalStates: {
+          showPrompt: true,
+          sharing: false,
+          sharedSuccess: false,
+          sharedFail: true
+        }
+      });
+    }
+  }
+
+  private signIn = async () => {
+    try {
+      await configureGoogleSignIn();
+      await GoogleSignin.hasPlayServices();
+      
+      this.setState({ isSigninInProgress: true })
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userInfo:\t', userInfo);
+      this.setState({ userInfo, isSigninInProgress: false, isSignedIn: true });
+      
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('[Google SignIn] User cancelled the login flow')
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('[Google SignIn] Login In Progress')
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('[Google SignIn] Play Services not available or outdated')
+      } else {
+        console.log('[Google SignIn] other error occurred:', error);
+      }
+      this.setState({ isSigninInProgress: false });
+    }
   }
 
   private shareVCnow = (VC, shareTo) => {
@@ -163,6 +237,8 @@ class PreferencesScreen extends React.Component<Props, State> {
       console.log('data X: ' + JSON.stringify(data))
       this.setState({data: data})
     })
+
+    GoogleSignin.isSignedIn().then(value => this.setState({ isSignedIn: value }))
   }
 
   public dispatchNavigationAction(action, data) {
@@ -356,8 +432,26 @@ class PreferencesScreen extends React.Component<Props, State> {
             renderItem={this.renderVC}
           />
         </ScreenContent>
-        <View style={{marginHorizontal: 20, marginBottom: 15}}>
-          <this.ExportVCs/>
+        <View style={{ alignItems:"center", marginHorizontal: 20, marginBottom: 15}}>
+
+        {
+          this.state.isSignedIn ? (
+            <TouchableOpacity 
+              style={{ paddingVertical: 10, marginBottom: 5}}
+              onPress={this.exportBackupOnDrive}
+              >
+              <Text style={{ color: variables.brandPrimary, fontSize: variables.btnFontSize}}>Carica Backup su Google Drive</Text>
+            </TouchableOpacity>
+          )
+          : (
+            <GoogleSigninButton
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={this.signIn}
+              disabled={this.state.isSigninInProgress} />
+          )
+        }
+        <this.ExportVCs/>
         </View>
         <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
         <Modal
@@ -366,77 +460,60 @@ class PreferencesScreen extends React.Component<Props, State> {
           visible={this.state.modalVisible}
         >
           <View style={styles.centeredView}>
+            {/* BLACK OPACHE BACKGROUND */}
+            <View style={styles.bgOpacity}></View>
             <View style={styles.modalView}>
+              {this.state.modalStates.sharing && (
+                <>
+                  <Text style={styles.modalText}>
+                    Facendo Backup delle Credenziali
+                  </Text>
+                  <ActivityIndicator size="large" color={variables.brandPrimary} />
+                </>
+              )}
 
-              {this.state.modalStates.showPrompt && <>
-                <Text style={styles.modalText}>Do you want to share this credential?</Text>
+              {this.state.modalStates.sharedSuccess && (
+                <>
+                  <Text style={styles.modalText}>
+                    Backup Eseguito con Successo
+                  </Text>
+                  <IconFont size={60} color={variables.brandPrimary} name="io-complete" style={{height: 63}}/>
 
-                <View style={{flexDirection: "row"}}>
                   <TouchableHighlight
-                    style={{...styles.openButton, backgroundColor: variables.brandPrimary, marginHorizontal: 20}}
+                    style={styles.openButton}
                     onPress={() => {
+                      this.setState({modalVisible: false});
                       this.setState({
                         modalStates: {
-                          showPrompt: false,
-                          sharing: true,
+                          showPrompt: true,
+                          sharing: false,
                           sharedSuccess: false,
                           sharedFail: false
                         }
                       });
-                      this.shareVCnow(this.state.VCtoBeShared, this.state.shareTo)
                     }}
                   >
-                    <Text style={styles.textStyle}>Yes</Text>
+                    <Text style={styles.buttonText}>
+                      {I18n.t("ssi.shareReqScreen.continueButton")}
+                    </Text>
                   </TouchableHighlight>
-
-                  <TouchableHighlight
-                    style={{...styles.openButton, backgroundColor: variables.brandDanger, marginHorizontal: 20}}
-                    onPress={() => {
-                      this.setState({modalVisible: false});
-                    }}
-                  >
-                    <Text style={styles.textStyle}>No</Text>
-                  </TouchableHighlight>
-                </View>
-              </>}
-
-              {this.state.modalStates.sharing && <>
-                <Text style={styles.modalText}>Sharing credential...</Text>
-                <ActivityIndicator/>
-              </>}
-
-              {this.state.modalStates.sharedSuccess && <>
-                <Text style={styles.modalText}>Credential shared!</Text>
-                <Text style={styles.modalText}>✅</Text>
-
-                <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
-                  onPress={() => {
-                    this.setState({modalVisible: false})
-                    this.setState({
-                      modalStates: {
-                        showPrompt: true,
-                        sharing: false,
-                        sharedSuccess: false,
-                        sharedFail: false
-                      }
-                    });
-                  }}
-                >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
-                </TouchableHighlight>
-              </>}
+                </>
+              )}
 
               {this.state.modalStates.sharedFail && <>
-                <Text style={styles.modalText}>Failed to share the credential</Text>
-                <Text style={styles.modalText}>🚫</Text>
+                <Text style={styles.modalText}>
+                  Problema Durante Backup su Drive
+                </Text>
+                <IconFont size={60} color={variables.brandDanger} name="io-notice"/>
                 <TouchableHighlight
-                  style={{...styles.openButton, backgroundColor: variables.brandPrimary}}
+                  style={styles.openButton}
                   onPress={() => {
                     this.setState({modalVisible: false});
                   }}
                 >
-                  <Text style={styles.textStyle}>Ok, thanks</Text>
+                  <Text style={styles.buttonText}>
+                    {I18n.t("ssi.shareReqScreen.tryAgainButton")}
+                  </Text>
                 </TouchableHighlight>
               </>}
             </View>
@@ -460,18 +537,36 @@ const ItemSeparator = () => <ItemSeparatorComponent noPadded={true}/>;
 
 
 const styles = StyleSheet.create({
+  header: {
+    fontSize: variables.h4FontSize,
+    padding: 20,
+    textAlign: "center",
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
+  },
+  bgOpacity: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: "black",
+    width: "100%",
+    height: "100%",
+    opacity: 0.5
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22
   },
   modalView: {
-    margin: 20,
+    width: "80%",
+    height: "45%",
     backgroundColor: "white",
     borderRadius: 5,
     padding: 35,
     alignItems: "center",
+    justifyContent: "space-around",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -481,12 +576,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5
   },
+  buttonText: {
+    color: variables.colorWhite,
+    fontSize: variables.fontSize2,
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
+    textAlign: "center"
+  },
   openButton: {
-    backgroundColor: "#F194FF",
+    backgroundColor: variables.brandPrimary,
     borderRadius: 5,
     padding: 10,
+    width: "100%",
     elevation: 2,
-    height: 40
   },
   textStyle: {
     color: "white",
@@ -494,8 +596,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: variables.fontSize3,
+    fontFamily: Platform.OS === "ios" ? "Titillium Web" : "TitilliumWeb-SemiBold",
+    fontWeight: Platform.OS === "ios" ? "500" : "normal",
   },
   leftAction: {
     flex: 1,
