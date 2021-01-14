@@ -2,6 +2,7 @@ package it.pagopa.io.app;
 
 import androidx.multidex.MultiDexApplication;
 
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.robinpowered.react.ScreenBrightness.ScreenBrightnessPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.sha256lib.Sha256Package;
@@ -86,7 +87,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           new SplashScreenReactPackage(), new ReactNativeExceptionHandlerPackage(), new RNCameraPackage(),
           new ReactNativePushNotificationPackage(), new KeychainPackage(), new RNI18nPackage(), new Sha256Package(),
           new RNMixpanel(), new RNDeviceInfo(), new ReactNativeConfigPackage(),new CiePackage(),new RNPermissionsPackage(),
-          new DocumentPickerPackage(),
+          new DocumentPickerPackage(), new RNGoogleSigninPackage(),
           new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN, MainApplication.this)
               .setInvocationEvent("none").setPrimaryColor("#0073E6").build());
     }
