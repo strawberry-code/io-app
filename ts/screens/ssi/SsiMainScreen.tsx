@@ -19,6 +19,7 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
+import { GoogleSignin } from '@react-native-community/google-signin';
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import {ContextualHelpPropsMarkdown} from "../../components/screens/BaseScreenComponent";
@@ -77,6 +78,7 @@ import {
 } from "./SsiUtils";
 import {JWT} from "did-jwt-vc/lib/types";
 import AsyncStorage from "@react-native-community/async-storage";
+import { importBackupData, setApiToken, configureGoogleSignIn } from "./googleDriveApi";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -808,6 +810,35 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                     SsiMainScreen.debugListItem(
                       `Pulisci VCs store`,
                       () => VCstore.clearStore(),
+                      false
+                    )}
+
+                    {isDevEnv &&
+                    SsiMainScreen.debugListItem(
+                      `Importa da Google Drive`,
+                      async () => {
+                        const tokens = await GoogleSignin.getTokens();
+                        console.log("TOKENS HERE", tokens);
+                        setApiToken(tokens.accessToken);
+                        await importBackupData();
+                        Toast.show({text: "Verified Credentials importate da Google Drive", duration: 4000});
+                      },
+                      false
+                    )}
+
+                    {isDevEnv &&
+                    SsiMainScreen.debugListItem(
+                      `Google Signout`,
+                      async () => {
+                        try {
+                          await configureGoogleSignIn();
+                          await GoogleSignin.revokeAccess();
+                          await GoogleSignin.signOut();
+                          Toast.show({text: "Disconnesso da Google", duration: 4000});
+                        } catch (error) {
+                          console.error(error);
+                        }
+                      },
                       false
                     )}
 
