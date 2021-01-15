@@ -130,11 +130,12 @@ async function uploadNewBackup() {
 }
 
 // returns the file backup data if exists, else return false and an undefined parameter
-async function existBackup() {
+export async function existBackup() {
   try {
     const response = await GDrive.files.list({
       q: `name='${BACKUP_FILE_NAME}'`,
-      spaces: "appDataFolder"
+      spaces: "appDataFolder",
+      fields: "files(id,name,size,modifiedTime)"
     });
     const responseData = await response.json();
     console.log("BACKUP FILE ALREADY EXISTS:", responseData);
