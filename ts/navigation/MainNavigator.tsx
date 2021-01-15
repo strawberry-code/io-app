@@ -151,9 +151,6 @@ const navigation = createBottomTabNavigator(
     },
     [ROUTES.ERCWALLET_NAVIGATOR]: {
       screen: SsiNavigator
-    },
-    [ROUTES.ERCWALLET_NAVIGATOR]: {
-      screen: SsiNavigator
     }
   },
   {
