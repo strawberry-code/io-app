@@ -30,8 +30,8 @@ import SsiMainScreen from "../../screens/ssi/SsiMainScreen";
 import SsiVerifiedCredentialsScreen from "../../screens/ssi/SsiVerifiedCredentialsScreen";
 import SsiWalletSendScreen from "../../screens/ssi/SsiWalletSendScreen";
 import SsiNotificationScreen from "../../screens/ssi/SsiNotificationScreen";
-import {GlobalState} from "../reducers/types";
-import {getSsiNotifications} from "../reducers/notifications/ssiNotifications";
+import { GlobalState } from "../reducers/types";
+import { getSsiNotifications } from "../reducers/notifications/ssiNotifications";
 
 export const navigationRestore = createStandardAction("NAVIGATION_RESTORE")<
   NavigationState
@@ -353,6 +353,13 @@ export const navigateToSsiNotificationScreen = (
     params
   });
 
+export const navigateToSsiBackupScreen = (
+  params?: InferNavigationParams<typeof SsiNotificationScreen>
+) =>
+  NavigationActions.navigate({
+    routeName: ROUTES.SSI_BACKUP,
+    params
+  });
 
 /**
  * SSI WALLET

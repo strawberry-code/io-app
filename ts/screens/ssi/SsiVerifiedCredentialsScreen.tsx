@@ -35,7 +35,7 @@ import {
   navigateToEmailInsertScreen,
   navigateToEmailReadScreen,
   navigateToFingerprintPreferenceScreen,
-  navigateToLanguagePreferenceScreen, navigateToSsiHome
+  navigateToLanguagePreferenceScreen, navigateToSsiBackupScreen, navigateToSsiHome
 } from "../../store/actions/navigation";
 import {Dispatch, ReduxProps} from "../../store/actions/types";
 import {
@@ -81,12 +81,9 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
-  data: [],
+  data: [];
   modalVisible: boolean;
   modalStates: any;
-  userInfo: any;
-  isSigninInProgress: boolean;
-  isSignedIn: boolean;
 };
 
 
@@ -115,9 +112,6 @@ class PreferencesScreen extends React.Component<Props, State> {
       data: [],
       modalVisible: false,
       modalStates: {showPrompt: true, sharing: false, sharedSuccess: false, sharedFail: false},
-      userInfo: undefined,
-      isSigninInProgress: false,
-      isSignedIn: false
     };
     this.refsArray = []
   }
@@ -142,67 +136,6 @@ class PreferencesScreen extends React.Component<Props, State> {
       shareTo: callback,
       VCtoBeShared: JSON.stringify({"verifiableCredential": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw"})
     })
-  }
-
-  private exportBackupOnDrive = async () => {
-    this.setState({
-      modalVisible: true,
-      modalStates: {
-        showPrompt: true,
-        sharing: true,
-        sharedSuccess: false,
-        sharedFail: false
-      }
-    });
-    try {
-      const tokens = await GoogleSignin.getTokens();
-      setApiToken(tokens.accessToken);
-      await exportBackup();
-      setTimeout(() => {
-        this.setState({
-          modalStates: {
-            showPrompt: true,
-            sharing: false,
-            sharedSuccess: true,
-            sharedFail: false
-          }
-        });
-      }, 2000);
-    } catch (e) {
-      console.log("Couldn't export your Backup on Google Drive:", e)
-      this.setState({
-        modalStates: {
-          showPrompt: true,
-          sharing: false,
-          sharedSuccess: false,
-          sharedFail: true
-        }
-      });
-    }
-  }
-
-  private signIn = async () => {
-    try {
-      await configureGoogleSignIn();
-      await GoogleSignin.hasPlayServices();
-      
-      this.setState({ isSigninInProgress: true })
-      const userInfo = await GoogleSignin.signIn();
-      console.log('userInfo:\t', userInfo);
-      this.setState({ userInfo, isSigninInProgress: false, isSignedIn: true });
-      
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('[Google SignIn] User cancelled the login flow')
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('[Google SignIn] Login In Progress')
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('[Google SignIn] Play Services not available or outdated')
-      } else {
-        console.log('[Google SignIn] other error occurred:', error);
-      }
-      this.setState({ isSigninInProgress: false });
-    }
   }
 
   private shareVCnow = (VC, shareTo) => {
@@ -433,25 +366,10 @@ class PreferencesScreen extends React.Component<Props, State> {
           />
         </ScreenContent>
         <View style={{ alignItems:"center", marginHorizontal: 20, marginBottom: 15}}>
-
-        {
-          this.state.isSignedIn ? (
-            <TouchableOpacity 
-              style={{ paddingVertical: 10, marginBottom: 5}}
-              onPress={this.exportBackupOnDrive}
-              >
-              <Text style={{ color: variables.brandPrimary, fontSize: variables.btnFontSize}}>Carica Backup su Google Drive</Text>
-            </TouchableOpacity>
-          )
-          : (
-            <GoogleSigninButton
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Light}
-              onPress={this.signIn}
-              disabled={this.state.isSigninInProgress} />
-          )
-        }
-        <this.ExportVCs/>
+        <ButtonDefaultOpacity activeOpacity={1} block onPress={() => this.props.navigateToSsiBackupScreen()}>
+          <IconFont name="io-cloud-upload" style={{color: 'white'}}/>
+          <Text style={{color: 'white', fontWeight: '800'}}>Backup Credenziali</Text>
+        </ButtonDefaultOpacity>
         </View>
         <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>
         <Modal
@@ -636,6 +554,7 @@ function mapStateToProps(state: GlobalState) {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+  navigateToSsiBackupScreen: () => dispatch(navigateToSsiBackupScreen()),
   navigateToFingerprintPreferenceScreen: () =>
     dispatch(navigateToFingerprintPreferenceScreen()),
   navigateToEmailForwardingPreferenceScreen: () =>

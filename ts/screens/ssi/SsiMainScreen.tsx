@@ -63,7 +63,7 @@ import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import {ScreenContentHeader} from "../../components/screens/ScreenContentHeader";
 import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
-import {navigateToPaymentScanQrCode} from "../../store/actions/navigation";
+import {navigateToPaymentScanQrCode, navigateToSsiBackupScreen} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
 import {VerifiedCredential} from "did-jwt-vc";
 import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
@@ -603,6 +603,14 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               hideIcon={true}
             />
 
+            {/* SSI BACKUP ON GOOGLE DRIVE */}
+            <ListItemComponent
+              title="Backup delle Credenziali Verificate"
+              subTitle="Da qui potrai gestire il Backup delle Credenziali Verificate."
+              onPress={() => this.props.navigateToSsiBackupScreen()}
+              hideIcon={true}
+            />
+
             {/* Codpy DID to clipboard */}
             <ListItemComponent
               title={I18n.t("ssi.copyDID.title")}
@@ -976,7 +984,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   dispatchSessionExpired: () => dispatch(sessionExpired()),
   dispatchLeaveBpd: () => dispatch(bpdDeleteUserFromProgram.request()),
   dispatchPreferencesExperimentalFeaturesSetEnabled: (enabled: boolean) =>
-    dispatch(preferencesExperimentalFeaturesSetEnabled(enabled))
+    dispatch(preferencesExperimentalFeaturesSetEnabled(enabled)),
+  navigateToSsiBackupScreen: () => dispatch(navigateToSsiBackupScreen()),
 });
 
 export default connect(

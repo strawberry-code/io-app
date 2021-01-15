@@ -10,8 +10,9 @@ import SsiVerifiedCredentials from "../screens/ssi/SsiVerifiedCredentialsScreen"
 import MarkdownPlayground from "../screens/profile/playgrounds/MarkdownPlayground";
 import WebPlayground from "../screens/profile/WebPlayground";
 import ShareVcsWithRequesterScreen from "../screens/ssi/ShareVerifiedCredentialsWithRequester";
-import ROUTES from "./routes";
 import ScanQrCodeScreen from "../screens/wallet/payment/ScanQrCodeScreen";
+import SsiBackupScreen from "../screens/ssi/SsiBackupScreen";
+import ROUTES from "./routes";
 
 /**
  * A navigator for all the screens of the SSI section
@@ -54,6 +55,9 @@ const ProfileNavigator = createStackNavigator(
     },
     [ROUTES.SSI_NOTIFICATIONS]: {
       screen: SsiNotificationScreen
+    },
+    [ROUTES.SSI_BACKUP]: {
+      screen: SsiBackupScreen
     }
   },
   {
