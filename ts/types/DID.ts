@@ -81,6 +81,10 @@ export class DID {
     return <string>this.mnemonic.phrase
   }
 
+  public getMnemonicForMarshall(): string {
+    return <string>this.mnemonic
+  }
+
   public setMnemonic(mnemonic: string) {
     this.mnemonic = mnemonic
   }
@@ -176,7 +180,7 @@ export class DID {
       ethAddress: this.getEthAddress(),
       publicKey: this.getPublicKey(),
       privateKey: this.getPrivateKey(),
-      mnemonic: this.getMnemonicToBeExported()
+      mnemonic: this.getMnemonicForMarshall()
     }
     return JSON.stringify(DidData)
   }
