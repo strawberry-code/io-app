@@ -15,7 +15,7 @@ export const configureGoogleSignIn = async () =>
   GoogleSignin.configure({
     scopes: ["https://www.googleapis.com/auth/drive.appdata"], // what API you want to access on behalf of the user, default is email and profile
     webClientId:
-      "471528807854-ra1nquarosn6n5uso6ih7nc17sk2jrtn.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
+      "232797350942-cq2qma60j8jre8jnk15l6t972edjkbhc.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
     offlineAccess: true
   });
 
@@ -140,6 +140,9 @@ export async function existBackup() {
     const responseData = await response.json();
     console.log("BACKUP FILE ALREADY EXISTS:", responseData);
 
+    if (responseData.files.length === 0) {
+      throw new Error(`${BACKUP_FILE_NAME} does not exist`);
+    }
     return { exist: true, data: responseData.files[0] };
   } catch (error) {
     console.log(
