@@ -137,37 +137,39 @@ function configurePushNotifications() {
 function handleIssuedVCNotification(VPjwt: string, foreground: boolean) {
 
   store.dispatch(updateSsiNotifications(VPjwt));
-  const currentRoute = navigationCurrentRouteSelector(store.getState());
+  const maybeCurrentRoute = navigationCurrentRouteSelector(store.getState());
   // CONTROLLO CHE L'ATTUALE ROUTE SIA QUELLA DELLE NOTIFICATIONS
-  console.log("CURRENT NAV", currentRoute);
- 
-  // SE IN FOREGROUND FACCIO VEDERE UN ALLERT DI NOTIFICA CHE CHIEDE SE VUOLE NAVIGARE NELLA VISTA DEL NOTIFICHE
-  if (foreground && currentRoute.value !== ROUTES.SSI_NOTIFICATIONS) {
-    Alert.alert(
-      'Nuova notifica',
-      'Hai ricevuto una richiesta di accettazione per la credenziale firmata',
-      [
-        {
-          text: 'Notifiche',
-          onPress: () => {
-              store.dispatch(navigateToSsiNotificationScreen());
-           return true;
+  console.log("CURRENT NAV", maybeCurrentRoute);
+
+  maybeCurrentRoute.map(currentRoute => {
+    // SE IN FOREGROUND FACCIO VEDERE UN ALLERT DI NOTIFICA CHE CHIEDE SE VUOLE NAVIGARE NELLA VISTA DEL NOTIFICHE
+    if (foreground && currentRoute !== ROUTES.SSI_NOTIFICATIONS) {
+      Alert.alert(
+        'Nuova notifica',
+        'Hai ricevuto una richiesta di accettazione per la credenziale firmata',
+        [
+          {
+            text: 'Notifiche',
+            onPress: () => {
+                store.dispatch(navigateToSsiNotificationScreen());
+             return true;
+            }
+          },
+          {
+            text: 'Chiudi',
+            style: 'destructive',
+            onPress: undefined
           }
-        },
-        {
-          text: 'Chiudi',
-          style: 'destructive',
-          onPress: undefined
-        }
-      ],
-      { cancelable: true }
-    );
-  }
+        ],
+        { cancelable: true }
+      );
+    }
+  
+    if (!foreground){
+      store.dispatch(navigateToSsiNotificationScreen());
+    }
 
-  if (!foreground){
-    store.dispatch(navigateToSsiNotificationScreen());
-  }
-
+  });
  }
 
 export default configurePushNotifications;
