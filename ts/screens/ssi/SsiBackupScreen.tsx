@@ -212,7 +212,7 @@ const SsiBackupScreen = () => {
     if (isSignedIn) {
       void updateBackupInfo();
     }
-  }, [isSignedIn]);
+  }, [modalStates.sharedSuccess, isSignedIn]);
 
   useEffect(() => {
     void GoogleSignin.isSignedIn().then(value => setIsSignedIn(value));
