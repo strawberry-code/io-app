@@ -349,7 +349,7 @@ ssi:
       dateOfAchievement: Data di conseguimento
       type: Tipologia
   balanceAndTransaction:
-    title: Bilancio & Transazioni
+    title: "Bilancio &\nTransazioni"
     balanceTitle: Bilancio
     transactionTitle: Transazioni
     sendButton: Invia

@@ -362,7 +362,7 @@ ssi:
     completedTransaction: Transaction completed
     errorTransaction: Transaction Failed
   receiveIntoWallet:
-    title: Receive in the Wallet
+    title: "Receive \nin the Wallet"
     descriptionTitle: Description
     descriptionContent: You can receive transactions by sharing the address through QRcode or by pressing the Receive button.
     addressTitle: Address
