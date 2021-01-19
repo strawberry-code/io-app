@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     width: "33%"
   },
   index: {
+    fontSize: customVariables.fontSizeBase,
     backgroundColor: customVariables.brandPrimary,
     color: customVariables.colorWhite,
     paddingHorizontal: 5,
@@ -20,6 +21,7 @@ const styles = StyleSheet.create({
     })
   },
   word: {
+    fontSize: customVariables.fontSizeBase,
     paddingHorizontal: 5,
     fontFamily: Platform.select({
       ios: "Titillium Web",

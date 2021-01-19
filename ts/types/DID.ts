@@ -1,8 +1,8 @@
 import {ethers, Wallet} from "ethers";
 import {generateSecureRandom} from "react-native-securerandom";
-import {getDidFromKeychain, setDidOnKeychain} from "../utils/keychain";
 import {Issuer} from "did-jwt-vc";
 import EthrDID from 'ethr-did'
+import {getDidFromKeychain, setDidOnKeychain} from "../utils/keychain";
 import I18n from "../i18n";
 
 /**
@@ -111,7 +111,7 @@ export class DID {
 
     let hdnode
     try {
-      const seed = await generateSecureRandom(SeedLength.l32);
+      const seed = await generateSecureRandom(SeedLength.l16);
       const language = ethers.wordlists[I18n.locale];
       const randomMnemonic = ethers.utils.entropyToMnemonic(seed, language);
       console.log('[random mnemonic generato]: ' + randomMnemonic)
