@@ -85,6 +85,7 @@ type State = {
   callbackUrl?: RequestInfo;
   method?: string;
   notificationToken: string;
+  errorMessage: string;
 };
 
 /**
@@ -115,7 +116,8 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         sharedSuccess: false,
         sharedFail: false
       },
-      shareable: false
+      shareable: false,
+      errorMessage: ""
     };
   }
 
@@ -203,6 +205,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         await setSsiAccessToken(response.access_token)
       } else {
         // Forma della risposta non corretta
+        this.setState({ errorMessage: "Autenticazione fallita" });
         console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
         throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
       }
@@ -352,6 +355,11 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
   }
 
   public render() {
+
+    const { errorMessage } = this.state;
+
+    const errorMessageToShow = errorMessage ? errorMessage : I18n.t('ssi.shareReqScreen.failedShare');
+
     return (
       <TopScreenComponent
         faqCategories={["profile", "privacy", "authentication_SPID"]}
@@ -476,8 +484,8 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
               {this.state.modalStates.sharedFail && <>
                 <Text style={styles.modalText}>
-                  {I18n.t("ssi.shareReqScreen.failedShare")}
-                </Text>
+                  {errorMessageToShow}
+                </Text>)
                 <IconFont size={60} color={variables.brandDanger} name="io-notice"/>
                 <TouchableHighlight
                   style={styles.openButton}
