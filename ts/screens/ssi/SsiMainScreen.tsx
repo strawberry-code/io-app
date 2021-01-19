@@ -19,7 +19,10 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
-import { GoogleSignin } from '@react-native-community/google-signin';
+import {VerifiedCredential} from "did-jwt-vc";
+import {JWT} from "did-jwt-vc/lib/types";
+import AsyncStorage from "@react-native-community/async-storage";
+import * as Animatable from 'react-native-animatable';
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import {ContextualHelpPropsMarkdown} from "../../components/screens/BaseScreenComponent";
@@ -32,7 +35,6 @@ import Switch from "../../components/ui/Switch";
 import {bpdEnabled, isPlaygroundsEnabled} from "../../config";
 import I18n from "../../i18n";
 import ROUTES from "../../navigation/routes";
-import * as Animatable from 'react-native-animatable';
 import {
   logoutRequest,
   sessionExpired
@@ -65,7 +67,6 @@ import IconFont from "../../components/ui/IconFont";
 import variables from "../../theme/variables";
 import {navigateToPaymentScanQrCode, navigateToSsiBackupScreen} from "../../store/actions/navigation";
 import {DidSingleton} from "../../types/DID";
-import {VerifiedCredential} from "did-jwt-vc";
 import {withLoadingSpinner} from "../../components/helpers/withLoadingSpinner";
 import VCstore from "./VCstore";
 import NetCode from './NetCode';
@@ -76,9 +77,8 @@ import {
   pickSingleFileAndReadItsContent,
   importVCs, copyDidAddress
 } from "./SsiUtils";
-import {JWT} from "did-jwt-vc/lib/types";
-import AsyncStorage from "@react-native-community/async-storage";
-import { importBackupData, setApiToken, configureGoogleSignIn } from "./googleDriveApi";
+
+import DebugSection from "./components/DebugSection";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -398,14 +398,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
   // eslint-disable-next-line
   public render() {
-    const {
-      navigation,
-      backendInfo,
-      sessionToken,
-      walletToken,
-      notificationToken,
-      notificationId
-    } = this.props;
+    const { navigation } = this.props;
 
     /*
     const showInformationModal = (
@@ -702,219 +695,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
               this.onTapAppVersion
             )}
 
-            {/* Developers Section */}
-            {(this.props.isDebugModeEnabled || isDevEnv) && (
-              <React.Fragment>
-                <SectionHeaderComponent
-                  sectionHeader={I18n.t("profile.main.developersSectionHeader")}
-                />
-                <View style={{margin: 5}}>
-                </View>
-
-
-                {
-                  // since no experimental features are available we avoid to render this item (see https://www.pivotaltracker.com/story/show/168263994).
-                  // It could be useful when new experimental features will be available
-                  /*
-                  this.developerListItem(
-                  I18n.t("profile.main.experimentalFeatures.confirmTitle"),
-                  this.props.isExperimentalFeaturesEnabled,
-                  this.onExperimentalFeaturesToggle
-                ) */
-                }
-                {isPlaygroundsEnabled && (
-                  <>
-                    <ListItemComponent
-                      title={"MyPortal Web Playground"}
-                      onPress={() => navigation.navigate(ROUTES.WEB_PLAYGROUND)}
-                    />
-                    <ListItemComponent
-                      title={"Markdown Playground"}
-                      onPress={() =>
-                        navigation.navigate(ROUTES.MARKDOWN_PLAYGROUND)
-                      }
-                    />
-                  </>
-                )}
-                {SsiMainScreen.developerListItem(
-                  I18n.t("profile.main.pagoPaEnvironment.pagoPaEnv"),
-                  this.props.isPagoPATestEnabled,
-                  this.onPagoPAEnvironmentToggle,
-                  I18n.t("profile.main.pagoPaEnvironment.pagoPAEnvAlert")
-                )}
-                {SsiMainScreen.developerListItem(
-                  I18n.t("profile.main.debugMode"),
-                  this.props.isDebugModeEnabled,
-                  this.props.setDebugModeEnabled
-                )}
-                {this.props.isDebugModeEnabled && (
-                  <React.Fragment>
-                    {backendInfo &&
-                    SsiMainScreen.debugListItem(
-                      `${I18n.t("profile.main.backendVersion")} ${
-                        backendInfo.version
-                      }`,
-                      () =>
-                        clipboardSetStringWithFeedback(backendInfo.version),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    sessionToken &&
-                    SsiMainScreen.debugListItem(
-                      `Session Token ${sessionToken}`,
-                      () => clipboardSetStringWithFeedback(sessionToken),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    notificationToken &&
-                    SsiMainScreen.debugListItem(
-                      `Push token ${notificationToken}`,
-                      () => clipboardSetStringWithFeedback(notificationToken),
-                      false
-                    )}
-
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Document picker`,
-                      async () => {
-                        let rawFileContent = await pickSingleFileAndReadItsContent()
-
-                        if (rawFileContent != null) {
-                          let AsyncStorageBackupString = decodeBase64(rawFileContent)
-                          let JWTs: JWT[] = JSON.parse(AsyncStorageBackupString)
-                          console.log(`rawFileContent: ${rawFileContent}`)
-                          console.log(`AsyncStorageBackupString: ${AsyncStorageBackupString}`)
-                          console.log(`JWTs: ${JWTs}`)
-                        } else {
-                          console.log('errore nel picking del file')
-                        }
-
-                      },
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    walletToken &&
-                    SsiMainScreen.debugListItem(
-                      `Wallet token ${walletToken}`,
-                      () => clipboardSetStringWithFeedback(walletToken),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    walletToken &&
-                    SsiMainScreen.debugListItem(
-                      `Mnemonics`,
-                      async () => {
-                        console.log(await DidSingleton.getMnemonicToBeExported())
-                      },
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Pulisci VCs store`,
-                      () => VCstore.clearStore(),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Importa da Google Drive`,
-                      async () => {
-                        const tokens = await GoogleSignin.getTokens();
-                        console.log("TOKENS HERE", tokens);
-                        setApiToken(tokens.accessToken);
-                        await importBackupData();
-                        Toast.show({text: "Verified Credentials importate da Google Drive", duration: 4000});
-                      },
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Google Signout`,
-                      async () => {
-                        try {
-                          await configureGoogleSignIn();
-                          await GoogleSignin.revokeAccess();
-                          await GoogleSignin.signOut();
-                          Toast.show({text: "Disconnesso da Google", duration: 4000});
-                        } catch (error) {
-                          console.error(error);
-                        }
-                      },
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Share masterkey`,
-                      async () => {
-                        await exportVCsIos()
-                        Toast.show({text: "Verified Credentials esportate", duration: 4000});
-                      },
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    DidSingleton.getMnemonicToBeExported() &&
-                    SsiMainScreen.debugListItem(
-                      `DID Recovery KEY ${DidSingleton.getMnemonicToBeExported().slice(0, 6)}***`,
-                      () => clipboardSetStringWithFeedback(DidSingleton.getMnemonicToBeExported()),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      `Notification ID ${notificationId.slice(0, 6)}`,
-                      () => clipboardSetStringWithFeedback(notificationId),
-                      false
-                    )}
-
-                    {isDevEnv &&
-                    notificationToken &&
-                    SsiMainScreen.debugListItem(
-                      `Notification token ${notificationToken.slice(0, 6)}`,
-                      () => clipboardSetStringWithFeedback(notificationToken),
-                      false
-                    )}
-
-                    {SsiMainScreen.debugListItem(
-                      I18n.t("profile.main.cache.clear"),
-                      this.handleClearCachePress,
-                      true
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      I18n.t("profile.main.forgetCurrentSession"),
-                      this.props.dispatchSessionExpired,
-                      true
-                    )}
-
-                    {isDevEnv &&
-                    SsiMainScreen.debugListItem(
-                      "Cancella push token dell'utente dal DB",
-                     async () => {
-                       await NetCode.deleteUser(DidSingleton.getDidAddress());
-                     },
-                      true
-                    )}
-
-                    {bpdEnabled &&
-                    SsiMainScreen.debugListItem(
-                      "Leave BPD",
-                      this.props.dispatchLeaveBpd,
-                      true
-                    )}
-                  </React.Fragment>
-                )}
-              </React.Fragment>
-            )}
+            <DebugSection />
 
             {/* end list */}
             <EdgeBorderComponent/>
