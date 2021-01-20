@@ -205,7 +205,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         await setSsiAccessToken(response.access_token)
       } else {
         // Forma della risposta non corretta
-        this.setState({ errorMessage: "Autenticazione fallita" });
+        this.setState({ errorMessage: I18n.locale === "it" ? "Autenticazione fallita" : "Authentication failed" });
         console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
         throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
       }
@@ -485,7 +485,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
               {this.state.modalStates.sharedFail && <>
                 <Text style={styles.modalText}>
                   {errorMessageToShow}
-                </Text>)
+                </Text>
                 <IconFont size={60} color={variables.brandDanger} name="io-notice"/>
                 <TouchableHighlight
                   style={styles.openButton}
