@@ -26,11 +26,13 @@ export interface Transaction {
   };
 }
 
-export interface IssuerInfo {
-  did: string;
-  name: string;
-  tradeName: string;
-  postalAddress: string;
-  electronicAddress: string;
-  informationUri: string;
-}
+export type IssuerInfoKeys =
+  | "did"
+  | "name"
+  | "tradeName"
+  | "postalAddress"
+  | "electronicAddress"
+  | "informationUri";
+export type IssuerInfo = {
+  [index in IssuerInfoKeys]: string;
+};

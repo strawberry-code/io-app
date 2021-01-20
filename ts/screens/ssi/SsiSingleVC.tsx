@@ -85,7 +85,7 @@ interface CartaIdentita extends JwtCredentialPayload {
 }
 
 
-type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | CartaIdentita;
+export type VCType = IdentityCard | DimensioneImpresa | BachelorDegree | MasterDegree | DeMinimis | CartaIdentita;
 
 interface Props {
   vCredential: VCType;
@@ -283,7 +283,6 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
                 name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
                 size={25}
-                style={vcItem.modalCloseButton}
               />
           </View>
           )

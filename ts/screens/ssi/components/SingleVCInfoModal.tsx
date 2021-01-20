@@ -9,13 +9,27 @@ import {
   Platform
 } from "react-native";
 
+import { TranslationKeys } from "../../../../locales/locales";
 import I18n from "../../../i18n";
 import variables from "../../../theme/variables";
 import IconFont from "../../../components/ui/IconFont";
-import IssuerComponent from "./IssuerComponent";
-import { TranslationKeys } from "../../../../locales/locales";
 
-const SingleVCInfoModal: React.FC = ({
+import { VCType } from "../SsiSingleVC";
+import IssuerComponent from "./IssuerComponent";
+
+interface Props {
+  credentialInfo: VCType["vc"];
+  visible: boolean;
+  toggleCredentials: () => void;
+  changeVisibility: (value: boolean) => void;
+  isSigning?: boolean;
+  signRequest?: () => void;
+  backHome: () => void;
+  closeAll: () => void;
+  issuer: string | { id: string } | undefined;
+}
+
+const SingleVCInfoModal: React.FC<Props> = ({
   credentialInfo,
   visible,
   isSigning,
@@ -28,6 +42,14 @@ const SingleVCInfoModal: React.FC = ({
 }) => {
   const { credentialSubject, type } = credentialInfo;
 
+  const handleBackButton = () => {
+    if (isSigning) {
+      closeAll();
+    } else {
+      changeVisibility(false);
+    }
+  };
+
   const fieldsElement = Object.keys(credentialSubject).map(field => {
     if (field === "id") {
       return null;
@@ -36,7 +58,7 @@ const SingleVCInfoModal: React.FC = ({
     return (
       <>
         <Text style={vcItem.modalDescription}>
-          {I18n.t(`ssi.singleVC.fields.${field}`) as TranslationKeys}:{" "}
+          {I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys)}:{" "}
         </Text>
         <Text style={vcItem.modalInfo}>{credentialSubject[field]}</Text>
       </>
@@ -44,7 +66,11 @@ const SingleVCInfoModal: React.FC = ({
   });
 
   return (
-    <Modal visible={visible} animationType="slide">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={handleBackButton}
+    >
       <ScrollView>
         <View style={vcItem.modalHeader}>
           <TouchableOpacity onPress={isSigning ? closeAll : toggleCredentials}>
@@ -73,7 +99,9 @@ const SingleVCInfoModal: React.FC = ({
             style={[button.container, button.marginRight]}
             onPress={() => {
               changeVisibility(false);
-              signRequest();
+              if (signRequest) {
+                signRequest();
+              }
             }}
           >
             <Text style={button.text}>
@@ -97,7 +125,11 @@ const SingleVCInfoModal: React.FC = ({
   );
 };
 
-const SingleVCModalHeader = ({ type }) => {
+interface HeaderProps {
+  type: VCType["vc"]["type"];
+}
+
+const SingleVCModalHeader: React.FC<HeaderProps> = ({ type }) => {
   switch (type[1]) {
     case "CartaIdentita":
       return <Text style={vcItem.modalTitle}>Carta d'identità</Text>;

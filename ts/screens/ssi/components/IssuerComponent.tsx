@@ -15,7 +15,7 @@ import IconFont from "../../../components/ui/IconFont";
 import I18n from "../../../i18n";
 import { TranslationKeys } from "../../../../locales/locales";
 import { DidSingleton } from "../../../types/DID";
-import { IssuerInfo } from "../types";
+import { IssuerInfo, IssuerInfoKeys } from "../types";
 
 interface Props {
   issuer: string | undefined | { id: string };
@@ -32,7 +32,9 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
   //   "did:ethr:0x6968F2E335eF8ba1ee240023b91AA426707FF6cE";
   const issuerId = issuer?.id ? issuer.id : issuer;
 
-  if (issuerId === DidSingleton.getDidAddress()) return null;
+  if (issuerId === DidSingleton.getDidAddress()) {
+    return null;
+  }
 
   useEffect(() => {
     const fetchIssuerInfo = async (id: string): void => {
@@ -71,17 +73,22 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
   }, [issuerId]);
 
   const handleOpen = () => {
-    if (visible === "none") setVisible("flex");
-    else setVisible("none");
+    if (visible === "none") {
+      setVisible("flex");
+    } else {
+      setVisible("none");
+    }
   };
 
   const fieldElement = issuerInfo
     ? [...Object.keys(issuerInfo)].reverse().map(field => {
-        if (field === "name" || field === "did") return null;
+        if (field === "name" || field === "did") {
+          return null;
+        }
 
         if (
-          issuerInfo[field].startsWith("https://") ||
-          issuerInfo[field].startsWith("http://")
+          issuerInfo[field as IssuerInfoKeys].startsWith("https://") ||
+          issuerInfo[field as IssuerInfoKeys].startsWith("http://")
         ) {
           return (
             <View
@@ -95,7 +102,9 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
               </Text>
               <TouchableOpacity
                 style={styles.issuerInfoLink}
-                onPress={() => Linking.openURL(issuerInfo[field])}
+                onPress={() =>
+                  Linking.openURL(issuerInfo[field as IssuerInfoKeys])
+                }
               >
                 <Text style={styles.issuerFieldTextLink}>
                   {I18n.t("ssi.linkText")}
@@ -110,11 +119,19 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
             <Text style={styles.issuerFieldText}>
               {I18n.t(`ssi.issuer.fields.${field}` as TranslationKeys)}
             </Text>
-            <Text style={styles.issuerInfo}>{issuerInfo[field]}</Text>
+            <Text style={styles.issuerInfo}>
+              {issuerInfo[field as IssuerInfoKeys]}
+            </Text>
           </View>
         );
       })
     : undefined;
+
+  const nameToShow = issuerInfo
+    ? issuerInfo?.name.length >= 18
+      ? issuerInfo.name.substr(0, 16) + "..."
+      : issuerInfo.name
+    : "";
 
   return (
     <View style={styles.issuerContainer}>
@@ -125,13 +142,7 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
           {!isLoading && !issuerInfo && (
             <IconFont name="io-notice" color={variables.brandDanger} />
           )}
-          {!isLoading && Boolean(issuerInfo) && (
-            <Text>
-              {(issuerInfo && issuerInfo?.name.length) >= 18
-                ? issuerInfo.name.substr(0, 16) + "..."
-                : issuerInfo.name}
-            </Text>
-          )}
+          {!isLoading && Boolean(issuerInfo) && <Text>{nameToShow}</Text>}
         </Text>
         <TouchableOpacity onPress={handleOpen}>
           <IconFont name="io-plus" color={variables.brandPrimary} />
