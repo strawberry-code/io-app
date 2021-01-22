@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 import {Platform} from "react-native";
-import {getSsiAccessToken} from "../../utils/keychain";
 import AsyncStorage from "@react-native-community/async-storage";
+import { JWT } from "did-jwt-vc/lib/types";
+import {getSsiAccessToken} from "../../utils/keychain";
 
 
 class __NetCode {
@@ -125,9 +127,81 @@ class __NetCode {
     }
   }
 
-  public dumpPreFetch(caller: string,{body, headers, method, url}: { url?: string; method?: string; headers?: Headers; body?: object; }) {
-    let debugString = `🚀 [HTTP REQUEST][${caller}] - url: ${url} - method: ${method} - headers: ${JSON.stringify(headers)} - body: ${JSON.stringify(body)}`
-    console.log(debugString)
+  public async signUpDid(didAddress: string) {
+    const apiUrl = '/auth/signUp';
+    const method = 'GET';
+    const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress);
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${await getSsiAccessToken()}`);
+    this.dumpPreFetch('auth/signUp',{url, method, headers});
+    try {
+      const rawResponse = await fetch(url, {
+        headers,
+        method,
+      });
+      
+      const responseBody = await rawResponse.json();
+
+      console.log(`[auth/signUp] raw response:  ${JSON.stringify(rawResponse)}`);
+      console.log(`[auth/signUp] json response:  ${JSON.stringify(responseBody)}`);
+
+      if (rawResponse.status === 200) {
+        return responseBody;
+      } else {
+        throw new Error(`[auth/signUp] Something went wrong ${JSON.stringify(responseBody)}`);
+      }
+
+
+    } catch (err) {
+      console.log('[auth/signUp] errored (string): ', err);
+      console.log('[auth/signUp] errored (object): ' + JSON.stringify(err));
+      return;
+    }
+
+  }
+
+  public async signChallengeForVID(signedJWT: JWT) {
+    const apiUrl = '/auth/signChallengeForVID';
+    const method = 'POST';
+    const url = this.serverBaseURL + apiUrl;
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${await getSsiAccessToken()}`);
+    const body = JSON.stringify({
+      signedVIDRequest: signedJWT
+    });
+
+    this.dumpPreFetch('signChallangeForVID',{url, method, headers, body});
+    try {
+      const rawResponse = await fetch(url, {
+        headers,
+        method,
+        body
+      });
+      
+      const responseBody = await rawResponse.json();
+
+      console.log(`[/auth/signChallengeForVID] raw response:  ${JSON.stringify(rawResponse)}`);
+      console.log(`[/auth/signChallengeForVID] json response:  ${JSON.stringify(responseBody)}`);
+
+      if (rawResponse.status === 201) {
+        return responseBody;
+      } else {
+        throw new Error(`[/auth/signChallengeForVID] Something went wrong: ${JSON.stringify(responseBody)}`);
+      }
+
+
+    } catch (err) {
+      console.log('[/auth/signChallengeForVID] errored (string): ', err);
+      console.log('[/auth/signChallengeForVID] errored (object): ' + JSON.stringify(err));
+      return;
+    }
+
+  }
+
+  public dumpPreFetch(caller: string,{body, headers, method, url}: { url?: string; method?: string; headers?: Headers; body?: RequestInit["body"] }) {
+    const debugString = `🚀 [HTTP REQUEST][${caller}] - url: ${url} - method: ${method} - headers: ${JSON.stringify(headers)} - body: ${JSON.stringify(body)}`;
+    console.log(debugString);
   }
 
 }
