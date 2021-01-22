@@ -102,8 +102,11 @@ const SsiNotificationScreen: React.FC<Props> = ({
     console.log("vp decodificato:", vpDecoded);
     const issuer = vpDecoded.iss;
     const vc = vpDecoded.vp.verifiableCredential[0];
-    const credential = vc ? VCstore.decodeJwt(vc).vc : null;
-    console.log("credential decodicficata:", vpDecoded);
+    const vCredential = vc ? VCstore.decodeJwt(vc) : null;
+
+    const { iat, exp, vc: credentialInfo } = vCredential;
+    const dateInfo = { iat, exp };
+
     return (
       <View style={styles.notificationContainer}>
         <View style={styles.topNotification}>
@@ -114,7 +117,7 @@ const SsiNotificationScreen: React.FC<Props> = ({
           </Text>
         </View>
         <View style={styles.textBox}>
-          <NotificationTitle type={credential.type[1]} />
+          <NotificationTitle type={credentialInfo.type[1]} />
           <TouchableOpacity onPress={toggleCredentials}>
             <StyledIconFont name="io-right" color={variables.brandPrimary} />
           </TouchableOpacity>
@@ -136,7 +139,9 @@ const SsiNotificationScreen: React.FC<Props> = ({
         </View>
         <SingleVCInfoModal
           visible={modalVisible}
-          credentialInfo={credential}
+          credentialInfo={credentialInfo}
+          dateInfo={dateInfo}
+          changeVisibility={setModalVisible}
           toggleCredentials={toggleCredentials}
           issuer={issuer}
         />
