@@ -19,10 +19,7 @@ export type SignUpResponse = TypeOf<typeof SignUpResponse>;
 const createVCWithChallengeMessage = async (
   signUpResponse: SignUpResponse
 ): Promise<JWT | undefined> => {
-  const issuer: Issuer = new EthrDID({
-    address: DidSingleton.getEthAddress(),
-    privateKey: DidSingleton.getPrivateKey()
-  });
+  const issuer: Issuer = DidSingleton.getIssuer();
 
   const isSignResponse = isRight(SignUpResponse.decode(signUpResponse));
 

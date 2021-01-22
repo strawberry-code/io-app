@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Platform
 } from "react-native";
+import { format, parse } from "date-fns";
 
 import { TranslationKeys } from "../../../../locales/locales";
 import I18n from "../../../i18n";
@@ -19,6 +20,10 @@ import IssuerComponent from "./IssuerComponent";
 
 interface Props {
   credentialInfo: VCType["vc"];
+  dateInfo: {
+    iat: VCType["iat"];
+    exp: VCType["exp"];
+  };
   visible: boolean;
   toggleCredentials: () => void;
   changeVisibility: (value: boolean) => void;
@@ -31,6 +36,7 @@ interface Props {
 
 const SingleVCInfoModal: React.FC<Props> = ({
   credentialInfo,
+  dateInfo,
   visible,
   isSigning,
   toggleCredentials,
@@ -50,17 +56,39 @@ const SingleVCInfoModal: React.FC<Props> = ({
     }
   };
 
-  const fieldsElement = Object.keys(credentialSubject).map(field => {
-    if (field === "id") {
+  const dateInfoElements = Object.keys(dateInfo).map(field => {
+    if (!dateInfo[field]) {
       return null;
     }
+
+    const dateObject = new Date(dateInfo[field] * 1000);
+    const dateString = format(dateObject, "DD/MM/YYYY");
 
     return (
       <>
         <Text style={vcItem.modalDescription}>
           {I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys)}:{" "}
         </Text>
-        <Text style={vcItem.modalInfo}>{credentialSubject[field]}</Text>
+        <Text style={vcItem.modalInfo}>{dateString}</Text>
+      </>
+    );
+  });
+
+  const fieldsElement = Object.keys(credentialSubject).map(field => {
+    if (field === "id") {
+      return null;
+    }
+
+    const fieldData = !isNaN(new Date(credentialSubject[field]))
+      ? format(parse(credentialSubject[field]), "DD/MM/YYYY")
+      : credentialSubject[field];
+
+    return (
+      <>
+        <Text style={vcItem.modalDescription}>
+          {I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys)}:{" "}
+        </Text>
+        <Text style={vcItem.modalInfo}>{fieldData}</Text>
       </>
     );
   });
@@ -91,6 +119,7 @@ const SingleVCInfoModal: React.FC<Props> = ({
         <View style={vcItem.modalBody}>
           {!isSigning && <IssuerComponent issuer={issuer} />}
           {fieldsElement}
+          {dateInfoElements}
         </View>
       </ScrollView>
       {isSigning && (

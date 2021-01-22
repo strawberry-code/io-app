@@ -141,8 +141,10 @@ const vcItem = StyleSheet.create({
 
 
 const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
-  const { iss } = vCredential;
+  const { iss, iat, exp } = vCredential;
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+
+  const dateInfo = { iat, exp };
   
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
@@ -184,7 +186,8 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
             </TouchableOpacity>
         </View>
         <SingleVCModal
-          credentialInfo={vCredential.vc} 
+          credentialInfo={vCredential.vc}
+          dateInfo={dateInfo}
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}
@@ -200,9 +203,11 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
 
 
 const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
-  const { iss } = vCredential;
+  const { iss, iat, exp } = vCredential;
   
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
+
+  const dateInfo = { iat, exp };
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -242,7 +247,8 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
         </View>
 
         <SingleVCModal
-          credentialInfo={vCredential.vc} 
+          credentialInfo={vCredential.vc}
+          dateInfo={dateInfo} 
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}
@@ -257,10 +263,11 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
 }
 
 const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
-  const { iss } = vCredential;
+  const { iss, iat, exp } = vCredential;
 
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
- 
+  
+  const dateInfo = { iat, exp };
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -298,6 +305,7 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
         </View>
         <SingleVCModal
           credentialInfo={vCredential.vc} 
+          dateInfo={dateInfo}
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}
@@ -312,10 +320,11 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
 }
 
 const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
-  const { iss } = vCredential;
+  const { iss, iat, exp } = vCredential;
 
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   
+  const dateInfo = { iat, exp };
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
   const toggleCredentials = ():void => {
@@ -354,7 +363,8 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
             </TouchableOpacity>
         </View>
         <SingleVCModal
-          credentialInfo={vCredential.vc} 
+          credentialInfo={vCredential.vc}
+          dateInfo={dateInfo} 
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}
@@ -369,7 +379,9 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
 }
 
 const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signRequest, backHome }) => {
-  const { iss } = vCredential;
+  const { iss, iat, exp } = vCredential;
+
+  const dateInfo = { iat, exp };
 
   const [modalVisibile, setModalVisible] = useState<boolean>(Boolean(isSigning));
   //  Se onPress è undefined verrà chiamata questa funzione nella vista
@@ -410,7 +422,8 @@ const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signReq
         </View>
 
         <SingleVCModal
-          credentialInfo={vCredential.vc} 
+          credentialInfo={vCredential.vc}
+          dateInfo={dateInfo} 
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}
@@ -435,7 +448,7 @@ const Header: React.FC<{ title: string }> = ({ title }) => (
 )
 
 const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, backHome, signRequest }) => {
-  const { iss } = vCredential;
+  const { iss, exp, iat } = vCredential;
 
   // const issuerTest = {
   //   id: "issuerId",
@@ -450,6 +463,8 @@ const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, bac
       console.log('onPress active', isSigning);
       console.log('onPress modalVisible', modalVisibile);
     }
+
+  const dateInfo = { iat, exp };
   
       //  Se onPress è undefined verrà chiamata questa funzione nella vista
   // "statica" per mostrare la credential
@@ -492,7 +507,8 @@ const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, bac
             </TouchableOpacity>
         </View>
         <SingleVCModal
-          credentialInfo={vCredential.vc} 
+          credentialInfo={vCredential.vc}
+          dateInfo={dateInfo} 
           visible={modalVisibile}
           isSigning={Boolean(isSigning)}
           signRequest={signRequest}

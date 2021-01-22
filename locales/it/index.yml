@@ -348,6 +348,8 @@ ssi:
       expirationDate: Scadenza
       dateOfAchievement: Data di conseguimento
       type: Tipologia
+      iat: Data Emissione
+      exp: Scadenza Credenziale
   balanceAndTransaction:
     title: "Bilancio &\nTransazioni"
     balanceTitle: Bilancio

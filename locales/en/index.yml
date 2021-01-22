@@ -346,6 +346,8 @@ ssi:
       expirationDate: Expiration Date
       dateOfAchievement: Date of Achievement
       type: Type
+      iat: Issuance Date
+      exp: Credential Expire Date
   balanceAndTransaction:
     title: Balance & Transactions
     balanceTitle: Balance
