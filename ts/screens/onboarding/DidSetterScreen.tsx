@@ -23,6 +23,10 @@ import NetCode from "../ssi/NetCode";
 import VCstore from "../ssi/VCstore";
 import { GlobalState } from "../../store/reducers/types";
 import { notificationsInstallationSelector } from "../../store/reducers/notifications/installation";
+import {
+  createVCWithChallengeMessage,
+  saveVCFromSignChallenge
+} from "../ssi/services/verifiableCredentialService";
 import RecoverIdentityModal from "./RecoverIdentityModal";
 import PassPhraseWordList from "./components/PassPhraseWordList";
 
@@ -141,17 +145,30 @@ const DidSetterScreen: React.FC<Props> = ({
         "",
         true
       );
-      await VCstore.storeVC(
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGMzTXpBeU9UY3lNeXdpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklqRXlNelFpTENKbWFYSnpkRTVoYldVaU9pSkVZVzVwWld4bElpd2liR0Z6ZEU1aGJXVWlPaUpTYjNOemFTSXNJbUpwY25Sb1pHRjVJam9pTVRrNU1TMHdPQzB5TlZReE56b3lPVG95TUM0eU56bGFJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2lVbTl0WlNKOWZTd2lZM0psWkdWdWRHbGhiRk5qYUdWdFlTSTZleUpwWkNJNklrTmhjblJoU1dSbGJuUnBkR0VpTENKMGVYQmxJam9pVW1WbmFXOXVaVXh2YldKaGNtUnBZUzFpYkdGaWJHRWlmU3dpYVhOeklqb2laR2xrT21WMGFISTZNSGhtTVRJek1tWTROREJtTTJGa04yUXlNMlpqWkdGaE9EUmtObU0yTm1SaFl6STBaV1ppTVRrNElpd2lhblJwSWpvaWFIUjBjRG92TDJWNFlXMXdiR1V1WldSMUwyTnlaV1JsYm5ScFlXeHpMek0zTXpJaUxDSnpkV0lpT2lKa2FXUTZaWFJvY2pvd2VFVTJRMFUwT1RnNU9ERmlOR0poT1dVNE0yVXlNRGxtT0VVd01qWXlPVFE1TkVaRE16RmlZemtpTENKdVltWWlPakUxTkRFME9UTTNNalFzSW01dmJtTmxJam9pTmpZd0lUWXpORFZHVTJWeUlpd2lhV1FpT2lJMk5qVTVOVFF6TUMwME5EVTRMVFJtTUdFdE9ERTFPUzAyWVdNeE1EUmhPVFEzTkRjaWZRLm92cmZuY2E2NUh4LUVMS3hsNlk2a0hoZjhnZDhPbTE0MEdYeGpSNXhGb3JPd3R2R1lMeWZVbnc4V2FYOTVlcVM2QnYxTzcwTGx3XzM0cTFkanhCSEJ3Il19LCJpc3MiOiJkaWQ6ZXRocjoweGYxMjMyZjg0MGYzYWQ3ZDIzZmNkYWE4NGQ2YzY2ZGFjMjRlZmIxOTgifQ.s-914n4v_V69q96G_Ak2fQow4wIUg-Y-WbP_drHjnfx6-9X5ooSKETHrhLPdB6DTGQ8c-1cWnIEko5FwsvYXiw"
+      // await VCstore.storeVC(
+      //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGMzTXpBeU9UY3lNeXdpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklqRXlNelFpTENKbWFYSnpkRTVoYldVaU9pSkVZVzVwWld4bElpd2liR0Z6ZEU1aGJXVWlPaUpTYjNOemFTSXNJbUpwY25Sb1pHRjVJam9pTVRrNU1TMHdPQzB5TlZReE56b3lPVG95TUM0eU56bGFJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2lVbTl0WlNKOWZTd2lZM0psWkdWdWRHbGhiRk5qYUdWdFlTSTZleUpwWkNJNklrTmhjblJoU1dSbGJuUnBkR0VpTENKMGVYQmxJam9pVW1WbmFXOXVaVXh2YldKaGNtUnBZUzFpYkdGaWJHRWlmU3dpYVhOeklqb2laR2xrT21WMGFISTZNSGhtTVRJek1tWTROREJtTTJGa04yUXlNMlpqWkdGaE9EUmtObU0yTm1SaFl6STBaV1ppTVRrNElpd2lhblJwSWpvaWFIUjBjRG92TDJWNFlXMXdiR1V1WldSMUwyTnlaV1JsYm5ScFlXeHpMek0zTXpJaUxDSnpkV0lpT2lKa2FXUTZaWFJvY2pvd2VFVTJRMFUwT1RnNU9ERmlOR0poT1dVNE0yVXlNRGxtT0VVd01qWXlPVFE1TkVaRE16RmlZemtpTENKdVltWWlPakUxTkRFME9UTTNNalFzSW01dmJtTmxJam9pTmpZd0lUWXpORFZHVTJWeUlpd2lhV1FpT2lJMk5qVTVOVFF6TUMwME5EVTRMVFJtTUdFdE9ERTFPUzAyWVdNeE1EUmhPVFEzTkRjaWZRLm92cmZuY2E2NUh4LUVMS3hsNlk2a0hoZjhnZDhPbTE0MEdYeGpSNXhGb3JPd3R2R1lMeWZVbnc4V2FYOTVlcVM2QnYxTzcwTGx3XzM0cTFkanhCSEJ3Il19LCJpc3MiOiJkaWQ6ZXRocjoweGYxMjMyZjg0MGYzYWQ3ZDIzZmNkYWE4NGQ2YzY2ZGFjMjRlZmIxOTgifQ.s-914n4v_V69q96G_Ak2fQow4wIUg-Y-WbP_drHjnfx6-9X5ooSKETHrhLPdB6DTGQ8c-1cWnIEko5FwsvYXiw"
+      // );
+
+      await VCstore.clearStore();
+
+      const didAddress = DidSingleton.getDidAddress();
+
+      const signUpResponse = await NetCode.signUpDid(didAddress);
+
+      const signedJWT = await createVCWithChallengeMessage(signUpResponse);
+
+      const signChallengeResponse = await NetCode.signChallengeForVID(
+        signedJWT as string
       );
-      setTimeout(() => {
-        changeLoadingStates(
-          true,
-          I18n.t("ssi.onboarding.generatingVCCompleted"),
-          "completed",
-          false
-        );
-      }, 2000);
+
+      await saveVCFromSignChallenge(signChallengeResponse);
+
+      changeLoadingStates(
+        true,
+        I18n.t("ssi.onboarding.generatingVCCompleted"),
+        "completed",
+        false
+      );
 
       setTimeout(() => createDIDSuccess(), 2000);
     } catch (e) {
