@@ -40,7 +40,13 @@ import {
   exportVCsIos,
   pickSingleFileAndReadItsContent
 } from "../../SsiUtils";
+import {
+  createVCWithChallengeMessage,
+  saveVCFromSignChallenge
+} from "../../services/verifiableCredentialService";
 import NetCode from "../../NetCode";
+import VCstore from "../../VCstore";
+
 import DebugListItem from "./DebugListItem";
 
 interface ComponentProps {
@@ -196,6 +202,45 @@ const DebugList: React.FC<Props> = ({ isActive, ...props }) => {
       hide: !notificationToken
     },
     {
+      title: "Debug SignUp Credential flow",
+      onPress: async () => {
+        try {
+          const didAddress = DidSingleton.getDidAddress();
+
+          const signUpResponse = await NetCode.signUpDid(didAddress);
+
+          const signedJWT = await createVCWithChallengeMessage(signUpResponse);
+
+          const response = await NetCode.signChallengeForVID(signedJWT);
+
+          await saveVCFromSignChallenge(response);
+
+          Toast.show({
+            text: "Saved Successfully Credential on the Device",
+            position: "bottom",
+            type: "success"
+          });
+
+          console.log("response [Debug Signup Credential]:", response);
+        } catch (e) {
+          console.log("[Error Debug SignUp Credential]", e);
+        }
+      }
+    },
+    {
+      title: "Pulisci VCStore",
+      onPress: () => VCstore.clearStore(),
+      isDanger: true
+    },
+    {
+      title: "Private Key",
+      onPress: () => {
+        const privateKey = DidSingleton.getPrivateKey();
+        console.log("privateKey =", privateKey);
+        clipboardSetStringWithFeedback(privateKey);
+      }
+    },
+    {
       title: I18n.t("profile.main.cache.clear"),
       onPress: handleClearCachePress,
       isDanger: true
@@ -223,13 +268,7 @@ const DebugList: React.FC<Props> = ({ isActive, ...props }) => {
   return (
     <React.Fragment>
       {debugList.map((item, index) => (
-        <DebugListItem
-          key={index}
-          title={item.title}
-          onPress={item.onPress}
-          isDanger={item?.isDanger}
-          hide={item?.hide}
-        />
+        <DebugListItem key={index} {...item} />
       ))}
     </React.Fragment>
   );
