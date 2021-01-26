@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable functional/immutable-data */
 /**
  * Set the basic PushNotification configuration
@@ -13,11 +14,9 @@ import {store} from "../App";
 import {debugRemotePushNotification, gcmSenderId} from "../config";
 import {loadMessages} from "../store/actions/messages";
 import {
-  loadSsiNotifications,
   updateSsiNotifications,
   updateNotificationsInstallationToken,
   updateNotificationsPendingMessage,
-  clearSsiNotifications
 } from "../store/actions/notifications";
 import { isDevEnv } from "../utils/environment";
 import {  navigateToSsiNotificationScreen } from "../store/actions/navigation";
@@ -36,25 +35,23 @@ const NotificationPayload = t.partial({
   })
 });
 
-const handleNotification = (notification) => {
+
+const handleNotification = (notification: typeof PushNotification) => {
   console.log('🎈 notifica push arrivata! ('+Platform.OS+')');
   console.log('dettagli della push: ' + JSON.stringify(notification));
+  console.log('dettagli della push object: ', notification);
 
   if (debugRemotePushNotification) {
     Alert.alert("Notification", JSON.stringify(notification));
   }
+  
+  const ssiNotificationPayload = Platform.OS === 'ios'
+    ? notification.data.payload
+    : JSON.parse(notification.payload);
+  
+  console.log('ssiNotificationPayload: ' + JSON.stringify(ssiNotificationPayload));
 
-  let ssiNotificationPayload
-
-  if(Platform.OS === 'ios') {
-    ssiNotificationPayload = notification.data.payload
-  } else {
-    ssiNotificationPayload = JSON.parse(notification.payload)
-  }
-
-  console.log('ssiNotificationPayload: ' + JSON.stringify(ssiNotificationPayload))
-
-  let ssiPushType = ssiNotificationPayload.type
+  const ssiPushType = ssiNotificationPayload.type;
 
   if(ssiPushType === 'ssi-issuedVC') {
     console.log('sto gestendo una notifica push SSI del tipo: ', ssiPushType);
@@ -99,8 +96,9 @@ const handleNotification = (notification) => {
   notification.finish(PushNotificationIOS.FetchResult.NoData);
 };
 
-const handleRegister = (device) => {
+const handleRegister = async (device : { os: string; token: string }) => {
   console.log('PUSH NOTIFICATIONS TOKEN: ', device.token);
+  await AsyncStorage.setItem("PUSH_TOKEN", device.token);
   // Dispatch an action to save the token in the store
   store.dispatch(updateNotificationsInstallationToken(device.token));
   PushNotification.popInitialNotification((notification) => {
@@ -120,7 +118,7 @@ function configurePushNotifications() {
   PushNotification.configure({
     // Called when token is generated
     onRegister: device => {
-      handleRegister(device);
+      void handleRegister(device);
     },
 
     // Called when a remote or local notification is opened or received
