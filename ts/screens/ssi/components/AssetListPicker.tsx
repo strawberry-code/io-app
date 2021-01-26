@@ -1,6 +1,18 @@
 import React, { useEffect } from "react";
-import {Text, View} from "react-native";
-import {Picker, Form, Header, Content, Container, Left, Button, Icon, Title, Right, Body} from "native-base";
+import { Text, View } from "react-native";
+import {
+  Picker,
+  Form,
+  Header,
+  Content,
+  Container,
+  Left,
+  Button,
+  Icon,
+  Title,
+  Right,
+  Body
+} from "native-base";
 import { connect } from "react-redux";
 
 import { DID } from "../../../types/DID";
@@ -8,6 +20,7 @@ import IconFont from "../../../components/ui/IconFont";
 import variables from "../../../theme/variables";
 import { GlobalState } from "../../../store/reducers/types";
 import { Dispatch } from "../../../store/actions/types";
+import I18n from "../../../i18n";
 import { Asset } from "../types";
 
 interface AssetListProps {
@@ -73,11 +86,11 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           color: variables.brandPrimary
         }}
       >
-        Asset Selection
+        {I18n.locale === "it" ? "Asset configurati" : "Assets configured"}
       </Text>
       <Form>
         <Picker
-          renderHeader={backAction =>
+          renderHeader={backAction => (
             <Header style={{ backgroundColor: variables.brandPrimary }}>
               <Left>
                 <Button transparent onPress={backAction}>
@@ -85,13 +98,18 @@ const AssetListPicker: React.FC<AssetListProps> = ({
                 </Button>
               </Left>
               <Body style={{ flex: 3 }}>
-                <Title style={{ color: "#fff" }}>Asset selection</Title>
+                <Title style={{ color: "#fff" }}>
+                  {I18n.locale === "it"
+                    ? "Asset configurati"
+                    : "Assets configured"}
+                </Title>
               </Body>
               <Right />
-            </Header>}
+            </Header>
+          )}
           note
           mode="dialog"
-          headerBackButtonText="Baaack!"
+          headerBackButtonText={I18n.t("global.buttons.back")}
           iosIcon={<IconFont name="io-plus" />}
           style={{
             marginHorizontal: 10,
@@ -103,7 +121,6 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           }}
           selectedValue={assetSelected}
           onValueChange={handleChangeAssets}
-
         >
           {assetList &&
             assetList.map(asset => (

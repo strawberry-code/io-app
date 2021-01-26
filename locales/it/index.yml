@@ -91,8 +91,8 @@ global:
     noResultsTitle: Nessun risultato.
   localNotifications:
     spidLogin:
-      title: Ricordati di accedere ad IO!
-      message: Accedi con la tua identità digitale su IO, l’app dei servizi pubblici
+      title: Ricordati di accedere ad Wallet App!
+      message: Accedi con la tua identità digitale su Wallet App, l’app dei servizi pubblici
 tablet:
   message: L’interfaccia di IO è ottimizzata per smartphone, ma tutte le funzioni compatibili con il tuo dispositivo sono comunque disponibili.
 rooted:
@@ -162,14 +162,14 @@ profile:
     spid: PROFILO SPID
   unknown: SCONOSCIUTO
   logout:
-    menulabel: Esci da IO
+    menulabel: Esci da Wallet App
     alertMessage: Sei sicuro di voler uscire? Al prossimo accesso sarà necessario un nuovo login con CIE o SPID.
     exit: Esci
     cta:
       header: Come vuoi uscire dall'app?
       keepData:
         title: Esci ma conserva i miei dati
-        description: "Per poter usare IO dovrai nuovamente accedere con la tua identità digitale ma tutte le impostazioni saranno disponibili quando lanci l'App. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
+        description: "Per poter usare Wallet App dovrai nuovamente accedere con la tua identità digitale ma tutte le impostazioni saranno disponibili quando lanci l'App. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
       resetData:
         title: Esci e resetta l'applicazione
         description: "Le impostazioni e i dati salvati sul tuo dispositivo saranno resettati. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
@@ -196,7 +196,7 @@ profile:
       description: Gestisci le preferenze dell'applicazione
     privacy:
       title: Privacy e condizioni d'uso
-      description: I tuoi diritti e obblighi nell’uso di IO
+      description: I tuoi diritti e obblighi nell’uso di Wallet App
       subtitle: Qui trovi informazioni sulle condizioni legali e sul trattamento dei tuoi dati personali.
       loading: Attendi qualche secondo, stiamo verificando il tuo profilo...
       removeAccount:
@@ -321,6 +321,19 @@ ssi:
     title: Recupera le tue Verifiable Credentials
     subtitle: Se hai un file di backup delle tue VCs, puoi recuperarle da qui
     prompt: Per favore, scegli il file di backup delle tue VCs
+    google:
+      date: "Data:"
+      size: "Dimensione:"
+      title: Backup delle tue Credenziali Verificate
+      title-1: Backup Credenziali
+      subtitle: Backup delle tue VCs su Google Drive
+      lastBackup: Ultimo Backup
+      description-1: "Esegui il Backup delle tue Credenziali Verificate. Potrai ripristinarle nel caso di smarrimento o sostituzione del dispositivo."
+      drive: Google Drive
+      description-2: Devi connettere l'applicazione a Google Drive per effettuare il backup delle tue Credenziali Verificate.
+      backupButton: Esegui backup
+      restoreButton: Ripristina dal backup
+      logout: "Logout da Google"
   issuer:
     unknown: Sconosciuto
     fields:
@@ -349,7 +362,7 @@ ssi:
       dateOfAchievement: Data di conseguimento
       type: Tipologia
       iat: Data Emissione
-      exp: Scadenza Credenziale
+      exp: Scadenza
   balanceAndTransaction:
     title: "Bilancio &\nTransazioni"
     balanceTitle: Bilancio
@@ -399,21 +412,38 @@ ssi:
     recoveringIdentity: Recuperando Identità
     recoveringIdentityCompleted: Recupero Identità avvenuto con successo
     recoveringError: Recupero Identità non riuscito
-    yourRecoverKey: Questa è la tua chiave privata
-    saveYourRecoverKey: Copiala in un posto sicuro!
+    yourRecoverKey: Questa è la tua frase d'accesso
+    saveYourRecoverKey: "Copiala in un posto sicuro,\n come un foglio di carta."
     retry: Riprova
-    generatingVC: Generando Credenziale Verificata
-    generatingVCCompleted: Generazione Credenziale Verificata avvenuta con succeesso
-    generatingVCError: Generazione Credenziale Verificata non riuscita
+    generatingVC: Generando la tua VID
+    generatingVCCompleted: Generazione VID avvenuta con succeesso
+    generatingVCError: Generazione VID non riuscita
+    recoveringVC: Recuperando la tua VID
+    recoveringVCCompleted: Recupero VID avvenuto con succeesso
+    recoveringVCError: Recupero VID non riuscito
   copyDID:
     title: Copia DID
     subtitle: Il tuo DID verrà copiato negli appunti del tuo device
     prompt: Il tuo DID verrà copiato negli appunti del tuo device, vuoi procedere?
   exportVcs: Esporta Credenziali
   notifications:
+    title: Notifiche
+    subtitle: Potrai vedere la lista delle notifiche ricevute
+    empty: Non hai ricevuto ancora alcuna notifica
     verifiableCredential:
+      question: Accetti la credenziale?
       accept: Accetta
       refuse: Rifiuta
+      save: Salva
+    acceptingCredential:
+      title: Salvando nuova credenziale
+      question: Sicuro di voler salvare questa credenziale?
+    refusingCredential:
+      title: Eliminando Credenziale
+      question: Sicuro di voler rifiutare questa credenziale?
+  logout:
+    title: "Vuoi salvare le Credenziali?"
+    question: "Effettuando il logout le tue credenziali verranno perse, vuoi esportarle prima di procedere?"
 userMetadata:
   errors:
     upsertVersion: Impossibile creare o aggiornare i metadata utente con questa versione
@@ -487,7 +517,7 @@ authentication:
     card4-content:
       L'accesso è consentito solo tramite SPID (Sistema Pubblico di Identità
       Digitale) per garantire la tua sicurezza online
-    card5-title: Benvenuto nella prima versione pubblica di IO!
+    card5-title: Benvenuto nella prima versione della Wallet App!
     card5-content: In questa versione trovi in alto a destra
       le icone per segnalare bug e aprire una chat con il team di IO.
       Aspettiamo i tuoi feedback!

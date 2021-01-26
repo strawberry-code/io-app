@@ -290,11 +290,11 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
           text: I18n.t("profile.logout.exit"),
           onPress: () => {
             Alert.alert(
-              'Vuoi salvare le tue Credenziali?',
-              'Effettuando il logout le tue credenziali verranno perse, vuoi esportarle prima di procedere?',
+              I18n.t("ssi.logout.title"),
+              I18n.t("ssi.logout.question"),
               [
                 {
-                  text: 'Sì',
+                  text: I18n.t("global.yes"),
                   onPress: async () => {
                     if (Platform.OS === 'ios') {
                       await exportVCsIos();
@@ -306,7 +306,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
                   }
                 },
                 {
-                  text: 'No',
+                  text: I18n.t("global.not"),
                   style: 'destructive',
                   onPress: this.props.logout
                 }
@@ -590,16 +590,16 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
 
             {/* SSI NOTIFICATIONS */}
             <ListItemComponent
-              title="Notifiche"
-              subTitle="Potrai vedere la lista delle notifiche arrivate"
+              title={I18n.t("ssi.notifications.title")}
+              subTitle={I18n.t("ssi.notifications.subtitle")}
               onPress={() => this.props.navigation.navigate(ROUTES.SSI_NOTIFICATIONS)}
               hideIcon={true}
             />
 
             {/* SSI BACKUP ON GOOGLE DRIVE */}
             <ListItemComponent
-              title="Backup delle Credenziali Verificate"
-              subTitle="Da qui potrai gestire il Backup delle Credenziali Verificate."
+              title={I18n.t("ssi.recoverVCs.google.title")}
+              subTitle={I18n.t("ssi.notifications.subtitle")}
               onPress={() => this.props.navigateToSsiBackupScreen()}
               hideIcon={true}
             />

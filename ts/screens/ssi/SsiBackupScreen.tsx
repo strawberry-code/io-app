@@ -4,7 +4,6 @@ import {
   statusCodes,
   User
 } from "@react-native-community/google-signin";
-import I18n from "i18n-js";
 import { Toast } from "native-base";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,11 +16,14 @@ import {
   TouchableHighlight,
   Alert
 } from "react-native";
+import { format } from "date-fns";
+
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import StyledIconFont from "../../components/ui/IconFont";
 import customVariables from "../../theme/variables";
+import I18n from "../../i18n";
 import {
   setApiToken,
   existBackup,
@@ -280,27 +282,31 @@ const SsiBackupScreen = () => {
 
   const date =
     backupInfo && backupInfo.exist
-      ? new Date(backupInfo.data.modifiedTime).toLocaleString()
+      ? format(new Date(backupInfo.data.modifiedTime), "DD/MM/YYYY HH:MM:SS")
       : "";
+
   const size = backupInfo
     ? (parseInt(backupInfo.data.size, 10) / 1000).toFixed(2) + "kB"
     : "";
 
   const canShowInfo = backupInfo && isSignedIn;
 
+  const noneBackupString = I18n.locale === "it" ? "Nessuno" : "None";
+
   return (
     <TopScreenComponent
-      accessibilityLabel={"Notifiche Credenziali"}
+      accessibilityLabel={I18n.t("ssi.recoverVCs.google.title")}
       headerTitle="Wallet"
       goBack={true}
     >
       <View style={styles.section}>
         <StyledIconFont name="io-cloud-upload" style={styles.icon} />
         <View style={styles.content}>
-          <Text style={styles.title}>Ultimo Backup</Text>
+          <Text style={styles.title}>
+            {I18n.t("ssi.recoverVCs.google.lastBackup")}
+          </Text>
           <Text style={styles.textContent}>
-            Esegui il Backup delle tue Credenziali Verificate. Potrai
-            ripristinarle nel caso di smarrimento o cambiamento del dispositivo.
+            {I18n.t("ssi.recoverVCs.google.description-1")}
           </Text>
           {isLoading && isSignedIn && (
             <ActivityIndicator
@@ -312,10 +318,12 @@ const SsiBackupScreen = () => {
           {!isLoading && canShowInfo && (
             <View style={styles.backupInfo}>
               <Text style={styles.backupInfoText}>
-                Data: {!backupInfo?.exist ? "Nessuno" : date}
+                {I18n.t("ssi.recoverVCs.google.date")}{" "}
+                {!backupInfo?.exist ? noneBackupString : date}
               </Text>
               <Text style={styles.backupInfoText}>
-                Dimensione: {!backupInfo?.exist ? "Nessuno" : size}
+                {I18n.t("ssi.recoverVCs.google.size")}:{" "}
+                {!backupInfo?.exist ? noneBackupString : size}
               </Text>
             </View>
           )}
@@ -326,7 +334,7 @@ const SsiBackupScreen = () => {
                 onPress={exportBackupOnDrive}
               >
                 <Text style={[styles.buttonText, styles.buttonTextBase]}>
-                  Esegui Backup
+                  {I18n.t("ssi.recoverVCs.google.backupButton")}
                 </Text>
               </ButtonDefaultOpacity>
               <ButtonDefaultOpacity
@@ -335,7 +343,7 @@ const SsiBackupScreen = () => {
                 onPress={importBackupFromDrive}
               >
                 <Text style={[styles.buttonText, styles.buttonTextBase]}>
-                  Ripristina Credenziali da Backup
+                  {I18n.t("ssi.recoverVCs.google.restoreButton")}
                 </Text>
               </ButtonDefaultOpacity>
             </>
@@ -347,8 +355,7 @@ const SsiBackupScreen = () => {
         <View style={styles.content}>
           <Text style={styles.title}>Google Drive</Text>
           <Text style={styles.textContent}>
-            Devi connettere l'applicazione a Google Drive per effettuare il
-            backup delle tue Credenziali Verificate.
+            {I18n.t("ssi.recoverVCs.google.description-2")}
           </Text>
           {isSignedIn && (
             <>
@@ -362,7 +369,7 @@ const SsiBackupScreen = () => {
                 onPress={logoutFromGoogle}
               >
                 <Text style={[styles.buttonText, styles.buttonTextBase]}>
-                  Logout da Google
+                  {I18n.t("ssi.recoverVCs.google.logout")}
                 </Text>
               </ButtonDefaultOpacity>
             </>

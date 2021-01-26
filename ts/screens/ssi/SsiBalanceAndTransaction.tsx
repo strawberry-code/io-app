@@ -18,7 +18,7 @@ import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { GlobalState } from "../../store/reducers/types";
 import { Transaction, Asset } from "./types";
 import AssetListPicker from "./components/AssetListPicker";
-import {DidSingleton} from "../../types/DID";
+import { DidSingleton } from "../../types/DID";
 
 /* Dummy Users
  "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
@@ -124,7 +124,9 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
           nestedScrollEnabled={true}
           ListEmptyComponent={() => (
             <Text style={{ marginLeft: 10 }}>
-              Non ci sono transazioni al momento
+              {I18n.locale === "it"
+                ? "Non ci sono transazioni al momento"
+                : "There are no transactions at moment"}
             </Text>
           )}
           data={transactionList}

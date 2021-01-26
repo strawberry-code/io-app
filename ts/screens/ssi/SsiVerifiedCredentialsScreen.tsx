@@ -368,7 +368,7 @@ class PreferencesScreen extends React.Component<Props, State> {
         <View style={{ alignItems:"center", marginHorizontal: 20, marginBottom: 15}}>
         <ButtonDefaultOpacity activeOpacity={1} block onPress={() => this.props.navigateToSsiBackupScreen()}>
           <IconFont name="io-cloud-upload" style={{color: 'white'}}/>
-          <Text style={{color: 'white', fontWeight: '800'}}>Backup Credenziali</Text>
+          <Text style={{color: 'white', fontWeight: '800'}}>{I18n.t("ssi.recoverVCs.google.title-1")}</Text>
         </ButtonDefaultOpacity>
         </View>
         <NavigationEvents onWillFocus={this.checkParamsOnWillFocus}/>

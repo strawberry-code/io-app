@@ -162,17 +162,17 @@ profile:
     spid: SPID PROFILE
   unknown: UNKNOWN
   logout:
-    menulabel: Logout from IO
+    menulabel: Logout from Wallet App
     alertMessage: Are you sure you want to quit? The next time you log in you will need a new login with CIE or SPID.
     exit: Exit
     cta:
       header: How do you want to quit the app?
       keepData:
         title: Quit keeping all data
-        description: In order to use IO, you will log in with you digital identity again, but any settings data will be conserved  and will be immediately available at next launch. This choise does not concern in a cancellation of the personal data concerning you by the App.
+        description: In order to use Wallet, you will log in with you digital identity again, but any settings data will be conserved  and will be immediately available at next launch. This choise does not concern in a cancellation of the personal data concerning you by the App.
       resetData:
         title: Quit and reset this app
-        description: "IO app will be restored to its initial state, as if it would just be installed. This option does not concern in a cancellation of the personal data concerning you by the App."
+        description: "Wallet app will be restored to its initial state, as if it would just be installed. This option does not concern in a cancellation of the personal data concerning you by the App."
   errors:
     load: Error loading the profile
     upsert: Error creating or updating the profile
@@ -196,7 +196,7 @@ profile:
       description: Manage app internal preferences
     privacy:
       title: Information and conditions of use
-      description: Your rights and obligations when using IO
+      description: Your rights and obligations when using Wallet App
       subtitle: Here you find information on the legal conditions and on the processing of your personal data.
       loading: Wait few seconds, we're checking your profile..
       removeAccount:
@@ -319,6 +319,19 @@ ssi:
     title: Restore your Verifiable Credentials
     subtitle: If you have a VCs backup file, you can restore your VCs from here
     prompt: Please, select you VCs backup file
+    google:
+      date: "Date:"
+      size: "Size:"
+      title: Backup of yout Verified Credentials
+      title-1: Backup Credentials
+      subtitle: Backup your VCs on Google Drive
+      lastBackup: Last Backup
+      description-1: "Backup your Verified Credentials. You will be able to restore them if the device is lost or replaced."
+      drive: Google Drive
+      description-2: "You need to connect the application to Google Drive to back up your Verified Credentials."
+      backupButton: Back up
+      restoreButton: Restore from Backup
+      logout: "Logout Google"
   issuer:
     unknown: Unknown
     fields:
@@ -347,7 +360,7 @@ ssi:
       dateOfAchievement: Date of Achievement
       type: Type
       iat: Issuance Date
-      exp: Credential Expire Date
+      exp: Expire Date
   balanceAndTransaction:
     title: Balance & Transactions
     balanceTitle: Balance
@@ -397,21 +410,38 @@ ssi:
     recoveringIdentity: Recovering Identity
     recoveringIdentityCompleted: Identity recovery was successful
     recoveringError: Identity retrieval failed
-    yourRecoverKey: This is your Private Key
-    saveYourRecoverKey: Copy it to a safe place!
+    yourRecoverKey: This is your Pass Phrase
+    saveYourRecoverKey: "Copy it to a safe place,\n like a piece of paper."
     retry: Retry
-    generatingVC: Generating Verified Credential
-    generatingVCCompleted: Successful Verified Credential Generation
-    generatingVCError: Verified Credential Generation Failed
+    generatingVC: Generating your VID
+    generatingVCCompleted: VID generated successfully
+    generatingVCError: VID generation failed
+    recoveringVC: Recovering your VID
+    recoveringVCCompleted: VID recovered successfully
+    recoveringVCError: VID recovering failed
   copyDID:
     title: Copy DID
     subtitle: Your DID will be copied into your device's clipboard
     prompt: Your DID will be copied into your device's clipboard, do you want proceed?
   exportVcs: Export Credentials
   notifications:
+    title: Notifications
+    subtitle: You will be able to see the list of notifications received
+    empty: You haven't received any notifications yet
     verifiableCredential:
-      accept: Accetta
-      refuse: Rifiuta
+      question: Do you want to accept this Credential?
+      accept: Accept
+      refuse: Decline
+      save: save
+    acceptingCredential:
+      title: Saving new credential
+      question: Are you sure you want to save this Credential?
+    refusingCredential:
+      title: Deleting Credential
+      question: Are you sure you want to decline this Credential?
+  logout:
+    title: "Save your Credentials?"
+    question: "By logging out your Credentials will be lost, do you want to export them before proceeding?"
 userMetadata:
   errors:
     upsertVersion: Can't upsert user metadata with this version
@@ -476,7 +506,7 @@ authentication:
     card4-title: You can use the app by SPID only
     card4-content: The access is allowed only by SPID (Public Service of Digital Identity)
       to guarantee your online safety
-    card5-title: Welcome to the public version of IO!
+    card5-title: Welcome to the first version of Wallet App!
     card5-content: In this version you can find in the upper-right corner
       the icons to report bugs or start a chat with the development team.
       We're waiting for your feedback!

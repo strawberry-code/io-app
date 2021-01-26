@@ -52,11 +52,11 @@ const SsiNotificationScreen: React.FC<Props> = ({
 
   const handleAcceptCredential = (id: number, VPjwt: string) => {
     Alert.alert(
-      "Salvando nuova credenziale",
-      "Sicuro di voler salvare questa credenziale?",
+      I18n.t("ssi.notifications.acceptingCredential.title"),
+      I18n.t("ssi.notifications.acceptingCredential.question"),
       [
         {
-          text: "Salva",
+          text: I18n.t("ssi.notifications.verifiableCredential.save"),
           onPress: async () => {
             acceptNotification(id);
             await VCstore.storeVC(VPjwt);
@@ -65,7 +65,7 @@ const SsiNotificationScreen: React.FC<Props> = ({
           }
         },
         {
-          text: "Indietro",
+          text: I18n.t("global.buttons.back"),
           style: "destructive",
           onPress: undefined
         }
@@ -76,18 +76,18 @@ const SsiNotificationScreen: React.FC<Props> = ({
 
   const handleRefuseCredential = (id: number) => {
     Alert.alert(
-      "Eliminando Notifica",
-      "Sicuro di voler non accettare questa credenziale?",
+      I18n.t("ssi.notifications.refusingCredential.title"),
+      I18n.t("ssi.notifications.refusingCredential.question"),
       [
         {
-          text: "Rifiuta",
+          text: I18n.t("ssi.notifications.verifiableCredential.refuse"),
           onPress: () => {
             refuseNotification(id);
             return true;
           }
         },
         {
-          text: "Indietro",
+          text: I18n.t("global.buttons.back"),
           style: "destructive",
           onPress: undefined
         }
@@ -122,19 +122,25 @@ const SsiNotificationScreen: React.FC<Props> = ({
             <StyledIconFont name="io-right" color={variables.brandPrimary} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.notificationQuestion}>Accetti la credenziale?</Text>
+        <Text style={styles.notificationQuestion}>
+          {I18n.t("ssi.notifications.verifiableCredential.question")}
+        </Text>
         <View style={styles.buttonsWrapper}>
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => handleAcceptCredential(item.id, item.VPjwt)}
           >
-            <Text style={styles.button}>Accetta</Text>
+            <Text style={styles.button}>
+              {I18n.t("ssi.notifications.verifiableCredential.accept")}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonRefuse}
             onPress={() => handleRefuseCredential(item.id)}
           >
-            <Text style={styles.buttonRefuseText}>Rifiuta</Text>
+            <Text style={styles.buttonRefuseText}>
+              {I18n.t("ssi.notifications.verifiableCredential.refuse")}
+            </Text>
           </TouchableOpacity>
         </View>
         <SingleVCInfoModal
@@ -171,7 +177,9 @@ const SsiNotificationScreen: React.FC<Props> = ({
 
       <FlatList
         ListEmptyComponent={() => (
-          <Text style={{ padding: 20 }}>Ancora nessuna notifica</Text>
+          <Text style={{ padding: 20 }}>
+            {I18n.t("ssi.notifications.empty")}
+          </Text>
         )}
         data={notifications}
         renderItem={renderNotifications}

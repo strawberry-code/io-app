@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   Modal,
   Text,
@@ -9,12 +9,12 @@ import {
   StyleSheet,
   Platform
 } from "react-native";
-import {Dispatch} from "redux";
-import {connect} from "react-redux";
+import { Dispatch } from "redux";
+import { connect } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 
-import {createDIDSuccess} from "../../store/actions/didset";
-import {DidSingleton} from "../../types/DID";
+import { createDIDSuccess } from "../../store/actions/didset";
+import { DidSingleton } from "../../types/DID";
 import variables from "../../theme/variables";
 import I18n from "../../i18n";
 import IconFont from "../../components/ui/IconFont";
@@ -29,14 +29,16 @@ interface Props {
     status: "error" | "completed" | "",
     isWaiting: boolean
   ) => void;
+  generateVC: (kind?: "generate" | "recover") => Promise<void>;
 }
 
 const RecoverIdentityModal: React.FC<Props> = ({
-                                                 close,
-                                                 visible,
-                                                 createDIDSuccess,
-                                                 changeLoadingStates
-                                               }) => {
+  close,
+  visible,
+  createDIDSuccess,
+  changeLoadingStates,
+  generateVC
+}) => {
   const [recoveryKey, setRecoveryKey] = useState<string>("");
   const [isPress, setIsPress] = React.useState<boolean>(false);
 
@@ -80,6 +82,8 @@ const RecoverIdentityModal: React.FC<Props> = ({
         false
       );
 
+      await generateVC("recover");
+
       setTimeout(() => createDIDSuccess(), 2000);
     } catch (e) {
       console.error("Errore:", e);
@@ -102,58 +106,57 @@ const RecoverIdentityModal: React.FC<Props> = ({
   };
 
   return (
+    <Modal visible={visible} animationType="slide">
+      <LinearGradient
+        colors={[variables.brandPrimaryLight, variables.brandPrimary]}
+        style={{ flex: 1 }}
+      >
+        <View style={topbar.container}>
+          <TouchableOpacity onPress={close}>
+            <IconFont name="io-back" size={35} color={variables.colorWhite} />
+          </TouchableOpacity>
+          <IconFont
+            name="io-lombardia"
+            size={30}
+            color={variables.colorWhite}
+            style={{ marginRight: 15 }}
+          />
+        </View>
+        <View style={main.container}>
+          <View>
+            <Text style={textBox.title}>
+              {I18n.t("ssi.onboarding.recoverIdentityTitle")}
+            </Text>
+            <Text style={textBox.subtitle}>
+              {I18n.t("ssi.onboarding.recoverIdentitySubtitle")}
+            </Text>
+          </View>
 
-      <Modal visible={visible} animationType="slide">
-        <LinearGradient
-          colors={[variables.brandPrimaryLight, variables.brandPrimary]}
-          style={{flex: 1}}
-        >
-          <View style={topbar.container}>
-            <TouchableOpacity onPress={close}>
-              <IconFont name="io-back" size={35} color={variables.colorWhite}/>
-            </TouchableOpacity>
-            <IconFont
-              name="io-lombardia"
-              size={30}
-              color={variables.colorWhite}
-              style={{marginRight: 15}}
+          <View style={input.group}>
+            <Text style={input.label}>
+              {I18n.t("ssi.onboarding.recoverIdenityLabel")}:
+            </Text>
+            <TextInput
+              onChangeText={handleRecoveryInput}
+              style={input.container}
+              value={recoveryKey}
             />
-          </View>
-          <View style={main.container}>
-            <View>
-              <Text style={textBox.title}>
-                {I18n.t("ssi.onboarding.recoverIdentityTitle")}
-              </Text>
-              <Text style={textBox.subtitle}>
-                {I18n.t("ssi.onboarding.recoverIdentitySubtitle")}
-              </Text>
-            </View>
-
-            <View style={input.group}>
-              <Text style={input.label}>
-                {I18n.t("ssi.onboarding.recoverIdenityLabel")}:
-              </Text>
-              <TextInput
-                onChangeText={handleRecoveryInput}
-                style={input.container}
-                value={recoveryKey}
-              />
-              <TouchableHighlight
-                {...touchProps}
-                style={
-                  isPress ? buttonPrimary.containerPress : buttonPrimary.container
-                }
+            <TouchableHighlight
+              {...touchProps}
+              style={
+                isPress ? buttonPrimary.containerPress : buttonPrimary.container
+              }
+            >
+              <Text
+                style={isPress ? buttonPrimary.textPress : buttonPrimary.text}
               >
-                <Text
-                  style={isPress ? buttonPrimary.textPress : buttonPrimary.text}
-                >
-                  {I18n.t("ssi.onboarding.recoverIdentity")}
-                </Text>
-              </TouchableHighlight>
-            </View>
+                {I18n.t("ssi.onboarding.recoverIdentity")}
+              </Text>
+            </TouchableHighlight>
           </View>
-        </LinearGradient>
-      </Modal>
+        </View>
+      </LinearGradient>
+    </Modal>
   );
 };
 

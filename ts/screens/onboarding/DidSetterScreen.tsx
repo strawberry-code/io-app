@@ -137,14 +137,14 @@ const DidSetterScreen: React.FC<Props> = ({
     }
   };
 
-  const generateVC = async () => {
+  const generateVC = async (kind?: "generate" | "recover") => {
     try {
-      changeLoadingStates(
-        true,
-        I18n.t("ssi.onboarding.generatingVC"),
-        "",
-        true
-      );
+      const generatingString =
+        kind === "generate"
+          ? I18n.t("ssi.onboarding.generatingVC")
+          : I18n.t("ssi.onboarding.recoveringVC");
+
+      changeLoadingStates(true, generatingString, "", true);
       // await VCstore.storeVC(
       //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTkRFME9UTTNNalFzSW1WNGNDSTZNVGMzTXpBeU9UY3lNeXdpZG1NaU9uc2lRR052Ym5SbGVIUWlPbHNpYUhSMGNITTZMeTkzZDNjdWR6TXViM0puTHpJd01UZ3ZZM0psWkdWdWRHbGhiSE12ZGpFaUxDSm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OWxlR0Z0Y0d4bGN5OTJNU0pkTENKMGVYQmxJanBiSWxabGNtbG1hV0ZpYkdWRGNtVmtaVzUwYVdGc0lpd2lRMkZ5ZEdGSlpHVnVkR2wwWVNKZExDSmpjbVZrWlc1MGFXRnNVM1ZpYW1WamRDSTZleUpwWkNJNklqRXlNelFpTENKbWFYSnpkRTVoYldVaU9pSkVZVzVwWld4bElpd2liR0Z6ZEU1aGJXVWlPaUpTYjNOemFTSXNJbUpwY25Sb1pHRjVJam9pTVRrNU1TMHdPQzB5TlZReE56b3lPVG95TUM0eU56bGFJaXdpY0d4aFkyVlBaa0pwY25Sb0lqb2lVbTl0WlNKOWZTd2lZM0psWkdWdWRHbGhiRk5qYUdWdFlTSTZleUpwWkNJNklrTmhjblJoU1dSbGJuUnBkR0VpTENKMGVYQmxJam9pVW1WbmFXOXVaVXh2YldKaGNtUnBZUzFpYkdGaWJHRWlmU3dpYVhOeklqb2laR2xrT21WMGFISTZNSGhtTVRJek1tWTROREJtTTJGa04yUXlNMlpqWkdGaE9EUmtObU0yTm1SaFl6STBaV1ppTVRrNElpd2lhblJwSWpvaWFIUjBjRG92TDJWNFlXMXdiR1V1WldSMUwyTnlaV1JsYm5ScFlXeHpMek0zTXpJaUxDSnpkV0lpT2lKa2FXUTZaWFJvY2pvd2VFVTJRMFUwT1RnNU9ERmlOR0poT1dVNE0yVXlNRGxtT0VVd01qWXlPVFE1TkVaRE16RmlZemtpTENKdVltWWlPakUxTkRFME9UTTNNalFzSW01dmJtTmxJam9pTmpZd0lUWXpORFZHVTJWeUlpd2lhV1FpT2lJMk5qVTVOVFF6TUMwME5EVTRMVFJtTUdFdE9ERTFPUzAyWVdNeE1EUmhPVFEzTkRjaWZRLm92cmZuY2E2NUh4LUVMS3hsNlk2a0hoZjhnZDhPbTE0MEdYeGpSNXhGb3JPd3R2R1lMeWZVbnc4V2FYOTVlcVM2QnYxTzcwTGx3XzM0cTFkanhCSEJ3Il19LCJpc3MiOiJkaWQ6ZXRocjoweGYxMjMyZjg0MGYzYWQ3ZDIzZmNkYWE4NGQ2YzY2ZGFjMjRlZmIxOTgifQ.s-914n4v_V69q96G_Ak2fQow4wIUg-Y-WbP_drHjnfx6-9X5ooSKETHrhLPdB6DTGQ8c-1cWnIEko5FwsvYXiw"
       // );
@@ -163,22 +163,21 @@ const DidSetterScreen: React.FC<Props> = ({
 
       await saveVCFromSignChallenge(signChallengeResponse);
 
-      changeLoadingStates(
-        true,
-        I18n.t("ssi.onboarding.generatingVCCompleted"),
-        "completed",
-        false
-      );
+      const generationCompletedString =
+        kind === "generate"
+          ? I18n.t("ssi.onboarding.generatingVCCompleted")
+          : I18n.t("ssi.onboarding.recoveringVCCompleted");
+
+      changeLoadingStates(true, generationCompletedString, "completed", false);
 
       setTimeout(() => createDIDSuccess(), 2000);
     } catch (e) {
       console.error("Credenziale verificata non generata", e);
-      changeLoadingStates(
-        true,
-        I18n.t("ssi.onboarding.generatingVCError"),
-        "error",
-        false
-      );
+      const generationErrorString =
+        kind === "generate"
+          ? I18n.t("ssi.onboarding.generatingVCError")
+          : I18n.t("ssi.onboarding.recoveringVCCompleted");
+      changeLoadingStates(true, generationErrorString, "error", false);
     }
   };
 
@@ -251,6 +250,7 @@ const DidSetterScreen: React.FC<Props> = ({
         visible={modalVisible}
         close={() => setModalVisible(false)}
         changeLoadingStates={changeLoadingStates}
+        generateVC={generateVC}
       />
       {loadingVisible && (
         <View style={loading.bg}>
@@ -286,9 +286,11 @@ const DidSetterScreen: React.FC<Props> = ({
                 <PassPhraseWordList passPhrase={recoveryKey} />
                 <TouchableOpacity
                   style={loadingButton.container}
-                  onPress={generateVC}
+                  onPress={() => generateVC("generate")}
                 >
-                  <Text style={loadingButton.textSmall}>Continua</Text>
+                  <Text style={loadingButton.textSmall}>
+                    {I18n.t("global.buttons.continue")}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
