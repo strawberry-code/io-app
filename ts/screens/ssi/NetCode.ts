@@ -3,6 +3,8 @@ import {Platform} from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import { JWT } from "did-jwt-vc/lib/types";
 import {getSsiAccessToken} from "../../utils/keychain";
+import { sessionTokenSelector } from "../../store/reducers/authentication";
+import { store } from "../../App";
 
 
 class __NetCode {
@@ -127,12 +129,49 @@ class __NetCode {
     }
   }
 
+  public async signIn(username: string, password: string) {
+    const apiUrl = '/auth/signIn';
+    const method = 'POST';
+    const url = this.serverBaseURL + apiUrl;;
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    const body = JSON.stringify({ username, password });
+
+    this.dumpPreFetch('auth/signIn',{url, method, headers, body});
+    try {
+      const rawResponse = await fetch(url, {
+        headers,
+        method,
+        body
+      });
+      
+      const responseBody = await rawResponse.json();
+
+      console.log(`[auth/signIn] raw response:  ${JSON.stringify(rawResponse)}`);
+      console.log(`[auth/signIn] json response:  ${JSON.stringify(responseBody)}`);
+
+      if (rawResponse.status === 201) {
+        return responseBody;
+      } else {
+        throw new Error(`[auth/signIn] Something went wrong ${JSON.stringify(responseBody)}`);
+      }
+
+
+    } catch (err) {
+      console.log('[auth/signIn] errored (string): ', err);
+      console.log('[auth/signIn] errored (object): ' + JSON.stringify(err));
+      return;
+    }
+
+  }
+
   public async signUpDid(didAddress: string) {
     const apiUrl = '/auth/signUp';
     const method = 'GET';
     const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress);
     const headers = new Headers();
-    headers.append('Authorization', `Bearer ${await getSsiAccessToken()}`);
+    const sessionToken = sessionTokenSelector(store.getState());
+    headers.append('Authorization', `Bearer ${sessionToken}`);
     this.dumpPreFetch('auth/signUp',{url, method, headers});
     try {
       const rawResponse = await fetch(url, {
@@ -165,8 +204,9 @@ class __NetCode {
     const method = 'POST';
     const url = this.serverBaseURL + apiUrl;
     const headers = new Headers();
+    const sessionToken = sessionTokenSelector(store.getState());
+    headers.append('Authorization', `Bearer ${sessionToken}`);
     headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${await getSsiAccessToken()}`);
     const body = JSON.stringify({
       signedVIDRequest: signedJWT
     });
@@ -206,6 +246,6 @@ class __NetCode {
 
 }
 
-let NetCode = new __NetCode()
+const NetCode = new __NetCode();
 
-export default NetCode
+export default NetCode;
