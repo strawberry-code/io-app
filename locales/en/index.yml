@@ -299,6 +299,14 @@ profile:
       local_calendar: Local calendar
       birthday_calendar: Birthdays
 ssi:
+  login: 
+    title: "Welcome to\nWallet App"
+    subtitle: Login into Wallet
+    loadingMessage: "Logging in..."
+    success: "Login successful"
+    loginError: "Error during login"
+    fieldError: "You must fill in all fields before logging in."
+    fieldErrorTitle: "Missing fields" 
   title: WALLET
   scanQr: Scan a QR code
   linkText: Visit

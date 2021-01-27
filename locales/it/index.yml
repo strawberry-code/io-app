@@ -301,6 +301,14 @@ profile:
       local_calendar: Calendario locale
       birthday_calendar: Compleanni
 ssi:
+  login: 
+    title: "Benvenuto su Wallet App"
+    subtitle: Accedi al Wallet
+    loadingMessage: "Effettuando il login..."
+    success: "Login effettuato con successo"
+    loginError: "Errore durante il login"
+    fieldError: "Devi compilare tutti i campi prima di effettuare il login"
+    fieldErrorTitle: "Campi mancanti"
   title: WALLET
   scanQr: Scansiona codice QR
   linkText: Visita
