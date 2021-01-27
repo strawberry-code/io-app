@@ -16,12 +16,16 @@ import IdpSelectionScreen from "../screens/authentication/IdpSelectionScreen";
 import LandingScreen from "../screens/authentication/LandingScreen";
 import SpidCIEInformationScreen from "../screens/authentication/SpidCIEInformationScreen";
 import SpidInformationScreen from "../screens/authentication/SpidInformationScreen";
+import SSILoginScreen from "../screens/authentication/SSILoginScreen";
 import TestAuthenticationScreen from "../screens/authentication/TestAuthenticationScreen";
 import MarkdownScreen from "../screens/development/MarkdownScreen";
 import ROUTES from "./routes";
 
 // Routes loaded in production mode
 const productionRouteConfigMap: NavigationRouteConfigMap = {
+  [ROUTES.AUTHENTICATION_SSI_LOGIN]: {
+    screen: SSILoginScreen
+  },
   [ROUTES.AUTHENTICATION_LANDING]: {
     screen: LandingScreen
   },
