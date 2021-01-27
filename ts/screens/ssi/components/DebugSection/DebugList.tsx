@@ -184,8 +184,10 @@ const DebugList: React.FC<Props> = ({ isActive, ...props }) => {
         0,
         6
       )}***`,
-      onPress: () =>
-        clipboardSetStringWithFeedback(DidSingleton.getMnemonicToBeExported()),
+      onPress: () => {
+        clipboardSetStringWithFeedback(DidSingleton.getMnemonicToBeExported());
+        console.log(DidSingleton.getMnemonicToBeExported());
+      },
       isDanger: false
     },
     {
