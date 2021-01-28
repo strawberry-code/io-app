@@ -36,14 +36,17 @@ class __NetCode {
         headers: headers,
         body: JSON.stringify(body)
       })
-      console.log('response status: ' + rawResponse.status)
+      console.log('response status: ', rawResponse.status)
+      if (rawResponse.status !== 200) {
+        throw new Error(JSON.stringify(await rawResponse.json()));
+      }
+      return await rawResponse.json();
     } catch (err) {
       console.log('[doAuthenticatedCallbackUrlFromQr] errored (string): ' + err)
       console.log('[doAuthenticatedCallbackUrlFromQr] errored (object): ' + JSON.stringify(err))
       return false
     }
 
-    return await rawResponse.json()
   }
 
   public async createNewUser(didAddress: string, pushDeviceToken: string | undefined) {
@@ -168,6 +171,7 @@ class __NetCode {
   public async signUpDid(didAddress: string) {
     const apiUrl = '/auth/signUp';
     const method = 'GET';
+    // TODO: DA SISTEMARE CON IL DID ADDRESS VERO
     const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress);
     const headers = new Headers();
     const sessionToken = sessionTokenSelector(store.getState());
@@ -207,8 +211,14 @@ class __NetCode {
     const sessionToken = sessionTokenSelector(store.getState());
     headers.append('Authorization', `Bearer ${sessionToken}`);
     headers.append('Content-Type', 'application/json');
+
+    const notificationToken = await AsyncStorage.getItem('PUSH_TOKEN');
+    const service = Platform.OS === "ios" ? "APN" : "FCM";
+
     const body = JSON.stringify({
-      signedVIDRequest: signedJWT
+      signedVIDRequest: signedJWT,
+      notificationToken,
+      service
     });
 
     this.dumpPreFetch('signChallangeForVID',{url, method, headers, body});
