@@ -28,6 +28,7 @@ import { UserDataProcessingState } from "./userDataProcessing";
 import { UserMetadataState } from "./userMetadata";
 import { WalletState } from "./wallet";
 import { InternalRouteNavigationState } from "./internalRouteNavigation";
+import { SSIState } from "./ssi";
 
 type NetworkState = Readonly<{
   isConnected: boolean;
@@ -63,6 +64,7 @@ export type GlobalState = Readonly<{
   cie: CieState;
   bonus: BonusState;
   internalRouteNavigation: InternalRouteNavigationState;
+  ssi: SSIState;
 }>;
 
 export type PersistedGlobalState = GlobalState & PersistPartial;

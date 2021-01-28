@@ -1,11 +1,10 @@
+/* eslint-disable no-console */
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
 import {
   Picker,
   Form,
   Header,
-  Content,
-  Container,
   Left,
   Button,
   Icon,
@@ -21,14 +20,10 @@ import variables from "../../../theme/variables";
 import { GlobalState } from "../../../store/reducers/types";
 import { Dispatch } from "../../../store/actions/types";
 import I18n from "../../../i18n";
-import { Asset } from "../types";
+import { addNewAssetList, selectAsset } from "../../../store/actions/ssi";
 
-interface AssetListProps {
-  assetList: Array<Asset>;
-  assetSelected: Asset["address"];
-  dispatchAssetList: Dispatch;
-  dispatchAssetSelected: Dispatch;
-}
+type AssetListProps = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
 const AssetListPicker: React.FC<AssetListProps> = ({
   assetList,
@@ -37,7 +32,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
   dispatchAssetSelected
 }) => {
   const userDID = new DID();
-  const ethAddress = userDID.getEthAddress();
+  // const ethAddress = userDID.getEthAddress();
   console.log("userDID ethAddress=", userDID.getEthAddress());
 
   const fetchAssetList = async () => {
@@ -142,10 +137,10 @@ const mapStateToProps = (state: GlobalState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  dispatchAssetList: assetList =>
-    dispatch({ type: "ADD_NEW_ASSET_LIST", payload: assetList }),
-  dispatchAssetSelected: assetAddress =>
-    dispatch({ type: "SELECT_ASSET", payload: assetAddress })
+  dispatchAssetList: (assetList: Array<any>) =>
+    dispatch(addNewAssetList(assetList)),
+  dispatchAssetSelected: (assetAddress: string) =>
+    dispatch(selectAsset(assetAddress))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssetListPicker);

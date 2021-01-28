@@ -2,8 +2,8 @@
  * A reducer for the SSI
  */
 import { getType } from "typesafe-actions";
+import { addNewAssetList, selectAsset } from "../actions/ssi";
 import { Action } from "../actions/types";
-import { GlobalState } from "./types";
 
 export type SSIState = {
   ssiAssetList: Array<any>;
@@ -17,12 +17,12 @@ const INITIAL_STATE: SSIState = {
 
 const reducer = (state: SSIState = INITIAL_STATE, action: Action): SSIState => {
   switch (action.type) {
-    case "ADD_NEW_ASSET_LIST":
+    case getType(addNewAssetList):
       return {
         ...state,
         ssiAssetList: action.payload
       };
-    case "SELECT_ASSET":
+    case getType(selectAsset):
       return {
         ...state,
         assetSelected: action.payload

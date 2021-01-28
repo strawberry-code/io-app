@@ -44,6 +44,7 @@ import { UserDataProcessingActions } from "./userDataProcessing";
 import { UserMetadataActions } from "./userMetadata";
 import { WalletActions } from "./wallet";
 import { InternalRouteNavigationActions } from "./internalRouteNavigation";
+import { SSIActions } from "./ssi";
 
 export type Action =
   | AnalyticsActions
@@ -80,7 +81,8 @@ export type Action =
   | ProfileEmailValidationAction
   | BonusActions
   | BpdActions
-  | AbiActions;
+  | AbiActions
+  | SSIActions;
 
 export type Dispatch = DispatchAPI<Action>;
 
