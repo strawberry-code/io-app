@@ -59,6 +59,12 @@ export const useLogin = () => {
     }
   };
 
+  const hideModal = () => {
+    setSuccess(false);
+    setError(false);
+    setModalVisible(false);
+  };
+
   return {
     success,
     error,
@@ -66,6 +72,6 @@ export const useLogin = () => {
     message,
     loginUser,
     modalVisible,
-    setModalVisible
+    hideModal
   };
 };

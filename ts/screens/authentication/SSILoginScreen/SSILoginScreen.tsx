@@ -28,7 +28,7 @@ const SSILoginScreen = () => {
     message,
     isLoading,
     loginUser,
-    setModalVisible
+    hideModal
   } = useLogin();
 
   const emptyFields = () => {
@@ -141,10 +141,7 @@ const SSILoginScreen = () => {
                   color={variables.brandDanger}
                   name="io-notice"
                 />
-                <ButtonDefaultOpacity
-                  block
-                  onPress={() => setModalVisible(false)}
-                >
+                <ButtonDefaultOpacity block onPress={() => hideModal()}>
                   <Text style={styles.buttonText}>
                     {I18n.t("ssi.shareReqScreen.tryAgainButton")}
                   </Text>
