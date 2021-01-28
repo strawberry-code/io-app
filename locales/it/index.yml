@@ -330,6 +330,7 @@ ssi:
     subtitle: Se hai un file di backup delle tue VCs, puoi recuperarle da qui
     prompt: Per favore, scegli il file di backup delle tue VCs
     google:
+      loginButton: Accedi con Google
       date: "Data:"
       size: "Dimensione:"
       title: Backup delle tue Credenziali Verificate

@@ -328,6 +328,7 @@ ssi:
     subtitle: If you have a VCs backup file, you can restore your VCs from here
     prompt: Please, select you VCs backup file
     google:
+      loginButton: "Sign in with Google"
       date: "Date:"
       size: "Size:"
       title: Backup of yout Verified Credentials

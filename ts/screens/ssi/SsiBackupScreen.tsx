@@ -1,6 +1,5 @@
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
   User
 } from "@react-native-community/google-signin";
@@ -30,6 +29,7 @@ import {
   configureGoogleSignIn
 } from "./googleDriveApi";
 import useBackupModal from "./hooks/useBackupModal";
+import CustomGoogleButton from "./components/CustomGoogleButton";
 
 const styles = StyleSheet.create({
   section: {
@@ -375,12 +375,9 @@ const SsiBackupScreen = () => {
             </>
           )}
           {!isSignedIn && (
-            <GoogleSigninButton
-              size={GoogleSigninButton.Size.Standard}
-              color={GoogleSigninButton.Color.Light}
+            <CustomGoogleButton
               onPress={signIn}
               disabled={isSigninInProgress}
-              style={{ marginTop: 10 }}
             />
           )}
         </View>
