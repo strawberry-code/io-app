@@ -44,12 +44,13 @@ export const useLogin = () => {
       setMessage("You logged in Successfully");
       setMessage(I18n.t("ssi.login.success"));
       setSuccess(true);
+      // NEED A TEST IDP OR THE APP WILL NOT LOGIN AND SAVE TOKEN
+      store.dispatch(idpSelected(testIdp));
+      store.dispatch(loginSuccess(response.access_token as SessionToken));
 
       setTimeout(() => {
         setModalVisible(false);
-        store.dispatch(idpSelected(testIdp));
-        store.dispatch(loginSuccess(response.access_token as SessionToken));
-      }, 2000);
+      }, 1000);
     } catch (e) {
       setMessage(I18n.t("ssi.login.loginError"));
       setIsLoading(false);
