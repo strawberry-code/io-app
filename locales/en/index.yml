@@ -341,6 +341,12 @@ ssi:
       backupButton: Back up
       restoreButton: Restore from Backup
       logout: "Logout Google"
+      backupLoading: "Backing up your credentials"
+      backupSuccess: "Credential Backup successful"
+      backupError: "Error while backing up credentials"
+      importLoading: "Importing Credentials Backup"
+      importSuccess: "Backup Import Successful"
+      importError: "Error while importing the Backup"
   issuer:
     unknown: Unknown
     fields:

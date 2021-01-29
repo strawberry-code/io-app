@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 import { GoogleSignin } from "@react-native-community/google-signin";
 import { useState } from "react";
 import { exportBackup, setApiToken, importBackupData } from "../googleDriveApi";
+import I18n from "../../../i18n";
 
 interface LoadingModalState {
   modalVisible: boolean;
@@ -44,7 +46,7 @@ const useBackupModal = (): ExportBackupModalHook => {
         sharedFail: false
       }
     });
-    setMessage("Facendo Backup delle Credenziali");
+    setMessage(I18n.t("ssi.recoverVCs.google.backupLoading"));
     try {
       const tokens = await GoogleSignin.getTokens();
       setApiToken(tokens.accessToken);
@@ -59,7 +61,7 @@ const useBackupModal = (): ExportBackupModalHook => {
             sharedFail: false
           }
         });
-        setMessage("Backup su Drive avvenuto con Successo");
+        setMessage(I18n.t("ssi.recoverVCs.google.backupSuccess"));
       }, 2000);
     } catch (e) {
       console.log("Couldn't export your Backup on Google Drive:", e);
@@ -72,7 +74,7 @@ const useBackupModal = (): ExportBackupModalHook => {
           sharedFail: true
         }
       });
-      setMessage("Errore durante il Backup delle Credenziali");
+      setMessage(I18n.t("ssi.recoverVCs.google.backupError"));
     }
   };
 
@@ -86,7 +88,7 @@ const useBackupModal = (): ExportBackupModalHook => {
         sharedFail: false
       }
     });
-    setMessage("Importando Backup delle Credenziali");
+    setMessage(I18n.t("ssi.recoverVCs.google.importLoading"));
     try {
       const tokens = await GoogleSignin.getTokens();
       setApiToken(tokens.accessToken);
@@ -101,7 +103,7 @@ const useBackupModal = (): ExportBackupModalHook => {
             sharedFail: false
           }
         });
-        setMessage("Importazione Backup avvenuta con Successo");
+        setMessage(I18n.t("ssi.recoverVCs.google.importSuccess"));
       }, 2000);
     } catch (e) {
       console.log("Couldn't export your Backup on Google Drive:", e);
@@ -114,7 +116,7 @@ const useBackupModal = (): ExportBackupModalHook => {
           sharedFail: true
         }
       });
-      setMessage("Errore durante l'importazione del Backup");
+      setMessage(I18n.t("ssi.recoverVCs.google.importError"));
     }
   };
 
