@@ -21,6 +21,7 @@ import { GlobalState } from "../../../store/reducers/types";
 import { Dispatch } from "../../../store/actions/types";
 import I18n from "../../../i18n";
 import { addNewAssetList, selectAsset } from "../../../store/actions/ssi";
+import * as config from "../../../config";
 
 type AssetListProps = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -31,21 +32,22 @@ const AssetListPicker: React.FC<AssetListProps> = ({
   dispatchAssetList,
   dispatchAssetSelected
 }) => {
+  // "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a5" testing address
   const userDID = new DID();
-  // const ethAddress = userDID.getEthAddress();
+  const ethAddress = userDID.getEthAddress();
   console.log("userDID ethAddress=", userDID.getEthAddress());
 
   const fetchAssetList = async () => {
     try {
       const response = await fetch(
-        "https://tokenization.pub.blockchaincc.ga/api/asset/app/listassets",
+        `${config.apiTokenizationPrefix}/api/asset/app/listassets`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a5"
+            userAddress: ethAddress
           })
         }
       );

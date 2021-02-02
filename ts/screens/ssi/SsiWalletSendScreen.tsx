@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Buffer } from "buffer";
 import React, { useState, useEffect } from "react";
 import {
@@ -22,24 +23,10 @@ import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { DID } from "../../types/DID";
+import { apiTokenizationPrefix } from "../../config";
 import AssetListPicker from "./components/AssetListPicker";
 import { SsiCustomGoBack } from "./components/SsiCustomGoBack";
 import { Asset } from "./types";
-
-const DUMMY_USER_2 = {
-  address: "0x5b9839858b38c3bF19811bcdbEC09Fb95a4e6B54",
-  privateKey: "84a70b263aa545e0f2cfb6cff58380ee3fb761970c1b2ab19461270be4c3f39d"
-};
-
-const DUMMY_USER_3 = {
-  address: "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51",
-  privateKey: "d603b3993036898349156db1b63143c18193d6c93b20ced4f0817cf7f87662d2"
-};
-
-const DUMMY_USER = {
-  address: "0x7506f0045F03cC82c73341A45f190ab9A1a85A93",
-  privateKey: "adac18e2cb203dde7ee4691de0a6d8fb22ca57982cabd334f4bac403794159c2"
-};
 
 interface CreateTXObject {
   userObject: {
@@ -124,7 +111,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
 
     try {
       const responseOne = await fetch(
-        `https://tokenization.pub.blockchaincc.ga/api/user/app/createRawTx`,
+        `${apiTokenizationPrefix}/api/user/app/createRawTx`,
         {
           method: "POST",
           headers: {
@@ -172,7 +159,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
 
       setLoadingMessage(I18n.t("ssi.sendFromWallet.sendingTransaction"));
       const responseTwo = await fetch(
-        `https://tokenization.pub.blockchaincc.ga/api/user/app/sendTx`,
+        `${apiTokenizationPrefix}/api/user/app/sendTx`,
         {
           method: "POST",
           headers: {
@@ -261,7 +248,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                     fontSize: variables.fontSizeBase,
                     width: "80%"
                   }}
-                  returnKeyType='done'
+                  returnKeyType="done"
                   value={recipient}
                 />
                 <TouchableOpacity
@@ -288,7 +275,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                 onChangeText={handleAmount}
                 keyboardType="number-pad"
                 placeholder="0"
-                returnKeyType='done'
+                returnKeyType="done"
                 style={{ width: "100%", fontSize: variables.fontSizeBase }}
               />
             </Item>
@@ -304,10 +291,10 @@ const SsiWalletSendScreen: React.FC<Props> = ({
             }
             void createRawTx(createTxObject);
             setTimeout(() => {
-              setRecipient("")
-              setAmount("")
-            }, 500)
-            navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION)
+              setRecipient("");
+              setAmount("");
+            }, 500);
+            navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
           }}
         >
           <Text style={button.text}>
@@ -331,7 +318,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
                 name="io-complete"
                 size={70}
                 color={variables.brandPrimary}
-                style={{height: 75}}
+                style={{ height: 75 }}
               />
             )}
             {isLoading && <RefreshIndicator />}

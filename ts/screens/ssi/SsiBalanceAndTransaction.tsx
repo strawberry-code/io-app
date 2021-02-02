@@ -16,31 +16,17 @@ import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { GlobalState } from "../../store/reducers/types";
+import { DidSingleton } from "../../types/DID";
+import { apiTokenizationPrefix } from "../../config";
+
 import { Transaction, Asset } from "./types";
 import AssetListPicker from "./components/AssetListPicker";
-import { DidSingleton } from "../../types/DID";
-
-/* Dummy Users
- "0x5b9839858b38c3bf19811bcdbec09fb95a4e6b54"
- '0x7506f0045f03cc82c73341a45f190ab9a1a85a93'
-  0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51
-*/
-//const DUMMY_USER = "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a51";
 
 interface BalanceAndTransactionProps {
   navigation: NavigationComponent;
   ssiAssetList: Array<Asset>;
   assetSelected: Asset["address"];
 }
-
-/*
-const fontRegular = Platform.OS === 'android'? 'TitilliumWeb-Regular': 'TitilliumWeb'
-
-
-const fontBold: TextStyle = Platform.OS === 'android'
-  ? { fontFamily : 'TitilliumWeb-Bold', fontWeight: 'normal'}
-  : { fontFamily: 'Titillium Web', fontWeight: 'bold'}
- */
 
 const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   navigation,
@@ -50,16 +36,13 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
   const [transactionList, setTransactionList] = useState<Array<Transaction>>([]); // prettier-ignore
   const [isLoading, setisLoading] = useState<boolean>(true);
 
-  // console.log('assetList=', assets)
-  //  console.log("transactionList=", transactionList);
-  // console.log("ssiAssetList", ssiAssetList);
   const userAddress = DidSingleton.getEthAddress().toLowerCase();
 
   const fetchTransactionList = async (assetAddress: string | undefined) => {
     setisLoading(true);
     try {
       const response = await fetch(
-        `https://tokenization.pub.blockchaincc.ga/api/transaction/app/list/${assetAddress}`,
+        `${apiTokenizationPrefix}/api/transaction/app/list/${assetAddress}`,
         {
           method: "POST",
           headers: {

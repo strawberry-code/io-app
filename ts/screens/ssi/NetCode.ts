@@ -4,14 +4,13 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { JWT } from "did-jwt-vc/lib/types";
 import {getSsiAccessToken} from "../../utils/keychain";
 import { sessionTokenSelector } from "../../store/reducers/authentication";
+import * as config from '../../config';
 import { store } from "../../App";
 
 
 class __NetCode {
 
-  protocol = 'https://'
-  serverAddress = 'ssi-aria-backend.herokuapp.com'
-  serverBaseURL = this.protocol + this.serverAddress
+  serverBaseURL = config.apiSSIPrefix;
 
   constructor() {
     if (NetCode) {

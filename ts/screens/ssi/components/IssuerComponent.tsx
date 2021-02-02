@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useRef, useEffect } from "react";
 import _ from "lodash";
 import {
@@ -15,6 +16,7 @@ import IconFont from "../../../components/ui/IconFont";
 import I18n from "../../../i18n";
 import { TranslationKeys } from "../../../../locales/locales";
 import { DidSingleton } from "../../../types/DID";
+import { apiSSIPrefix } from "../../../config";
 import { IssuerInfo, IssuerInfoKeys } from "../types";
 
 interface Props {
@@ -40,15 +42,12 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
     const fetchIssuerInfo = async (id: string): void => {
       setIsLoading(true);
       try {
-        const response = await fetch(
-          `https://ssi-aria-backend.herokuapp.com/issuers/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-            }
+        const response = await fetch(`${apiSSIPrefix}/issuers/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
           }
-        );
+        });
         console.log("response from get fetchIssuer", response);
 
         if (response.status === 204) {
