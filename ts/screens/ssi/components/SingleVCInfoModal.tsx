@@ -79,15 +79,19 @@ const SingleVCInfoModal: React.FC<Props> = ({
       return null;
     }
 
+    const fieldName = I18n.t(
+      `ssi.singleVC.fields.${field}` as TranslationKeys
+    ).startsWith("[missing")
+      ? field.charAt(0).toUpperCase() + field.slice(1)
+      : I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys);
+
     const fieldData = !isNaN(new Date(credentialSubject[field]))
       ? format(parse(credentialSubject[field]), "DD/MM/YYYY")
       : credentialSubject[field];
 
     return (
       <>
-        <Text style={vcItem.modalDescription}>
-          {I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys)}:{" "}
-        </Text>
+        <Text style={vcItem.modalDescription}>{fieldName}: </Text>
         <Text style={vcItem.modalInfo}>{fieldData}</Text>
       </>
     );
@@ -165,7 +169,7 @@ const SingleVCModalHeader: React.FC<HeaderProps> = ({ type }) => {
     case "DimensioneImpresa":
       return <Text style={vcItem.modalTitle}>Dimensione Impresa</Text>;
     default:
-      return <Text style={vcItem.modalTitle}>Sconosciuto</Text>;
+      return <Text style={vcItem.modalTitle}>{type[1]}</Text>;
   }
 };
 

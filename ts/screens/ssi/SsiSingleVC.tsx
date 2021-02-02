@@ -121,9 +121,7 @@ const SingleVC: React.FC<Props> = ({ vCredential, onPress, backHome, isSigning, 
   } else {
     // COSA FARE NEL CASO IN CUI NON CORRISPONDE A NESSUNA DI QUESTE VISTE?
     return (
-    <TouchableOpacity onPress={() => alert(JSON.stringify(vCredential))}>
-      <Text>Credenziale Work in Progress. Clicca qui per vederla</Text>
-    </TouchableOpacity>
+    <VCCartaIdentita vCredential={vCredential} onPress={onPress} isSigning={isSigning} backHome={backHome} signRequest={signRequest} />
     )
   }
 
@@ -174,7 +172,7 @@ const VCIdentityCard: React.FC<Props> = ({ vCredential, onPress, isSigning, back
           </View>
           )
         }
-            <Header title="Carta d'identità" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity 
               onPress={() => setModalVisible(!modalVisibile)}
             >
@@ -236,7 +234,7 @@ const VCDimensioneImpresa: React.FC<Props> = ({ vCredential, onPress, isSigning,
           </View>
           )
         }
-            <Header title="Dimensione Impresa" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
             <IconFont
                 name="io-right"
@@ -294,7 +292,7 @@ const VCBachelorDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, si
           </View>
           )
         }
-            <Header title="Bachelor Degree" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
             <IconFont
                 name="io-right"
@@ -352,7 +350,7 @@ const VCMasterDegree: React.FC<Props> = ({ vCredential, onPress, isSigning, sign
           </View>
           )
         }
-            <Header title="Master Degree" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
             <IconFont
                 name="io-right"
@@ -411,7 +409,7 @@ const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signReq
           </View>
           )
         }
-            <Header title="De Minimis" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity onPress={() => setModalVisible(!modalVisibile)}>
             <IconFont
                 name="io-right"
@@ -437,7 +435,17 @@ const VCDeMinimis: React.FC<Props> = ({ vCredential, onPress, isSigning, signReq
   );
 }
 
-const Header: React.FC<{ title: string }> = ({ title }) => (
+const Header = ({ title }) => (
+  <Text style={{
+    color: variables.colorBlack,
+    fontWeight: Platform.OS === 'ios'? 'bold' : 'normal',
+    fontFamily: Platform.OS === 'ios'? 'Titillium Web': 'TitilliumWeb-Bold',
+    textAlign: 'center',
+    fontSize: variables.h3FontSize,
+  }}>{title[1]}</Text>
+)
+
+const HeaderOld: React.FC<{ title: string }> = ({ title }) => (
   <Text style={{
     color: variables.colorBlack,
     fontWeight: Platform.OS === 'ios'? 'bold' : 'normal',
@@ -495,7 +503,7 @@ const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, bac
           </View>
           )
         }
-            <Header title="Carta d'Identità" />
+            <Header title={vCredential.vc.type} />
             <TouchableOpacity 
               onPress={() => setModalVisible(!modalVisibile)}
             >
