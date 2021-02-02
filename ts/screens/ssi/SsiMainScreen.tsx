@@ -79,6 +79,7 @@ import {
 } from "./SsiUtils";
 
 import DebugSection from "./components/DebugSection";
+import CrossMenu from "./components/CrossMenu";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -415,128 +416,6 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
     };
     */
 
-    const windowWidth = Dimensions.get("window").width;
-    const crossMenuSizeFactor = windowWidth * 0.4;
-    const crossBorderWidth = 0.5;
-    const inspectCss = false;
-
-    // define a widely customisable functional component used to draw a touchable item in the cross menu
-    const touchableMenuItem = (
-      left: boolean,
-      right: boolean,
-      top: boolean,
-      bottom: boolean,
-      icon: string,
-      text: string,
-      callback: () => void
-    ) => (
-
-      <TouchableOpacity
-        onPress={callback}
-        style={{
-          width: crossMenuSizeFactor,
-          height: crossMenuSizeFactor,
-          borderColor: inspectCss ? "red" : "#AAAAAA",
-          borderLeftWidth: inspectCss && left ? crossBorderWidth : 0,
-          borderRightWidth: inspectCss && right ? crossBorderWidth : 0,
-          borderBottomWidth: inspectCss && bottom ? crossBorderWidth : 0,
-          borderTopWidth: inspectCss && top ? crossBorderWidth : 0,
-          backgroundColor: inspectCss ? "cyan" : undefined
-        }}
-      >
-          <View
-            style={{
-              flex: 1,
-              //backgroundColor: inspectCss ? "pink" : "#EEEEEE",
-              justifyContent: "center",
-              borderRadius: 100,
-              borderWidth: 0.6,
-              borderColor: customVariables.colorBlack,
-              backgroundColor: "white",
-              shadowColor: "black",
-              shadowOpacity: 0.2,
-              shadowOffset: {
-                width: 0,
-                height: 2
-              },
-              elevation: 3,
-              margin: 15
-            }}
-          >
-            <IconFont
-              style={{textAlign: "center", justifyContent: "center"}}
-              name={icon}
-              size={50}
-            />
-            <Text
-              style={{
-                textAlign: "center",
-                justifyContent: "center",
-                backgroundColor: inspectCss ? "yellow" : undefined,
-                fontSize: 13
-              }}
-            >
-              {text}
-            </Text>
-          </View>
-      </TouchableOpacity>
-
-    );
-
-    // Define a cross menu functional component with four touchable items
-    const crossMenu = () => (
-      <View>
-        <View
-          style={{flex: 1, flexDirection: "row", justifyContent: "center"}}
-        >
-          {touchableMenuItem(
-            false,
-            true,
-            false,
-            true,
-            "io-service-list",
-            I18n.t('ssi.vcslist.button'),
-            async () => {
-              navigation.navigate(ROUTES.SSI_VERIFIED_CREDENTIALS_SCREEN); // devonly: navigator placeholder
-              //alert('clicked A')
-            }
-          )}
-          {touchableMenuItem(
-            true,
-            false,
-            false,
-            true,
-            "io-portafoglio",
-            I18n.t('ssi.balanceAndTransaction.title'),
-            async () => {
-              // await DidSingleton.loadDidFromKeychain()
-              // alert(DidSingleton.getDidAddress())
-              // console.log((await VCstore.getJwts()).forEach(item => {
-              //   console.log(item)
-              // }))
-              navigation.navigate(ROUTES.SSI_WALLET_BALANCE_AND_TRANSACTION);
-            })}
-        </View>
-        <View style={{flex: 1, flexDirection: "row", justifyContent: "center"}}>
-          {touchableMenuItem(false, true, true, false, "inbox-upload", I18n.t('ssi.sendFromWallet.title'), async () => {
-            // await DidSingleton.loadDidFromKeychain()
-            // alert(DidSingleton.getDidAddress())
-            navigation.navigate(ROUTES.SSI_WALLET_SEND_SCREEN);
-
-            // console.log((await VCstore.getJwts()).forEach(item => {
-            //   console.log(item)
-            // }))
-          })}
-          {touchableMenuItem(true, false, true, false, "inbox-download", I18n.t('ssi.receiveIntoWallet.title'), async () => {
-            // VCstore.clearStore()
-            // console.log(await VCstore.getVCs())
-            // const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkZW50aXR5Q2FyZCI6eyJmaXJzdE5hbWUiOiJBbmRyZWEiLCJsYXN0TmFtZSI6IlRhZ2xpYSIsImJpcnRoRGF0ZSI6IjExLzA5LzE5OTUiLCJjaXR5IjoiQ2F0YW5pYSJ9fX0sInN1YiI6ImRpZDpldGhyOjB4RTZDRTQ5ODk4MWI0YmE5ZTgzZTIwOWY4RTAyNjI5NDk0RkMzMWJjOSIsIm5iZiI6MTU2Mjk1MDI4MiwiaXNzIjoiZGlkOmV0aHI6MHhmMTIzMmY4NDBmM2FkN2QyM2ZjZGFhODRkNmM2NmRhYzI0ZWZiMTk4In0.bdOO9TsL3sw4xPR1nJYP_oVcgV-eu5jBf2QrN47AMe-BMZeuQG0kNMDidbgw32CJ58HCm-OyamjsU9246w8xPw'
-            navigation.navigate(ROUTES.SSI_WALLET_RECEIVE_SCREEN);
-          })}
-        </View>
-      </View>
-    );
-
     const qrButtonFooter = () => (
       <ButtonDefaultOpacity
         block={true}
@@ -566,8 +445,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         <ScrollView ref={this.ServiceListRef} style={styles.whiteBg}>
           <NavigationEvents onWillFocus={this.scrollToTop}/>
           <View spacer={true}/>
-
-          {crossMenu()}
+     
+          <CrossMenu />
           <View style={styles.qrButton}>{qrButtonFooter()}</View>
           {false && <View style={styles.qrButton}>{messagesButtonFooter()}</View>}
 
