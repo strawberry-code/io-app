@@ -11,6 +11,26 @@ import {useState} from "react";
 import {clipboardSetStringWithFeedback} from "../../utils/clipboard";
 import I18n from "../../i18n";
 
+
+interface CustomRequestInit extends RequestInit {
+          timeout?: number;
+        }
+
+const fetchWithTimeout = async (resource: RequestInfo, options: CustomRequestInit) => {
+  const { timeout = 8000 } = options;
+  
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal  
+  });
+  clearTimeout(id);
+
+  return response;
+};
+
 const exportVCsIos = async () => {
   let filePath = RNFS.DocumentDirectoryPath + `/${DidSingleton.getEthAddress()}-${formatDateYYYYMMDDhhmmss(new Date())}.txt`
   let payload = await VCstore.getRawJwts()
@@ -241,5 +261,6 @@ export {
   pickSingleFileAndReadItsContent,
   readFile,
   writeFile,
-  copyDidAddress
+  copyDidAddress,
+  fetchWithTimeout
 };
