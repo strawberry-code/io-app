@@ -17,20 +17,20 @@ interface Props {
   navigation: NavigationComponent;
 }
 
-const SsiSuccess: React.FC<Props> = ({ navigation }) => {
+const SsiFailure: React.FC<Props> = ({ navigation }) => {
   const message = navigation.getParam(
     "message",
-    "Operazione completata con successo!" // valore di default
+    "Error occurred: something went wrong!" // valore di default
   );
 
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={[variables.brandPrimaryLight, variables.brandPrimary]}
+        colors={[variables.brandDanger, variables.brandDanger]}
         style={topBox.container}
       >
         <IconFont
-          name="io-complete"
+          name="io-close"
           size={130}
           color={variables.colorWhite}
           style={{ height: 135 }}
@@ -78,7 +78,7 @@ const button = StyleSheet.create({
     paddingHorizontal: "10%",
     marginHorizontal: 30,
     width: "auto",
-    backgroundColor: variables.brandPrimary,
+    backgroundColor: variables.brandDarkGray,
     borderRadius: 5
   },
   text: {
@@ -90,4 +90,4 @@ const button = StyleSheet.create({
   }
 });
 
-export default SsiSuccess;
+export default SsiFailure;
