@@ -361,7 +361,8 @@ ssi:
   singleVC:
     types:
       CartaIdentita: Identity Card
-      DimensioneImpresa:  Dimensions of Enterprise
+      DimensioneImpresa:  Dimensione Impresa
+      ScontoStudenti: Sconto Studenti
     fields:
       firstName: Name
       lastName: Surname

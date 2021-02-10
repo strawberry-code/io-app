@@ -302,7 +302,7 @@ profile:
       birthday_calendar: Compleanni
 ssi:
   login: 
-    title: "Benvenuto su Wallet App"
+    title: "Benvenuto su\nWallet App"
     subtitle: Accedi al Wallet
     loadingMessage: "Effettuando il login..."
     success: "Login effettuato con successo"
@@ -364,6 +364,7 @@ ssi:
     types:
       CartaIdentita: "Carta d'Identita"
       DimensioneImpresa: Dimensione Impresa
+      ScontoStudenti: Sconto Studenti
     fields:
       firstName: Nome
       lastName: Cognome
