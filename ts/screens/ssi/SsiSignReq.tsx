@@ -82,8 +82,18 @@ const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
     console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
 
     setIsLoading(true);
+    
+    let antipanic = true
+    // Antipanic timeout per evitare l'inifinite spinning modal
+    setTimeout(10000, () => {
+      if(antipanic) {
+        // TODO: loggare qui e/o avvisare l'utente che qualcosa non è andato a buon fine
+        setIsLoading(false);
+      }
+    })
 
     let response = await NetCode.doAuthenticatedCallbackUrlFromQr({body: body, url: callback, method: callbackMethod})
+    antipanic = false //
 
     // TODO: Implementare la gestione della risposta della response
 
