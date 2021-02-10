@@ -10,21 +10,21 @@ import {
 import {NavigationComponent} from 'react-navigation';
 import {createVerifiableCredentialJwt, Issuer} from "did-jwt-vc";
 
+import {connect} from "react-redux";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import {RefreshIndicator} from "../../components/ui/RefreshIndicator";
 import I18n from "../../i18n";
 import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import {DidSingleton} from "../../types/DID";
+import {setSsiAccessToken} from "../../utils/keychain";
+import {GlobalState} from "../../store/reducers/types";
+import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
+import IconFont from "../../components/ui/IconFont";
 import {SsiCustomGoBack} from "./components/SsiCustomGoBack";
 import SingleVC from "./SsiSingleVC";
 import {encodeVerifiablePresentation} from "./VerifiablePresentations";
-import {setSsiAccessToken} from "../../utils/keychain";
 import NetCode from "./NetCode";
-import {GlobalState} from "../../store/reducers/types";
-import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
-import {connect} from "react-redux";
-import IconFont from "../../components/ui/IconFont";
 
 interface NavigationProps {
   navigation: NavigationComponent;
@@ -33,75 +33,80 @@ interface NavigationProps {
 type Props = NavigationProps & ReturnType<typeof mapStateToProps>;
 
 const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
-  const [VC, setVC] = useState(undefined)
+  const [VC, setVC] = useState(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  console.log('-------------------------')
+  console.log('-------------------------');
   console.log('Inside SignReq Component', VC);
 
   useEffect(() => {
-    onBoarding()
+    onBoarding();
   }, []);
 
   const onBoarding = () => {
-    const fetchedVC = navigation.state.params.data
-    console.log(`[SsiSignReq]: fetchedVC from navigation: ${JSON.stringify(VC)}`)
-    setVC(fetchedVC)
-  }
+    const fetchedVC = navigation.state.params.data;
+    console.log(`[SsiSignReq]: fetchedVC from navigation: ${JSON.stringify(VC)}`);
+    setVC(fetchedVC);
+  };
 
   const signRequest = async () => {
-    console.log(`firma in corso... ${VC.payload.vc.type}`)
-    let {type, callback, callbackMethod, payload} = VC
+    console.log(`firma in corso... ${VC.payload.vc.type}`);
+    const {type, callback, callbackMethod, payload} = VC;
 
-    console.log('[SsiSignReq]: analizzo dati nel QR:')
-    console.log(`type: ${type}\ncallbackMethod: ${callbackMethod}\ncallback: ${callback}\npayload: ${payload}\n`)
+    console.log('[SsiSignReq]: analizzo dati nel QR:');
+    console.log(`type: ${type}\ncallbackMethod: ${callbackMethod}\ncallback: ${callback}\npayload: ${payload}\n`);
 
-    console.log('[SsiSignReq]: ottengo issuer...')
-    const issuer: Issuer = DidSingleton.getIssuer()
-    console.log('[SsiSignReq]: issuer.did: ' + issuer.did)
+    console.log('[SsiSignReq]: ottengo issuer...');
+    const issuer: Issuer = DidSingleton.getIssuer();
+    console.log('[SsiSignReq]: issuer.did: ' + issuer.did);
 
     let vcJwt;
     try {
-      console.log('payload: ' + JSON.stringify(payload))
-      console.log('issuer: ' + JSON.stringify(issuer))
-      console.log('address: ' + JSON.stringify(DidSingleton.getEthAddress()))
-      console.log('private key: ' + JSON.stringify(DidSingleton.getPrivateKey()))
-      console.log('public key: ' + JSON.stringify(DidSingleton.getPublicKey()))
-      vcJwt = await createVerifiableCredentialJwt(payload, issuer)
-      console.log('signed token: ' + vcJwt)
+      console.log('payload: ' + JSON.stringify(payload));
+      console.log('issuer: ' + JSON.stringify(issuer));
+      console.log('address: ' + JSON.stringify(DidSingleton.getEthAddress()));
+      console.log('private key: ' + JSON.stringify(DidSingleton.getPrivateKey()));
+      console.log('public key: ' + JSON.stringify(DidSingleton.getPublicKey()));
+      vcJwt = await createVerifiableCredentialJwt(payload, issuer);
+      console.log('signed token: ' + vcJwt);
     } catch (e) {
-      console.log(e)
-      alert('codice type QR è sbagliato')
+      console.log(e);
+      alert('codice type QR è sbagliato');
     }
 
     if (vcJwt === undefined) {
-      throw new Error('VC JWT could not be undefined!')
+      throw new Error('VC JWT could not be undefined!');
     }
 
-    let body = {"verifiablePresentation": await encodeVerifiablePresentation([vcJwt])}
-    console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`)
+    const body = {"verifiablePresentation": await encodeVerifiablePresentation([vcJwt])};
+    console.log(`making fetch:\nqr type: ${type}\nmethod: ${callbackMethod}\ncallback: ${callback}\nbody: ${body}`);
 
-    setIsLoading(true);
-    
-    let antipanic = true
-    // Antipanic timeout per evitare l'inifinite spinning modal
-    setTimeout(10000, () => {
-      if(antipanic) {
-        // TODO: loggare qui e/o avvisare l'utente che qualcosa non è andato a buon fine
-        setIsLoading(false);
+    try {
+      setIsLoading(true);
+      
+      const result = await NetCode.doAuthenticatedCallbackUrlFromQr({body, url: callback, method: callbackMethod});
+      
+      if (result) {
+        navigation.navigate(ROUTES.SSI_SUCCESS, {
+          message: 'Credential signed successfully!'
+        });
+      } else {
+        navigation.navigate(ROUTES.SSI_FAILURE, {
+          message: 'Error occurred: Credential could not be signed'
+        });      
       }
-    })
+  
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error)
+      navigation.navigate(ROUTES.SSI_FAILURE, {
+          message: error.message
+        });  
+    }
+    
+    
 
-    let response = await NetCode.doAuthenticatedCallbackUrlFromQr({body: body, url: callback, method: callbackMethod})
-    antipanic = false //
 
-    // TODO: Implementare la gestione della risposta della response
-
-    setIsLoading(false);
-
-    navigation.navigate(ROUTES.SSI_SUCCESS, {
-      message: 'Firma della Credenziale Verificata avvenuta con successo!'
-    });
 
 
     /*
@@ -131,7 +136,7 @@ const SsiSignReq: React.FC<Props> = ({navigation, notificationToken}) => {
         console.error('Error:', error);
       });
      */
-  }
+  };
 
   const VCtoPass = VC ? VC.payload : undefined;
 

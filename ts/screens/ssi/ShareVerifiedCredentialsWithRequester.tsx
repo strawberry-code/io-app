@@ -22,6 +22,8 @@ import {
   NavigationState
 } from "react-navigation";
 import {connect} from "react-redux";
+import {CredentialPayload, JwtCredentialPayload} from "did-jwt-vc";
+import {JWT} from "did-jwt-vc/lib/types";
 import {withLightModalContext} from "../../components/helpers/withLightModalContext";
 import ScreenContent from "../../components/screens/ScreenContent";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
@@ -52,17 +54,16 @@ import {
 } from "../../store/reducers/profile";
 import {GlobalState} from "../../store/reducers/types";
 import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
-import {CredentialPayload, JwtCredentialPayload} from "did-jwt-vc";
 import variables from "../../theme/variables";
-import VCstore from "./VCstore";
-import SingleVC from './SsiSingleVC'
-import {encodeVerifiablePresentation} from "./VerifiablePresentations";
-import {JWT} from "did-jwt-vc/lib/types";
-import NetCode from "./NetCode";
 import {DidSingleton} from "../../types/DID";
 import {getSsiAccessToken, setSsiAccessToken} from "../../utils/keychain";
 import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
 import IconFont from "../../components/ui/IconFont";
+import VCstore from "./VCstore";
+import SingleVC from './SsiSingleVC';
+import {encodeVerifiablePresentation} from "./VerifiablePresentations";
+import NetCode from "./NetCode";
+import { fetchWithTimeout } from "./SsiUtils";
 
 type OwnProps = Readonly<{
   navigation: NavigationScreenProp<NavigationState>;
@@ -78,7 +79,7 @@ type Props = OwnProps &
 type State = {
   isFingerprintAvailable: boolean;
   isFirstLoad: boolean;
-  data: CredentialPayload[];
+  data: Array<CredentialPayload>;
   modalVisible: boolean;
   modalStates: any;
   shareable: boolean;
@@ -123,7 +124,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
   public componentDidMount() {
     // Da usare per test e debug: tre JWT già decodificati da mettere in store
-    //let _data = JSON.parse('[{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Identity card","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1603968221,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Tessera Museo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Diploma Asilo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""}]')
+    // let _data = JSON.parse('[{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Identity card","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1603968221,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Tessera Museo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""},{"exp":1,"vc":{"@context":["https://www.w3.org/2018/credentials/v1"],"type":["VerifiableCredential"],"credentialSubject":{"name":"Diploma Asilo","number":"AB1234567","firstName":"Andrea","lastName":"Taglia","iss":"did:ethr:0x9fe146cd95b4ff6aa039bf075c889e6e47f8bd18"}},"iss":"did:ethr:0xE6CE498981b4ba9e83e209f8E02629494FC31bc9","sub":"did:ethr:0x45","nbf":1605018262,"aud":"","jti":""}]')
   }
 
   /**
@@ -135,19 +136,19 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     console.log(`qrData: ${JSON.stringify(qrData)}`);
 
     // Callback è l'API URL server COMPLETA da invocare quando l'utente decide di codnividere le VCs
-    let callback = qrData.callback;
-    let method = qrData.callbackMethod;
+    const callback = qrData.callback;
+    const method = qrData.callbackMethod;
 
 
     // TODO: questi sarebbero i campi che vengono presi dal QR, quindi cambiare quando lato server hanno finito
     // L'app deve mostrare in questa vita SOLO le VC che hanno uno o più di questi campi
-    let requestedTypes = ['VerifiableCredential']
+    const requestedTypes = ['VerifiableCredential'];
 
     console.log(`\nAPI URL (di tipo ${qrData.callbackMethod}) che verrà chiamata è: ${callback}\n`);
 
-    //let VCs = HardcodedVCs
+    // let VCs = HardcodedVCs
 
-    //callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
+    // callback = "https://ssi-aria-backend.herokuapp.com/authVC?socketid=vThFWqdWQq6goSdgAAAD"
 
     // Carica le VCs da store
     void VCstore.getVCs().then((data): void => {
@@ -179,7 +180,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
       // Aggiorna stato della vista
       // shareable: aggiorna il flag del button blu "YES" (switcha se cliccabile o meno), siccome carico tutte come checkate, ora è su true
       this.setState({
-        data: data,
+        data,
         shareable: true,
         modalVisible: false,
         modalStates: {
@@ -189,7 +190,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
           sharedFail: false
         },
         callbackUrl: callback,
-        method: method,
+        method,
       });
     });
   }
@@ -197,20 +198,20 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
   private salvaAccessTokeNelKeychain = async (response: any) => {
     if (typeof response === 'boolean' && !response) {
       // HTTP Failure
-      console.log('la chiamata http per la sign request è fallita...')
+      console.log('la chiamata http per la sign request è fallita...');
     } else {
       // HTTP Success
       if (response.hasOwnProperty('access_token')) {
         // Nella risposta c'è l'access_token
-        await setSsiAccessToken(response.access_token)
+        await setSsiAccessToken(response.access_token);
       } else {
         // Forma della risposta non corretta
         this.setState({ errorMessage: I18n.locale === "it" ? "Autenticazione fallita" : "Authentication failed" });
-        console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
-        throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`)
+        console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`);
+        throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`);
       }
     }
-  }
+  };
 
   private shareVCnow = async () => {
 
@@ -220,50 +221,54 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     }));
 
     if (this.state.callbackUrl === undefined) {
-      throw new TypeError("La callbackUrl da QR Code non può essere undefined!")
+      throw new TypeError("La callbackUrl da QR Code non può essere undefined!");
     }
 
     if (this.state.method === undefined) {
-      throw new TypeError("Il method della callback ottenuto QR Code non può essere undefined!")
+      throw new TypeError("Il method della callback ottenuto QR Code non può essere undefined!");
     }
 
     const callbackUrl: RequestInfo = this.state.callbackUrl;
     const method: string = this.state.method;
-    let VCsToBeShared: JWT[] = [];
+    const VCsToBeShared: Array<JWT> = [];
 
     this.state.data.forEach(VCinState => {
-      if (VCinState.selected === true) VCsToBeShared.push(VCinState.jwt);
+      if (VCinState.selected === true) {VCsToBeShared.push(VCinState.jwt);}
     });
 
-    let VerifiablePresentationDaCondividere: string
+    let VerifiablePresentationDaCondividere: string;
     try {
-      console.log(`costruisco la Verifiable Presentation da condividere`)
-      VerifiablePresentationDaCondividere = await encodeVerifiablePresentation(VCsToBeShared)
-      console.log(`la Verifiable Presentation è stata costruita`)
+      console.log(`costruisco la Verifiable Presentation da condividere`);
+      VerifiablePresentationDaCondividere = await encodeVerifiablePresentation(VCsToBeShared);
+      console.log(`la Verifiable Presentation è stata costruita`);
     } catch (errVP) {
-      console.error(`impossibile costruire la Verifiable Presentation: ${JSON.stringify(errVP)}`)
-      return
+      console.error(`impossibile costruire la Verifiable Presentation: ${JSON.stringify(errVP)}`);
+      return;
     }
 
-    console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita')
+    console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita');
 
-    let headers = new Headers()
-    headers.append("Content-Type", "application/json")
-    headers.append("authorization", "Bearer " + await getSsiAccessToken())
-    let body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere})
-    console.log('metodo della richiesta (preso da QR): ' + method)
-    console.log('callback url: ' + callbackUrl)
-    console.log('headers: ' + JSON.stringify(headers))
-    console.log('body: ' + body)
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("authorization", "Bearer " + await getSsiAccessToken());
+    const body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere});
+    console.log('metodo della richiesta (preso da QR): ' + method);
+    console.log('callback url: ' + callbackUrl);
+    console.log('headers: ' + JSON.stringify(headers));
+    console.log('body: ' + body);
+
+    try {
+        
+        
+        const response  = await fetchWithTimeout(callbackUrl, {
+                  method: method.toUpperCase(),
+                  headers,
+                  body,
+              });
+        
+        const data = await response.json();
 
 
-    fetch(callbackUrl, {
-      method: method.toUpperCase(),
-      headers: headers,
-      body: body
-    })
-      .then(response => response.json())
-      .then(async data => {
         console.info("Response received:", JSON.stringify(data));
         this.setState({
           modalVisible: true,
@@ -276,25 +281,30 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         });
 
         if(callbackUrl.toString().includes('/auth/VID')) {
-          await this.salvaAccessTokeNelKeychain(data)
+          await this.salvaAccessTokeNelKeychain(data);
         }
 
-        console.log('PROPS: ' + JSON.stringify(this.props))
+        console.log('PROPS: ' + JSON.stringify(this.props));
 
-        let userCreationResponse = await NetCode.createNewUser(DidSingleton.getDidAddress(), this.props.notificationToken)
+        const userCreationResponse = await NetCode.createNewUser(DidSingleton.getDidAddress(), this.props.notificationToken);
 
         if (!userCreationResponse) {
           // Fail
-          console.log('unable to create user in the backned service')
+          console.log('unable to create user in the backned service');
         } else {
           // Success
-          console.log(`l'utente è stato correttamente creato nel servizio backend`)
+          console.log(`l'utente è stato correttamente creato nel servizio backend`);
         }
 
-
-      })
-      .catch(error => {
+      } catch (error) {
         console.info("Error:", error);
+
+        if (error.name === 'AbortError') {
+          this.setState({ errorMessage : "Network Error" });
+        } else {
+          this.setState({ errorMessage : error.message });
+        }
+
         this.setState({
           modalVisible: true,
           modalStates: {
@@ -302,9 +312,11 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
             sharing: false,
             sharedSuccess: false,
             sharedFail: true
-          }
-        });
-      });
+           }
+         });
+      }
+
+      
   };
 
   /**
@@ -324,18 +336,16 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
   // Funzione che verra passata alla SingleVC View per fare il toggle della checkbox
   private checkSelectedVC = (info: JwtCredentialPayload) => {
     //  Aggiorno i data dello stato
-    const updatedData = this.state.data.map((item, index) => {
-      return (index === info.index)
+    const updatedData = this.state.data.map((item, index) => (index === info.index)
         ? {...item, selected: !item.selected}
-        : item
-    })
+        : item);
 
     // Cerca se ci sono VC selezionati, altrimenti ritorna undefined
-    const isSharable = updatedData.find(item => item.selected === true)
+    const isSharable = updatedData.find(item => item.selected === true);
 
     // Aggiorna la vista della componente
     this.setState({data: updatedData, shareable: Boolean(isSharable)});
-  }
+  };
 
   /**
    * Genera la vista di una singola VC (functional component passata alla FlatList)
@@ -343,16 +353,16 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
    */
   private renderItem = (info: ListRenderItemInfo<JwtCredentialPayload>) => {
     const VC = info.item;
-    //console.log(JSON.stringify(VC))
+    // console.log(JSON.stringify(VC))
 
-    console.log('renderizzazione di una VC: ' + VC.vc.type.toString())
+    console.log('renderizzazione di una VC: ' + VC.vc.type.toString());
     console.log('info.item=', info.item);
-    //return <Text>Prova</Text>;
+    // return <Text>Prova</Text>;
     return (
       <SingleVC key={info.item.sub} vCredential={info.item} onPress={() => this.checkSelectedVC(info)}/>
-    )
+    );
 
-  }
+  };
 
   public render() {
 
@@ -388,7 +398,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
               disabled={!this.state.shareable}
               onPress={() => {
                 console.log(this.state.shareable);
-                if (!this.state.shareable) return;
+                if (!this.state.shareable) {return;}
                 this.setState({
                   modalStates: {
                     showPrompt: false,
@@ -472,7 +482,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
                           sharedFail: false
                         }
                       });
-                      this.props.navigateToSsiHome()
+                      this.props.navigateToSsiHome();
                     }}
                   >
                     <Text style={styles.buttonText}>

@@ -6,6 +6,7 @@ import {getSsiAccessToken} from "../../utils/keychain";
 import { sessionTokenSelector } from "../../store/reducers/authentication";
 import * as config from '../../config';
 import { store } from "../../App";
+import { fetchWithTimeout } from "./SsiUtils";
 
 
 class __NetCode {
@@ -30,17 +31,22 @@ class __NetCode {
 
     this.dumpPreFetch('doAuthenticatedCallbackUrlFromQr', {url, method, headers, body})
     try {
-      rawResponse = await fetch(url, {
+      rawResponse = await fetchWithTimeout(url, {
         method: method.toUpperCase(),
         headers: headers,
         body: JSON.stringify(body)
-      })
+      });
       console.log('response status: ', rawResponse.status)
       if (rawResponse.status !== 200) {
         throw new Error(JSON.stringify(await rawResponse.json()));
       }
       return await rawResponse.json();
     } catch (err) {
+
+      if (err.name === 'AbortError') {
+        throw new Error('Network error occurred.');
+      }
+
       console.log('[doAuthenticatedCallbackUrlFromQr] errored (string): ' + err)
       console.log('[doAuthenticatedCallbackUrlFromQr] errored (object): ' + JSON.stringify(err))
       return false
