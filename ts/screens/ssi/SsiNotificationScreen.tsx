@@ -204,9 +204,7 @@ const NotificationTitle: React.FC<{ type: string }> = ({ type }) => {
         </Text>
       );
     default:
-      return (
-        <Text style={styles.notificationTitle}>Credenziale Sconosciuta</Text>
-      );
+      return <Text style={styles.notificationTitle}>{type}</Text>;
   }
 };
 

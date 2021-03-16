@@ -208,7 +208,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
         // Forma della risposta non corretta
         this.setState({ errorMessage: I18n.locale === "it" ? "Autenticazione fallita" : "Authentication failed" });
         console.log(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`);
-        throw new TypeError(`[signRequest] errored: mi aspettavo un <access_token> nella risposta, ma non l'ho trovato...`);
+        throw new TypeError(I18n.locale === "it" ? "Autenticazione fallita" : "Authentication failed");
       }
     }
   };

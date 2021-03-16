@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Text, View, H3 } from "native-base";
 import { ActivityIndicator, Alert, Modal, StyleSheet } from "react-native";
 import { FiscalCode } from "italia-ts-commons/lib/strings";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 
 import { LabelledItem } from "../../../components/LabelledItem";
 import StyledIconFont from "../../../components/ui/IconFont";
@@ -12,12 +14,15 @@ import variables from "../../../theme/variables";
 
 import { useLogin } from "../../../utils/hooks/useLogin";
 
+import { navigateToIdpSelectionScreenAction } from "../../../store/actions/navigation";
 import ContainerLogin from "./ContainerLogin";
 
 const checkUsernameValid = (username: string): boolean =>
   FiscalCode.decode(username).isRight();
 
-const SSILoginScreen = () => {
+type Props = ReturnType<typeof mapDispatchToProps>;
+
+const SSILoginScreen: React.FC<Props> = ({ navigateToIdpSelection }) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -69,7 +74,14 @@ const SSILoginScreen = () => {
           </ButtonDefaultOpacity>
         }
         buttonSecondary={
-          <ButtonDefaultOpacity block lightText icon disabled>
+          <ButtonDefaultOpacity
+            disabled
+            block
+            lightText
+            icon
+            delayPressIn={0}
+            onPress={() => navigateToIdpSelection()}
+          >
             <Text>{I18n.t("authentication.landing.loginSpid")}</Text>
           </ButtonDefaultOpacity>
         }
@@ -155,7 +167,11 @@ const SSILoginScreen = () => {
   );
 };
 
-export default SSILoginScreen;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  navigateToIdpSelection: () => dispatch(navigateToIdpSelectionScreenAction)
+});
+
+export default connect(undefined, mapDispatchToProps)(SSILoginScreen);
 
 const styles = StyleSheet.create({
   bgOpacity: {

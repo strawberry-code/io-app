@@ -60,37 +60,38 @@ const handleNotification = (notification: typeof PushNotification) => {
     console.log(`⚠️ attenzione: il tipo di notifica push SSI (${ssiPushType}) non è ancora gestito`);
   }
 
-  const maybeMessageId = fromEither(
-    NotificationPayload.decode(notification)
-  ).chain(payload =>
-    fromNullable(payload.message_id).alt(
-      fromNullable(payload.data).mapNullable(_ => _.message_id)
-    )
-  );
+  // Disabling IO APP Push Notification
+  // const maybeMessageId = fromEither(
+  //   NotificationPayload.decode(notification)
+  // ).chain(payload =>
+  //   fromNullable(payload.message_id).alt(
+  //     fromNullable(payload.data).mapNullable(_ => _.message_id)
+  //   )
+  // );
+  
+  // maybeMessageId.map(messageId => {
+  //   // We just received a push notification about a new message
+  //   if (notification.foreground) {
+  //     // The App is in foreground so just refresh the messages list
+  //     store.dispatch(loadMessages.request());
+  //   } else {
+  //     // The App was closed/in background and has been now opened clicking
+  //     // on the push notification.
+  //     // Save the message id of the notification in the store so the App can
+  //     // navigate to the message detail screen as soon as possible (if
+  //     // needed after the user login/insert the unlock code)
+  //     store.dispatch(
+  //       updateNotificationsPendingMessage(
+  //         messageId,
+  //         notification.foreground
+  //       )
+  //     );
 
-  maybeMessageId.map(messageId => {
-    // We just received a push notification about a new message
-    if (notification.foreground) {
-      // The App is in foreground so just refresh the messages list
-      store.dispatch(loadMessages.request());
-    } else {
-      // The App was closed/in background and has been now opened clicking
-      // on the push notification.
-      // Save the message id of the notification in the store so the App can
-      // navigate to the message detail screen as soon as possible (if
-      // needed after the user login/insert the unlock code)
-      store.dispatch(
-        updateNotificationsPendingMessage(
-          messageId,
-          notification.foreground
-        )
-      );
-
-      // finally, refresh the message list to start loading the content of
-      // the new message
-      store.dispatch(loadMessages.request());
-    }
-  });
+  //     // finally, refresh the message list to start loading the content of
+  //     // the new message
+  //     store.dispatch(loadMessages.request());
+  //   }
+  // });
 
   // On iOS we need to call this when the remote notification handling is complete
   notification.finish(PushNotificationIOS.FetchResult.NoData);

@@ -1058,7 +1058,7 @@ wallet:
   chooseMethod: Select the desired method
   QRtoPay:
     chooser: Pick image from gallery
-    wrongQrCode: Not a pagoPA QR Code!
+    wrongQrCode: Not a SSI QR Code!
     byCameraTitle: Notice QR Code
     cameraUsageInfo: Capture the QR Code on the payment notice with the camera, or
       manually insert the transaction-related data (IUV and the entity/company code).

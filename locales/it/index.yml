@@ -1084,7 +1084,7 @@ wallet:
   chooseMethod: Scegli il metodo che preferisci
   QRtoPay:
     chooser: Carica immagine dalla galleria
-    wrongQrCode: Non è un QR Code pagoPA!
+    wrongQrCode: Non è un QR Code SSI!
     byCameraTitle: QR Code avviso
     cameraUsageInfo:
       Inquadra il QR Code che trovi nell'avviso con la fotocamera, oppure

@@ -85,9 +85,12 @@ const SingleVCInfoModal: React.FC<Props> = ({
       ? field.charAt(0).toUpperCase() + field.slice(1)
       : I18n.t(`ssi.singleVC.fields.${field}` as TranslationKeys);
 
-    const fieldData = !isNaN(new Date(credentialSubject[field]))
-      ? format(parse(credentialSubject[field]), "DD/MM/YYYY")
-      : credentialSubject[field];
+    const fieldData =
+      !isNaN(new Date(credentialSubject[field])) &&
+      field !== "valore" &&
+      field !== "value"
+        ? format(parse(credentialSubject[field]), "DD/MM/YYYY")
+        : credentialSubject[field];
 
     return (
       <>
