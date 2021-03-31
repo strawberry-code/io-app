@@ -250,7 +250,7 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
-    headers.append("authorization", "Bearer " + await getSsiAccessToken());
+    // headers.append("authorization", "Bearer " + await getSsiAccessToken());
     const body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere});
     console.log('metodo della richiesta (preso da QR): ' + method);
     console.log('callback url: ' + callbackUrl);

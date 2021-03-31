@@ -29,7 +29,10 @@ interface Props {
     status: "error" | "completed" | "",
     isWaiting: boolean
   ) => void;
-  generateVC: (kind?: "generate" | "recover") => Promise<void>;
+  generateVC: (options: {
+    kind?: "generate" | "recover";
+    overWriteDID?: boolean;
+  }) => Promise<void>;
 }
 
 const RecoverIdentityModal: React.FC<Props> = ({
@@ -82,7 +85,7 @@ const RecoverIdentityModal: React.FC<Props> = ({
         false
       );
 
-      await generateVC("recover");
+      await generateVC({ kind: "recover" });
 
       setTimeout(() => createDIDSuccess(), 2000);
     } catch (e) {

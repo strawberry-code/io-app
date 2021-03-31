@@ -25,7 +25,7 @@ class __NetCode {
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
-    headers.append('Authorization', 'Bearer ' + <string>await getSsiAccessToken())
+   // headers.append('Authorization', 'Bearer ' + <string>await getSsiAccessToken())
 
     let rawResponse
 
@@ -173,11 +173,11 @@ class __NetCode {
 
   }
 
-  public async signUpDid(didAddress: string) {
+  public async signUpDid(didAddress: string, overWriteDID?: boolean) {
     const apiUrl = '/auth/signUp';
     const method = 'GET';
-    // TODO: DA SISTEMARE CON IL DID ADDRESS VERO
-    const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress);
+    const overWriteParam = overWriteDID ? '&overwrite=true' : '';
+    const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress) + overWriteParam;
     const headers = new Headers();
     const sessionToken = sessionTokenSelector(store.getState());
     headers.append('Authorization', `Bearer ${sessionToken}`);
@@ -193,17 +193,20 @@ class __NetCode {
       console.log(`[auth/signUp] raw response:  ${JSON.stringify(rawResponse)}`);
       console.log(`[auth/signUp] json response:  ${JSON.stringify(responseBody)}`);
 
+      if (rawResponse.status === 409) {
+        throw new Error(`[auth/signUp] User has already a DID`);
+      }
+
       if (rawResponse.status === 200) {
         return responseBody;
       } else {
         throw new Error(`[auth/signUp] Something went wrong ${JSON.stringify(responseBody)}`);
       }
 
-
     } catch (err) {
       console.log('[auth/signUp] errored (string): ', err);
       console.log('[auth/signUp] errored (object): ' + JSON.stringify(err));
-      return;
+      throw new Error(err.message);
     }
 
   }

@@ -30,7 +30,12 @@ import {
 import RecoverIdentityModal from "./RecoverIdentityModal";
 import PassPhraseWordList from "./components/PassPhraseWordList";
 
-type ResultStatus = "completed" | "error" | "show_recovery_key" | "";
+type ResultStatus =
+  | "completed"
+  | "error"
+  | "show_recovery_key"
+  | "conflictError"
+  | "";
 
 type Props = ReturnType<typeof mapDispatchToProps> &
   ReturnType<typeof mapStateToProps>;
@@ -137,7 +142,11 @@ const DidSetterScreen: React.FC<Props> = ({
     }
   };
 
-  const generateVC = async (kind?: "generate" | "recover") => {
+  const generateVC = async (options: {
+    kind?: "generate" | "recover";
+    overWriteDID?: boolean;
+  }) => {
+    const { kind, overWriteDID } = options;
     try {
       const generatingString =
         kind === "generate"
@@ -153,7 +162,7 @@ const DidSetterScreen: React.FC<Props> = ({
 
       const didAddress = DidSingleton.getDidAddress();
 
-      const signUpResponse = await NetCode.signUpDid(didAddress);
+      const signUpResponse = await NetCode.signUpDid(didAddress, overWriteDID);
 
       const signedJWT = await createVCWithChallengeMessage(signUpResponse);
 
@@ -173,6 +182,18 @@ const DidSetterScreen: React.FC<Props> = ({
       setTimeout(() => createDIDSuccess(), 2000);
     } catch (e) {
       console.error("Credenziale verificata non generata", e);
+      console.log("error message", e.message);
+
+      if (e.message.includes("User has already a DID")) {
+        changeLoadingStates(
+          true,
+          "You already have a DID",
+          "conflictError",
+          false
+        );
+        return;
+      }
+
       const generationErrorString =
         kind === "generate"
           ? I18n.t("ssi.onboarding.generatingVCError")
@@ -262,7 +283,7 @@ const DidSetterScreen: React.FC<Props> = ({
             }
           >
             <Text style={loading.stateText}>{loadingMessage}</Text>
-            {result === "error" && (
+            {(result === "error" || result === "conflictError") && (
               <IconFont
                 name="io-error"
                 size={70}
@@ -286,7 +307,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 <PassPhraseWordList passPhrase={recoveryKey} />
                 <TouchableOpacity
                   style={loadingButton.container}
-                  onPress={() => generateVC("generate")}
+                  onPress={() => generateVC({ kind: "generate" })}
                 >
                   <Text style={loadingButton.textSmall}>
                     {I18n.t("global.buttons.continue")}
@@ -302,6 +323,25 @@ const DidSetterScreen: React.FC<Props> = ({
               >
                 <Text style={loadingButton.text}>Riprova</Text>
               </TouchableOpacity>
+            )}
+            {!isLoading && result === "conflictError" && (
+              <>
+                <TouchableOpacity
+                  style={loadingButton.container}
+                  onPress={() =>
+                    generateVC({ kind: "generate", overWriteDID: true })
+                  }
+                >
+                  <Text style={loadingButton.text}>Overwrite DID</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={loadingButton.container}
+                  onPress={() => setLoadingVisible(false)}
+                >
+                  <Text style={loadingButton.text}>Cancel</Text>
+                </TouchableOpacity>
+              </>
             )}
           </View>
         </View>
