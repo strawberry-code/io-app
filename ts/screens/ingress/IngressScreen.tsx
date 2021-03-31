@@ -81,7 +81,7 @@ function mapStateToProps(state: GlobalState) {
   return {
     hasSessionToken: maybeSessionToken !== undefined,
     hasSessionInfo: maybeSessionInfo.isSome(),
-    hasProfile: potProfile !== null,
+    hasProfile: pot.isSome(potProfile),
     isProfileEnabled:
       pot.isSome(potProfile) &&
       potProfile.value.has_profile &&
