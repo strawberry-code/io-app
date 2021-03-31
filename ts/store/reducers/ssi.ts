@@ -22,6 +22,7 @@ const reducer = (state: SSIState = INITIAL_STATE, action: Action): SSIState => {
         ...state,
         ssiAssetList: action.payload
       };
+
     case getType(selectAsset):
       return {
         ...state,

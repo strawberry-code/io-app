@@ -14,6 +14,12 @@ import { PublicSession } from "../../../definitions/backend/PublicSession";
 import { IdentityProvider } from "../../models/IdentityProvider";
 import { SessionToken } from "../../types/SessionToken";
 
+export type AccessAndRefreshToken = {
+  access_token: SessionToken;
+  refresh_token: SessionToken;
+  expires_in: number;
+};
+
 export type LogoutOption = {
   keepUserData: boolean;
 };
@@ -44,8 +50,12 @@ export const idpLoginUrlChanged = createStandardAction(
 )<{ url: string }>();
 
 export const loginSuccess = createStandardAction("LOGIN_SUCCESS")<
-  SessionToken
+  AccessAndRefreshToken
 >();
+
+export const loginSuccessWithoutGrantToken = createStandardAction(
+  "LOGIN_SUCCESS_NO_GRANT_TOKEN"
+)<SessionToken>();
 
 export const loginFailure = createStandardAction("LOGIN_FAILURE")<Error>();
 
@@ -75,6 +85,18 @@ export const resetAuthenticationState = createStandardAction(
   "RESET_AUTHENTICATION_STATE"
 )();
 
+export const startRefreshingTokens = createStandardAction(
+  "REFRESH_TOKENS_START"
+)();
+
+export const refreshAuthenticationTokens = createStandardAction(
+  "REFRESH_SESSION_AND_REFRESH_TOKENS"
+)<AccessAndRefreshToken>();
+
+export const refreshAuthenticationGrantToken = createStandardAction(
+  "REFRESH_GRANT_TOKEN"
+)<SessionToken>();
+
 export const checkCurrentSession = createAsyncAction(
   "CHECK_CURRENT_SESSION_REQUEST",
   "CHECK_CURRENT_SESSION_SUCCESS",
@@ -90,10 +112,14 @@ export type AuthenticationActions =
   | ActionType<typeof idpLoginUrlChanged>
   | ActionType<typeof testLoginRequest>
   | ActionType<typeof loginSuccess>
+  | ActionType<typeof loginSuccessWithoutGrantToken>
   | ActionType<typeof loginFailure>
   | ActionType<typeof logoutRequest>
   | ActionType<typeof logoutSuccess>
   | ActionType<typeof logoutFailure>
+  | ActionType<typeof startRefreshingTokens>
+  | ActionType<typeof refreshAuthenticationTokens>
+  | ActionType<typeof refreshAuthenticationGrantToken>
   | ActionType<typeof sessionInformationLoadSuccess>
   | ActionType<typeof sessionInformationLoadFailure>
   | ActionType<typeof checkCurrentSession>
