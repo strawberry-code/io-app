@@ -30,6 +30,7 @@ import {
   idpSelected,
   loginFailure,
   loginSuccess,
+  loginSuccessWithoutGrantToken,
   logoutFailure,
   logoutSuccess,
   sessionExpired,
@@ -302,6 +303,7 @@ const trackAction = (mp: NonNullable<typeof mixpanel>) => (
     case getType(analyticsAuthenticationStarted):
     case getType(analyticsAuthenticationCompleted):
     case getType(loginSuccess):
+    case getType(loginSuccessWithoutGrantToken):
     case getType(sessionInformationLoadSuccess):
     case getType(sessionExpired):
     case getType(sessionInvalid):

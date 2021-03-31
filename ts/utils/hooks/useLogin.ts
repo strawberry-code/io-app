@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { store } from "../../App";
 import NetCode from "../../screens/ssi/NetCode";
-import { idpSelected, loginSuccess } from "../../store/actions/authentication";
+import {
+  idpSelected,
+  loginSuccess,
+  loginSuccessWithoutGrantToken
+} from "../../store/actions/authentication";
 import { SessionToken } from "../../types/SessionToken";
 import I18n from "../../i18n";
 import { IdentityProvider } from "../../models/IdentityProvider";
@@ -17,6 +21,7 @@ const testIdp: IdentityProvider = {
 };
 
 // const testSessionToken: SessionToken = "ABCDEF12345";
+const NO_SPID_LOGIN = "NO_SPID_LOGIN";
 
 export const useLogin = () => {
   const [success, setSuccess] = useState<boolean>(false);
@@ -46,7 +51,16 @@ export const useLogin = () => {
       setSuccess(true);
       // NEED A TEST IDP OR THE APP WILL NOT LOGIN AND SAVE TOKEN
       store.dispatch(idpSelected(testIdp));
-      store.dispatch(loginSuccess(response.access_token as SessionToken));
+      store.dispatch(
+        loginSuccess({
+          access_token: response.access_token,
+          refresh_token: NO_SPID_LOGIN as SessionToken,
+          expires_in: 60
+        })
+      );
+      store.dispatch(
+        loginSuccessWithoutGrantToken(NO_SPID_LOGIN as SessionToken)
+      );
 
       setTimeout(() => {
         setModalVisible(false);

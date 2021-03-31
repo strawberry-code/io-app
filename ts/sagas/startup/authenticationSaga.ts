@@ -5,7 +5,7 @@ import {
   analyticsAuthenticationCompleted,
   analyticsAuthenticationStarted
 } from "../../store/actions/analytics";
-import { loginSuccess } from "../../store/actions/authentication";
+import { loginSuccessWithoutGrantToken } from "../../store/actions/authentication";
 import { resetToAuthenticationRoute } from "../../store/actions/navigation";
 import { SessionToken } from "../../types/SessionToken";
 import { stopCieManager, watchCieAuthenticationSaga } from "../cie";
@@ -28,8 +28,8 @@ export function* authenticationSaga(): Generator<Effect, SessionToken, any> {
 
   // Wait until the user has successfully logged in with SPID
   // FIXME: show an error on LOGIN_FAILED?
-  const action: ActionType<typeof loginSuccess> = yield take(
-    getType(loginSuccess)
+  const action: ActionType<typeof loginSuccessWithoutGrantToken> = yield take(
+    getType(loginSuccessWithoutGrantToken)
   );
 
   yield cancel(watchCieAuthentication);

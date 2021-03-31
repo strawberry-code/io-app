@@ -74,6 +74,10 @@ export type IdentificationState = {
 
 export type PersistedIdentificationState = IdentificationState & PersistPartial;
 
+export const isIdentificationStarted = (
+  state: IdentificationProgressState
+): state is IdentificationStartedState => state.kind === "started";
+
 const INITIAL_PROGRESS_STATE: IdentificationUnidentifiedState = {
   kind: "unidentified"
 };

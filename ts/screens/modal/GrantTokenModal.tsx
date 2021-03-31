@@ -1,46 +1,37 @@
-import { fromNullable, none } from "fp-ts/lib/Option";
-import Instabug from "instabug-reactnative";
+import { fromNullable } from "fp-ts/lib/Option";
 import * as pot from "italia-ts-commons/lib/pot";
-import { Text, View } from "native-base";
+import { Text, View, Button } from "native-base";
 import * as React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, Modal } from "react-native";
 import { WebView } from "react-native-webview";
 import { WebViewNavigation } from "react-native-webview/lib/WebViewTypes";
-import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 import brokenLinkImage from "../../../img/broken-link.png";
-import { instabugLog, TypeLogs } from "../../boot/configureInstabug";
 import ButtonDefaultOpacity from "../../components/ButtonDefaultOpacity";
 import { IdpSuccessfulAuthentication } from "../../components/IdpSuccessfulAuthentication";
 import LoadingSpinnerOverlay from "../../components/LoadingSpinnerOverlay";
-import BaseScreenComponent from "../../components/screens/BaseScreenComponent";
-import IdpCustomContextualHelpContent from "../../components/screens/IdpCustomContextualHelpContent";
-import Markdown from "../../components/ui/Markdown";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import I18n from "../../i18n";
 import {
-  idpLoginUrlChanged,
   loginFailure,
-  loginSuccess,
-  loginSuccessWithoutGrantToken,
-  AccessAndRefreshToken
+  AccessAndRefreshToken,
+  refreshAuthenticationGrantToken,
+  refreshAuthenticationTokens
 } from "../../store/actions/authentication";
 import { Dispatch } from "../../store/actions/types";
 import {
   isLoggedIn,
-  isLoggedOutWithIdp,
-  selectedIdentityProviderSelector,
-  isLoggedInWithoutGrantToken
+  isRefreshing,
+  sessionTokenSelector,
+  isLoggedInAndRefreshingTokens,
+  isLoggedInAndRefreshingGrantToken
 } from "../../store/reducers/authentication";
-import { idpContextualHelpDataFromIdSelector } from "../../store/reducers/content";
 import { GlobalState } from "../../store/reducers/types";
 import { SessionToken } from "../../types/SessionToken";
-import { getIdpLoginUri, onLoginUriChanged, getToken } from "../../utils/login";
-import { getSpidErrorCodeDescription } from "../../utils/spidErrorCode";
+import { onLoginUriChanged, getToken } from "../../utils/login";
 import { getUrlBasepath } from "../../utils/url";
 
-type Props = NavigationScreenProps &
-  ReturnType<typeof mapStateToProps> &
+type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
 enum ErrorType {
@@ -98,17 +89,20 @@ const styles = StyleSheet.create({
   }
 });
 
-/**
- * A screen that allows the user to login with an IDP.
- * The IDP page is opened in a WebView
- */
-class IdpLoginScreen extends React.Component<Props, State> {
+class GrantTokenModal extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       requestState: pot.noneLoading,
-      loginUri: getIdpLoginUri()
+      loginUri: `https://api.lispa.it/lispaauthenticationendpoint/authpin.do?redirect_uri=http://localhost&friendlyName=SISSMobile&Authorization=${props.accessToken}`
     };
+  }
+
+  componentDidMount() {
+    console.log("MOUNTED GRANT TOKEN MODAL", this.state.loginUri);
+    this.updateUrl(
+      `https://api.lispa.it/lispaauthenticationendpoint/authpin.do?redirect_uri=http://localhost&friendlyName=SISSMobile&Authorization=${this.props.accessToken}`
+    );
   }
 
   private updateLoginTrace = (url: string): void => {
@@ -129,14 +123,6 @@ class IdpLoginScreen extends React.Component<Props, State> {
     this.props.dispatchLoginFailure(
       new Error(`login failure with code ${errorCode || "n/a"}`)
     );
-    const logText = fromNullable(errorCode).fold(
-      "login failed with no error code available",
-      ec =>
-        `login failed with code (${ec}) : ${getSpidErrorCodeDescription(ec)}`
-    );
-
-    instabugLog(logText, TypeLogs.ERROR, "login");
-    Instabug.appendTags([loginFailureTag]);
     this.setState({
       requestState: pot.noneError(ErrorType.LOGIN_ERROR),
       errorCode
@@ -144,9 +130,7 @@ class IdpLoginScreen extends React.Component<Props, State> {
   };
 
   private handleLoginSuccess = (grantToken: SessionToken) => {
-    instabugLog(`login success`, TypeLogs.DEBUG, "login");
-    Instabug.resetTags();
-    this.props.dispatchLoginSuccessWithoutGrantToken(grantToken);
+    this.props.dispatchRefreshGrantToken(grantToken);
   };
 
   private handleGettingSessionTokens = async (authorizationCode: {
@@ -155,7 +139,7 @@ class IdpLoginScreen extends React.Component<Props, State> {
   }) => {
     try {
       const tokensInfo = await getToken(authorizationCode);
-      this.props.dispatchLoginSuccess(tokensInfo);
+      this.props.dispatchRefreshGrantToken(tokensInfo);
       this.updateUrl(
         `https://api.lispa.it/lispaauthenticationendpoint/authpin.do?redirect_uri=http://localhost&friendlyName=SISSMobile&Authorization=${tokensInfo.access_token}`
       );
@@ -168,12 +152,10 @@ class IdpLoginScreen extends React.Component<Props, State> {
     this.setState({ requestState: pot.noneLoading });
 
   private handleNavigationStateChange = (event: WebViewNavigation): void => {
-    console.log("event URL =", event.url);
+    console.log(event.url);
     if (event.url) {
       const urlChanged = getUrlBasepath(event.url);
-      console.log("urlChanged =", urlChanged);
       if (urlChanged !== this.state.loginTrace) {
-        this.props.dispatchIdpLoginUrlChanged(urlChanged);
         this.updateLoginTrace(urlChanged);
       }
     }
@@ -231,7 +213,6 @@ class IdpLoginScreen extends React.Component<Props, State> {
 
           <View style={styles.errorButtonsContainer}>
             <ButtonDefaultOpacity
-              onPress={this.props.navigation.goBack}
               style={styles.cancelButtonStyle}
               block={true}
               light={true}
@@ -255,50 +236,36 @@ class IdpLoginScreen extends React.Component<Props, State> {
     return null;
   };
 
-  get contextualHelp() {
-    const { selectedIdpTextData } = this.props;
-
-    if (selectedIdpTextData.isNone()) {
-      return {
-        title: I18n.t("authentication.idp_login.contextualHelpTitle"),
-        body: () => (
-          <Markdown>
-            {I18n.t("authentication.idp_login.contextualHelpContent")}
-          </Markdown>
-        )
-      };
-    }
-    const idpTextData = selectedIdpTextData.value;
-    return IdpCustomContextualHelpContent(idpTextData);
-  }
-
   public render() {
     const {
-      loggedOutWithIdpAuth,
-      loggedInAuth,
-      loggedInWithoutGrantToken
+      loggedInAndRefreshingTokens,
+      loggedInAndRefreshingGrantToken,
+      loggedInAuth
     } = this.props;
     const hasError = pot.isError(this.state.requestState);
 
     if (loggedInAuth) {
-      return <IdpSuccessfulAuthentication />;
+      return (
+        <Modal>
+          <IdpSuccessfulAuthentication />
+        </Modal>
+      );
     }
 
-    if (!loggedOutWithIdpAuth && !loggedInWithoutGrantToken) {
+    if (!loggedInAndRefreshingTokens && !loggedInAndRefreshingGrantToken) {
       // This condition will be true only temporarily (if the navigation occurs
       // before the redux state is updated succesfully)
-      return <LoadingSpinnerOverlay isLoading={true} />;
+      return (
+        <Modal>
+          <LoadingSpinnerOverlay isLoading={true} />
+        </Modal>
+      );
     }
 
     const { loginUri } = this.state;
 
     return (
-      <BaseScreenComponent
-        goBack={true}
-        contextualHelp={this.contextualHelp}
-        faqCategories={["authentication_SPID"]}
-        headerTitle={I18n.t("authentication.idp_login.headerTitle")}
-      >
+      <Modal>
         {!hasError && (
           <>
             <WebView
@@ -311,42 +278,42 @@ class IdpLoginScreen extends React.Component<Props, State> {
             />
           </>
         )}
+        <Button
+          onPress={() => {
+            this.dispatchRefreshTokens({
+              access_token: "NO_SPID_LOGIN",
+              refresh_token: "NO_SPID_LOGIN",
+              expires_in: 60
+            });
+            this.handleLoginSuccess("NO_SPID_LOGIN" as SessionToken);
+          }}
+        >
+          <Text>Grant Token Accettato</Text>
+        </Button>
         {this.renderMask()}
-      </BaseScreenComponent>
+      </Modal>
     );
   }
 }
 
-const mapStateToProps = (state: GlobalState) => {
-  const selectedtIdp = selectedIdentityProviderSelector(state);
-
-  const selectedIdpTextData = fromNullable(selectedtIdp).fold(none, idp =>
-    idpContextualHelpDataFromIdSelector(idp.id)(state)
-  );
-
-  return {
-    loggedInWithoutGrantToken: isLoggedInWithoutGrantToken(state.authentication)
-      ? state.authentication
-      : undefined,
-    loggedOutWithIdpAuth: isLoggedOutWithIdp(state.authentication)
-      ? state.authentication
-      : undefined,
-    loggedInAuth: isLoggedIn(state.authentication)
-      ? state.authentication
-      : undefined,
-    selectedIdpTextData
-  };
-};
+const mapStateToProps = (state: GlobalState) => ({
+  loggedInAndRefreshingGrantToken: isLoggedInAndRefreshingGrantToken(
+    state.authentication
+  ),
+  loggedInAndRefreshingTokens: isLoggedInAndRefreshingTokens(
+    state.authentication
+  ),
+  loggedInAuth:
+    isLoggedIn(state.authentication) && !isRefreshing(state.authentication),
+  accessToken: sessionTokenSelector(state)
+});
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  dispatchIdpLoginUrlChanged: (url: string) =>
-    dispatch(idpLoginUrlChanged({ url })),
-  dispatchLoginSuccess: (token: AccessAndRefreshToken) =>
-    dispatch(loginSuccess(token)),
-  dispatchLoginSuccessWithoutGrantToken: (
-    accessAndRefreshToken: SessionToken
-  ) => dispatch(loginSuccessWithoutGrantToken(accessAndRefreshToken)),
+  dispatchRefreshGrantToken: (token: SessionToken) =>
+    dispatch(refreshAuthenticationGrantToken(token)),
+  dispatchRefreshTokens: (accessAndRefreshToken: AccessAndRefreshToken) =>
+    dispatch(refreshAuthenticationTokens(accessAndRefreshToken)),
   dispatchLoginFailure: (error: Error) => dispatch(loginFailure(error))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(IdpLoginScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(GrantTokenModal);

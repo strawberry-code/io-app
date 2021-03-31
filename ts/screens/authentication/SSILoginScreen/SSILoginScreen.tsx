@@ -75,7 +75,6 @@ const SSILoginScreen: React.FC<Props> = ({ navigateToIdpSelection }) => {
         }
         buttonSecondary={
           <ButtonDefaultOpacity
-            disabled
             block
             lightText
             icon

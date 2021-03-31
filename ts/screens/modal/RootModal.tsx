@@ -4,10 +4,13 @@ import { connect } from "react-redux";
 import { serverInfoDataSelector } from "../../store/reducers/backendInfo";
 import { isBackendServicesStatusOffSelector } from "../../store/reducers/backendStatus";
 import { GlobalState } from "../../store/reducers/types";
+import { isRefreshingGrantTokenSelector } from "../../store/reducers/authentication";
+import { progressSelector } from "../../store/reducers/identification";
 import { isUpdateNeeded } from "../../utils/appVersion";
 import IdentificationModal from "./IdentificationModal";
 import SystemOffModal from "./SystemOffModal";
 import UpdateAppModal from "./UpdateAppModal";
+import GrantTokenModal from "./GrantTokenModal";
 
 type Props = ReturnType<typeof mapStateToProps>;
 
@@ -29,12 +32,19 @@ export const RootModal: React.FunctionComponent<Props> = (props: Props) => {
   if (isAppOutOfDate) {
     return <UpdateAppModal />;
   }
+
+  if (props.isRefreshingGrantToken && !props.isIdentificationStarted) {
+    return <GrantTokenModal />;
+  }
+
   return <IdentificationModal />;
 };
 
 const mapStateToProps = (state: GlobalState) => ({
   isBackendServicesStatusOff: isBackendServicesStatusOffSelector(state),
-  backendInfo: serverInfoDataSelector(state)
+  backendInfo: serverInfoDataSelector(state),
+  isRefreshingGrantToken: isRefreshingGrantTokenSelector(state),
+  isIdentificationStarted: progressSelector(state).kind === "started"
 });
 
 export default connect(mapStateToProps)(RootModal);

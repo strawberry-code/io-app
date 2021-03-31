@@ -42,7 +42,9 @@ import { clearCache, resetProfileState } from "../store/actions/profile";
 import {
   idpSelector,
   sessionInfoSelector,
-  sessionTokenSelector
+  sessionTokenSelector,
+  tokenExpirationSelector,
+  isSpidLoginSelector
 } from "../store/reducers/authentication";
 import { IdentificationResult } from "../store/reducers/identification";
 import { navigationStateSelector } from "../store/reducers/navigation";
@@ -95,6 +97,7 @@ import {
 import { watchWalletSaga } from "./wallet";
 import { watchProfileEmailValidationChangedSaga } from "./watchProfileEmailValidationChangedSaga";
 import { checkConfiguredDIDSaga } from "./startup/checkConfiguredDIDSaga";
+import { watchTokenExpirationSaga } from "./startup/watchTokenExpirationSaga";
 
 const WAIT_INITIALIZE_SAGA = 3000 as Millisecond;
 /**
@@ -298,6 +301,12 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   //
   // User is autenticated, session token is valid
   //
+  const tokenExpirationDate = yield select(tokenExpirationSelector);
+  const isSpidLogin = yield select(isSpidLoginSelector);
+
+  if (tokenExpirationDate && isSpidLogin) {
+    yield fork(watchTokenExpirationSaga);
+  }
 
   if (bonusVacanzeEnabled) {
     // Start watching for requests about bonus
@@ -351,17 +360,17 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   yield fork(watchLoadServicesSaga, backendClient);
 
   // Load messages when requested
-  yield fork(watchMessagesLoadOrCancelSaga, backendClient.getMessages);
+  // yield fork(watchMessagesLoadOrCancelSaga, backendClient.getMessages);
 
   // Load messages when requested
-  yield fork(watchMessageLoadSaga, backendClient.getMessage);
+  // yield fork(watchMessageLoadSaga, backendClient.getMessage);
 
   // Load message and related entities (ex. the sender service)
-  yield takeEvery(
-    getType(loadMessageWithRelations.request),
-    loadMessageWithRelationsSaga,
-    backendClient.getMessage
-  );
+  // yield takeEvery(
+  //   getType(loadMessageWithRelations.request),
+  //   loadMessageWithRelationsSaga,
+  //   backendClient.getMessage
+  // );
 
   // Watch for the app going to background/foreground
   yield fork(watchApplicationActivitySaga);
