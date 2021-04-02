@@ -140,8 +140,19 @@ export const extractLoginResult = (url: string): LoginResult | undefined => {
 /** for a given idp id get the relative login uri */
 // export const getIdpLoginUri = (idpId: string) =>
 //   `${config.apiUrlPrefix}/login?authLevel=SpidL2&entityID=${idpId}`;
-export const getIdpLoginUri = (idpId: string) =>
-  `https://api.lispa.it/oauth2/authorize?response_type=code&client_id=nX1EUUIb60_1Kl93GpslxCbvGjoa&redirect_uri=http://10.218.161.123/124:9001/callback&scope=ssiplatform_user&state=prova&friendlyName=SPIDMobile`;
+export const getIdpLoginUri = (idpId: string) => {
+  const options = {
+    response_type: "code",
+    client_id: "nX1EUUIb60_1Kl93GpslxCbvGjoa",
+    redirect_uri: "http://10.218.161.123/124:9001/callback",
+    scope: encodeURIComponent("ssiplatform_user ssiplatform tokenplatform"),
+    friendlyName: "SPIDMobile"
+  };
+
+  const params = new URLSearchParams(options);
+
+  return `https://api.lispa.it/oauth2/authorize?${params.toString()}`;
+};
 
 /**
  * Extract the login result from the given url.
@@ -187,7 +198,7 @@ export const getToken = async (authorizationCode: {
   const details = {
     grant_type: "authorization_code",
     code: authorizationCode.code,
-    scope: encodeURIComponent("ssiplatform tokenplatform"),
+    scope: encodeURIComponent("ssiplatform_user ssiplatform tokenplatform"),
     redirect_uri: "http://10.218.161.123/124:9001/callback"
   };
 
@@ -234,7 +245,6 @@ export const refreshSessionFromRefreshToken = async (
   const details = {
     grant_type: "refresh_token",
     refresh_token: refreshToken,
-    scope: encodeURIComponent("ssiplatform tokenplatform"),
     redirect_uri: "http://10.218.161.123/124:9001/callback"
   };
 
