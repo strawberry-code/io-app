@@ -3,7 +3,7 @@ import {Platform} from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import { JWT } from "did-jwt-vc/lib/types";
 import {getSsiAccessToken} from "../../utils/keychain";
-import { sessionTokenSelector } from "../../store/reducers/authentication";
+import { sessionTokenSelector, grantTokenSelector } from "../../store/reducers/authentication";
 import * as config from '../../config';
 import { store } from "../../App";
 import { fetchWithTimeout } from "./SsiUtils";
@@ -177,10 +177,12 @@ class __NetCode {
     const apiUrl = '/auth/signUp';
     const method = 'GET';
     const overWriteParam = overWriteDID ? '&overwrite=true' : '';
-    const url = this.serverBaseURL + apiUrl + '/?sub=' + encodeURI(didAddress) + overWriteParam;
+    const url = this.serverBaseURL + apiUrl + '?sub=' + encodeURI(didAddress) + overWriteParam;
     const headers = new Headers();
     const sessionToken = sessionTokenSelector(store.getState());
+    const grantToken = grantTokenSelector(store.getState());
     headers.append('Authorization', `Bearer ${sessionToken}`);
+    headers.append('AuthorizationGrant', `Bearer ${grantToken}`);
     this.dumpPreFetch('auth/signUp',{url, method, headers});
     try {
       const rawResponse = await fetch(url, {
@@ -188,18 +190,17 @@ class __NetCode {
         method,
       });
       
-      const responseBody = await rawResponse.json();
 
       console.log(`[auth/signUp] raw response:  ${JSON.stringify(rawResponse)}`);
-      console.log(`[auth/signUp] json response:  ${JSON.stringify(responseBody)}`);
 
       if (rawResponse.status === 409) {
         throw new Error(`[auth/signUp] User has already a DID`);
       }
 
       if (rawResponse.status === 200) {
-        return responseBody;
+        return await rawResponse.json();
       } else {
+        const responseBody = await rawResponse.json();
         throw new Error(`[auth/signUp] Something went wrong ${JSON.stringify(responseBody)}`);
       }
 
@@ -217,7 +218,9 @@ class __NetCode {
     const url = this.serverBaseURL + apiUrl;
     const headers = new Headers();
     const sessionToken = sessionTokenSelector(store.getState());
+    const grantToken = grantTokenSelector(store.getState());
     headers.append('Authorization', `Bearer ${sessionToken}`);
+    headers.append('AuthorizationGrant', `Bearer ${grantToken}`);
     headers.append('Content-Type', 'application/json');
 
     const notificationToken = await AsyncStorage.getItem('PUSH_TOKEN');
