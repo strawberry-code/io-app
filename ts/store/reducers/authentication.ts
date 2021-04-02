@@ -227,6 +227,13 @@ export const sessionTokenSelector = (
     ? state.authentication.sessionToken
     : undefined;
 
+export const grantTokenSelector = (
+  state: GlobalState
+): SessionToken | undefined =>
+  isLoggedIn(state.authentication)
+    ? state.authentication.grantToken
+    : undefined;
+
 export const refreshTokenSelector = (
   state: GlobalState
 ): SessionToken | undefined =>
