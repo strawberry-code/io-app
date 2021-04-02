@@ -10,20 +10,32 @@ import {
   Linking,
   ActivityIndicator
 } from "react-native";
+import { connect } from "react-redux";
 
 import variables from "../../../theme/variables";
 import IconFont from "../../../components/ui/IconFont";
 import I18n from "../../../i18n";
+import {
+  sessionTokenSelector,
+  grantTokenSelector
+} from "../../../store/reducers/authentication";
 import { TranslationKeys } from "../../../../locales/locales";
 import { DidSingleton } from "../../../types/DID";
 import { apiSSIPrefix } from "../../../config";
 import { IssuerInfo, IssuerInfoKeys } from "../types";
+import { GlobalState } from "../../../store/reducers/types";
 
-interface Props {
+interface OwnProps {
   issuer: string | undefined | { id: string };
 }
 
-const IssuerComponent: React.FC<Props> = ({ issuer }) => {
+type Props = ReturnType<typeof mapStateToProps> & OwnProps;
+
+const IssuerComponent: React.FC<Props> = ({
+  issuer,
+  sessionToken,
+  grantToken
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [visible, setVisible] = useState<"none" | "flex">("none");
   const [issuerInfo, setIssuerInfo] = useState<IssuerInfo | undefined>(
@@ -39,19 +51,34 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
   }
 
   useEffect(() => {
-    const fetchIssuerInfo = async (id: string): void => {
+    const fetchIssuerInfo = async (id: string): Promise<void> => {
       setIsLoading(true);
       try {
         const response = await fetch(`${apiSSIPrefix}/issuers/${id}`, {
           method: "GET",
           headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            AuthorizationGrant: `Bearer ${grantToken}`,
             "Content-Type": "application/json"
           }
         });
+        console.log("response stats from get fetchIssuer", response.status);
         console.log("response from get fetchIssuer", response);
 
         if (response.status === 204) {
           throw new Error("Unknown Issuer");
+        }
+
+        if (response.status === 404) {
+          throw new Error("No matching resource found for given API");
+        }
+
+        if (response.status === 401) {
+          throw new Error(`${JSON.stringify(await response.json())}`);
+        }
+
+        if (response.status !== 200) {
+          throw new Error(`${JSON.stringify(await response.json())}`);
         }
 
         const data = await response.json();
@@ -59,7 +86,7 @@ const IssuerComponent: React.FC<Props> = ({ issuer }) => {
         console.log("data from get fetchIssuer", data);
         setIssuerInfo(data);
       } catch (e) {
-        console.error("error:", e);
+        console.error(e);
       }
       setIsLoading(false);
     };
@@ -212,4 +239,9 @@ const styles = StyleSheet.create({
   }
 });
 
-export default IssuerComponent;
+const mapStateToProps = (state: GlobalState) => ({
+  sessionToken: sessionTokenSelector(state),
+  grantToken: grantTokenSelector(state)
+});
+
+export default connect(mapStateToProps)(IssuerComponent);
