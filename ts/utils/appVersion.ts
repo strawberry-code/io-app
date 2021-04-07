@@ -50,6 +50,8 @@ export const isVersionAppSupported = (
   return semSatisfies;
 };
 
+export const getDeviceInfo = () => DeviceInfo.getUniqueId();
+
 export const getAppVersion = () =>
   Platform.select({
     ios: DeviceInfo.getReadableVersion(),
@@ -63,14 +65,16 @@ export const getAppVersion = () =>
 export const isUpdateNeeded = (
   serverInfo: ServerInfo | undefined,
   section: "min_app_version_pagopa" | "min_app_version"
-) =>
-  fromNullable(serverInfo)
-    .map(si => {
-      const minAppVersion = Platform.select({
-        default: "undefined",
-        ios: si[section].ios,
-        android: si[section].android
-      });
-      return !isVersionAppSupported(minAppVersion, getAppVersion());
-    })
-    .getOrElse(false);
+) => {
+  return false;
+  // return fromNullable(serverInfo)
+  //   .map(si => {
+  //     const minAppVersion = Platform.select({
+  //       default: "undefined",
+  //       ios: si[section].ios,
+  //       android: si[section].android
+  //     });
+  //     return !isVersionAppSupported(minAppVersion, getAppVersion());
+  //   })
+  //   .getOrElse(false);
+};
