@@ -54,14 +54,18 @@ const IssuerComponent: React.FC<Props> = ({
     const fetchIssuerInfo = async (id: string): Promise<void> => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${apiSSIPrefix}/issuers/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            AuthorizationGrant: `Bearer ${grantToken}`,
-            "Content-Type": "application/json"
+        const issuerAddress = id.replace("did:ethr:", "");
+        const response = await fetch(
+          `${apiSSIPrefix}/issuers/${issuerAddress}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              AuthorizationGrant: `Bearer ${grantToken}`,
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
         console.log("response stats from get fetchIssuer", response.status);
         console.log("response from get fetchIssuer", response);
 
