@@ -3,6 +3,7 @@ import base64 from "react-native-base64";
 import * as config from "../config";
 import { SessionToken } from "../types/SessionToken";
 import { AccessAndRefreshToken } from "../store/actions/authentication";
+import { getDeviceInfo } from "./appVersion";
 /**
  * Helper functions for handling the SPID login flow through a webview.
  */
@@ -143,9 +144,11 @@ export const extractLoginResult = (url: string): LoginResult | undefined => {
 export const getIdpLoginUri = (idpId: string) => {
   const options = {
     response_type: "code",
-    client_id: "nX1EUUIb60_1Kl93GpslxCbvGjoa",
+    client_id: config.apiManagerClient,
     redirect_uri: "http://10.218.161.123/124:9001/callback",
-    scope: encodeURIComponent("ssiplatform_user ssiplatform tokenplatform"),
+    scope: encodeURIComponent(
+      `device_${getDeviceInfo()} ssiplatform_user ssiplatform tokenplatform`
+    ),
     friendlyName: "SPIDMobile"
   };
 
@@ -192,13 +195,15 @@ export const getToken = async (authorizationCode: {
   state: string;
 }) => {
   const blob = base64.encode(
-    "nX1EUUIb60_1Kl93GpslxCbvGjoa:33CaI5lihDfAWxtuWeajNu1uYRwa"
+    `${config.apiManagerClient}:${config.apiManagerSecret}`
   );
 
   const details = {
     grant_type: "authorization_code",
     code: authorizationCode.code,
-    scope: encodeURIComponent("ssiplatform_user ssiplatform tokenplatform"),
+    scope: encodeURIComponent(
+      `device_${getDeviceInfo()} ssiplatform_user ssiplatform tokenplatform`
+    ),
     redirect_uri: "http://10.218.161.123/124:9001/callback"
   };
 
@@ -237,9 +242,9 @@ export const getToken = async (authorizationCode: {
 
 export const refreshSessionFromRefreshToken = async (
   refreshToken: SessionToken
-): AccessAndRefreshToken => {
+): Promise<AccessAndRefreshToken | undefined> => {
   const blob = base64.encode(
-    "nX1EUUIb60_1Kl93GpslxCbvGjoa:33CaI5lihDfAWxtuWeajNu1uYRwa"
+    `${config.apiManagerClient}:${config.apiManagerSecret}`
   );
 
   const details = {
@@ -277,7 +282,6 @@ export const refreshSessionFromRefreshToken = async (
     if (err.name === "AbortError") {
       throw new Error("Network error occurred.");
     }
-
     console.log("[refreshToken] errored (string): " + err);
     console.log("[refreshToken] errored (object): " + JSON.stringify(err));
   }

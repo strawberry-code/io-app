@@ -43,6 +43,8 @@ export const debugRemotePushNotification =
 export const isDebugBiometricIdentificationEnabled =
   Config.DEBUG_BIOMETRIC_IDENTIFICATION === "YES";
 export const instabugToken: string = Config.INSTABUG_TOKEN;
+export const apiManagerClient: string = Config.CONSUMER_KEY;
+export const apiManagerSecret: string = Config.CONSUMER_SECRET;
 
 export const bonusVacanzeEnabled: boolean =
   Config.BONUS_VACANZE_ENABLED === "YES";
