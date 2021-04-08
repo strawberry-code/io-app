@@ -21,11 +21,13 @@ import {
 import {
   AccessAndRefreshToken,
   startRefreshingTokens,
-  refreshAuthenticationTokens
+  refreshAuthenticationTokens,
+  sessionExpired
 } from "../../store/actions/authentication";
 import { startTimer } from "../../utils/timer";
 import { refreshSessionFromRefreshToken } from "../../utils/login";
 import { SessionToken } from "../../types/SessionToken";
+import { startApplicationInitialization } from "../../store/actions/application";
 
 const CHECK_TOKEN_EXPIRATION_INTERVAL = (5 * 1000) as Millisecond;
 
@@ -43,7 +45,8 @@ function* getNewTokensInfo(refreshToken: SessionToken) {
     // const response = true;
 
     if (!response) {
-      throw new Error("Could not refresh access token");
+      // error during getting refreshing token and so we need to restart application
+      throw new Error("Api Manager could not refresh tokens Session Expired");
     }
 
     // TESTING
@@ -59,7 +62,8 @@ function* getNewTokensInfo(refreshToken: SessionToken) {
 
     yield put(refreshAuthenticationTokens(response));
   } catch (error) {
-    yield console.log("AN ERROR OCCURRED", error);
+    console.log("AN ERROR OCCURRED", error);
+    yield put(sessionExpired());
   }
 }
 
