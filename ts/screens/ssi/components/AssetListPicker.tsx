@@ -18,6 +18,10 @@ import { DID } from "../../../types/DID";
 import IconFont from "../../../components/ui/IconFont";
 import variables from "../../../theme/variables";
 import { GlobalState } from "../../../store/reducers/types";
+import {
+  sessionTokenSelector,
+  grantTokenSelector
+} from "../../../store/reducers/authentication";
 import { Dispatch } from "../../../store/actions/types";
 import I18n from "../../../i18n";
 import { addNewAssetList, selectAsset } from "../../../store/actions/ssi";
@@ -30,7 +34,9 @@ const AssetListPicker: React.FC<AssetListProps> = ({
   assetList,
   assetSelected,
   dispatchAssetList,
-  dispatchAssetSelected
+  dispatchAssetSelected,
+  sessionToken,
+  grantToken
 }) => {
   // "0x38c8c05E9d7Dd379924E15a2AB25348A63fC3a5" testing address
   const userDID = new DID();
@@ -39,11 +45,17 @@ const AssetListPicker: React.FC<AssetListProps> = ({
 
   const fetchAssetList = async () => {
     try {
+      console.log(
+        "URL",
+        `${config.apiTokenizationPrefix}/api/asset/app/listassets`
+      );
       const response = await fetch(
-        `${config.apiTokenizationPrefix}/api/asset/app/listassets`,
+        `${config.apiTokenizationPrefix}/api/asset/app/listAssets`,
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            AuthorizationGrant: `Bearer ${grantToken}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -135,7 +147,9 @@ const AssetListPicker: React.FC<AssetListProps> = ({
 
 const mapStateToProps = (state: GlobalState) => ({
   assetList: state.ssi.ssiAssetList,
-  assetSelected: state.ssi.assetSelected
+  assetSelected: state.ssi.assetSelected,
+  sessionToken: sessionTokenSelector(state),
+  grantToken: grantTokenSelector(state)
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

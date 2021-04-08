@@ -7,7 +7,7 @@ import {
   TouchableHighlight,
   Platform
 } from "react-native";
-import { NavigationComponent } from "react-navigation";
+import { NavigationScreenProps } from "react-navigation";
 import { connect } from "react-redux";
 
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
@@ -16,22 +16,24 @@ import variables from "../../theme/variables";
 import ROUTES from "../../navigation/routes";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import { GlobalState } from "../../store/reducers/types";
+import {
+  sessionTokenSelector,
+  grantTokenSelector
+} from "../../store/reducers/authentication";
 import { DidSingleton } from "../../types/DID";
 import { apiTokenizationPrefix } from "../../config";
 
 import { Transaction, Asset } from "./types";
 import AssetListPicker from "./components/AssetListPicker";
 
-interface BalanceAndTransactionProps {
-  navigation: NavigationComponent;
-  ssiAssetList: Array<Asset>;
-  assetSelected: Asset["address"];
-}
+type Props = ReturnType<typeof mapStateToProps> & NavigationScreenProps;
 
-const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
+const SsiBalanceAndTransctionScreen: React.FC<Props> = ({
   navigation,
   ssiAssetList,
-  assetSelected
+  assetSelected,
+  sessionToken,
+  grantToken
 }) => {
   const [transactionList, setTransactionList] = useState<Array<Transaction>>([]); // prettier-ignore
   const [isLoading, setisLoading] = useState<boolean>(true);
@@ -46,10 +48,12 @@ const SsiBalanceAndTransctionScreen: React.FC<BalanceAndTransactionProps> = ({
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            AuthorizationGrant: `Bearer ${grantToken}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            userAddress: userAddress
+            userAddress
           })
         }
       );
@@ -324,7 +328,9 @@ const balanceStyle = StyleSheet.create({
 
 const mapStateToProps = (state: GlobalState) => ({
   ssiAssetList: state.ssi.ssiAssetList,
-  assetSelected: state.ssi.assetSelected
+  assetSelected: state.ssi.assetSelected,
+  sessionToken: sessionTokenSelector(state),
+  grantToken: grantTokenSelector(state)
 });
 
 export default connect(mapStateToProps)(SsiBalanceAndTransctionScreen);

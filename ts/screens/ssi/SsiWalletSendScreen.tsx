@@ -14,8 +14,12 @@ import {
 import { Form, Item, Label } from "native-base";
 import { ethers } from "ethers";
 import { connect } from "react-redux";
-import { NavigationComponent } from "react-navigation";
+import { NavigationScreenPro, NavigationScreenPropsps } from "react-navigation";
 
+import {
+  sessionTokenSelector,
+  grantTokenSelector
+} from "../../store/reducers/authentication";
 import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import TopScreenComponent from "../../components/screens/TopScreenComponent";
 import IconFont from "../../components/ui/IconFont";
@@ -38,16 +42,14 @@ interface CreateTXObject {
   recipientAddress: string;
 }
 
-interface Props {
-  navigation: NavigationComponent;
-  assetList: Array<Asset>;
-  assetSelected: Asset["address"];
-}
+type Props = ReturnType<typeof mapStateToProps> & NavigationScreenProps;
 
 const SsiWalletSendScreen: React.FC<Props> = ({
   navigation,
   assetList,
-  assetSelected
+  assetSelected,
+  sessionToken,
+  grantToken
 }) => {
   const [amount, setAmount] = useState<string>("");
   const [recipient, setRecipient] = useState<string>("");
@@ -115,6 +117,8 @@ const SsiWalletSendScreen: React.FC<Props> = ({
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            AuthorizationGrant: `Bearer ${grantToken}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -163,6 +167,8 @@ const SsiWalletSendScreen: React.FC<Props> = ({
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            AuthorizationGrant: `Bearer ${grantToken}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
@@ -206,7 +212,7 @@ const SsiWalletSendScreen: React.FC<Props> = ({
     console.log("target", textValue);
     const number = parseFloat(textValue).toFixed(2);
     if (+number < 0) {
-      alert("Si accettano solo numeri positivi");
+      alert("We accept only positive numbers");
     }
     setAmount(number);
     console.log("number", number);
@@ -394,6 +400,8 @@ const title = StyleSheet.create({
 
 const mapStateToProps = (state: GlobalState) => ({
   assetList: state.ssi.ssiAssetList,
-  assetSelected: state.ssi.assetSelected
+  assetSelected: state.ssi.assetSelected,
+  sessionToken: sessionTokenSelector(state),
+  grantToken: grantTokenSelector(state)
 });
 export default connect(mapStateToProps)(SsiWalletSendScreen);
