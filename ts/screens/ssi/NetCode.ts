@@ -173,11 +173,11 @@ class __NetCode {
 
   }
 
-  public async signUpDid(didAddress: string, overWriteDID?: boolean) {
+  public async signUpDid(didAddress: string, action?: "recover" | "overwrite") {
     const apiUrl = '/auth/signUp';
     const method = 'GET';
-    const overWriteParam = overWriteDID ? '&overwrite=true' : '';
-    const url = this.serverBaseURL + apiUrl + '?sub=' + encodeURI(didAddress) + overWriteParam;
+    const actionParam = action ? `&action=${action}` : '';
+    const url = this.serverBaseURL + apiUrl + '?sub=' + encodeURI(didAddress) + actionParam;
     const headers = new Headers();
     const sessionToken = sessionTokenSelector(store.getState());
     const grantToken = grantTokenSelector(store.getState());

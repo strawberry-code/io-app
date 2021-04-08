@@ -144,9 +144,9 @@ const DidSetterScreen: React.FC<Props> = ({
 
   const generateVC = async (options: {
     kind?: "generate" | "recover";
-    overWriteDID?: boolean;
+    fetchOptions?: "recover" | "overwrite";
   }) => {
-    const { kind, overWriteDID } = options;
+    const { kind, fetchOptions } = options;
     try {
       const generatingString =
         kind === "generate"
@@ -162,7 +162,7 @@ const DidSetterScreen: React.FC<Props> = ({
 
       const didAddress = DidSingleton.getDidAddress();
 
-      const signUpResponse = await NetCode.signUpDid(didAddress, overWriteDID);
+      const signUpResponse = await NetCode.signUpDid(didAddress, fetchOptions);
 
       const signedJWT = await createVCWithChallengeMessage(signUpResponse);
 
@@ -199,6 +199,8 @@ const DidSetterScreen: React.FC<Props> = ({
           ? I18n.t("ssi.onboarding.generatingVCError")
           : I18n.t("ssi.onboarding.recoveringVCCompleted");
       changeLoadingStates(true, generationErrorString, "error", false);
+
+      throw new Error(e.message);
     }
   };
 
@@ -329,7 +331,7 @@ const DidSetterScreen: React.FC<Props> = ({
                 <TouchableOpacity
                   style={loadingButton.container}
                   onPress={() =>
-                    generateVC({ kind: "generate", overWriteDID: true })
+                    generateVC({ kind: "generate", fetchOptions: "overwrite" })
                   }
                 >
                   <Text style={loadingButton.text}>Overwrite DID</Text>
