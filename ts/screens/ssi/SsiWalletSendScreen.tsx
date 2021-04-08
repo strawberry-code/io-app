@@ -14,7 +14,7 @@ import {
 import { Form, Item, Label } from "native-base";
 import { ethers } from "ethers";
 import { connect } from "react-redux";
-import { NavigationScreenPro, NavigationScreenPropsps } from "react-navigation";
+import { NavigationScreenProps } from "react-navigation";
 
 import {
   sessionTokenSelector,
