@@ -278,7 +278,8 @@ class GrantTokenModal extends React.PureComponent<Props, State> {
             />
           </>
         )}
-        <Button
+        {/* Test Button to close the Modal */}
+        {/* <Button
           onPress={() => {
             this.dispatchRefreshTokens({
               access_token: "NO_SPID_LOGIN",
@@ -289,7 +290,7 @@ class GrantTokenModal extends React.PureComponent<Props, State> {
           }}
         >
           <Text>Grant Token Accettato</Text>
-        </Button>
+        </Button> */}
         {this.renderMask()}
       </Modal>
     );
