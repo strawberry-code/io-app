@@ -301,6 +301,8 @@ profile:
       local_calendar: Calendario locale
       birthday_calendar: Compleanni
 ssi:
+  landing:
+    title: Tutto quello che ti serve in una tasca
   login: 
     title: "Benvenuto su\nWallet App"
     subtitle: Accedi al Wallet

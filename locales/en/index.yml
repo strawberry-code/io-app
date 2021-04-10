@@ -299,6 +299,8 @@ profile:
       local_calendar: Local calendar
       birthday_calendar: Birthdays
 ssi:
+  landing:
+    title: Everything you need in your pocket
   login: 
     title: "Welcome to\nWallet App"
     subtitle: Login into Wallet
