@@ -146,16 +146,10 @@ const navigation = createBottomTabNavigator(
     [ROUTES.SSI_NAVIGATOR]: {
       screen: SsiNavigator
     },
-    [ROUTES.SSI_WALLET_RECEIVE_SCREEN]: {
-      screen: SsiNavigator
-    },
-    [ROUTES.ERCWALLET_NAVIGATOR]: {
-      screen: SsiNavigator
-    }
   },
   {
     defaultNavigationOptions: ({ navigation: nav }) => ({
-      tabBarVisible: false,
+      tabBarVisible: true,
       tabBarLabel: (options: {
         tintColor: string | null;
         focused: boolean;
