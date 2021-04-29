@@ -13,6 +13,7 @@ import {
   takeEvery,
   takeLatest
 } from "redux-saga/effects";
+import { isAfter } from "date-fns";
 import { getType } from "typesafe-actions";
 import { BackendClient } from "../api/backend";
 import { setInstabugProfileAttributes } from "../boot/configureInstabug";
@@ -137,9 +138,12 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   const previousSessionToken: ReturnType<typeof sessionTokenSelector> = yield select(
     sessionTokenSelector
   );
+  
+  // Check token expiraton date and if it's expired it will log out the session
+  const tokenExpirationDate: Date = yield select(tokenExpirationSelector);
 
   // Unless we have a valid session token already, login until we have one.
-  const sessionToken: SagaCallReturnType<typeof authenticationSaga> = previousSessionToken
+  const sessionToken: SagaCallReturnType<typeof authenticationSaga> = previousSessionToken && !isAfter(new Date(), tokenExpirationDate)
     ? previousSessionToken
     : yield call(authenticationSaga);
 
@@ -301,7 +305,6 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   //
   // User is autenticated, session token is valid
   //
-  const tokenExpirationDate = yield select(tokenExpirationSelector);
   const isSpidLogin = yield select(isSpidLoginSelector);
 
   if (tokenExpirationDate && isSpidLogin) {
@@ -359,13 +362,13 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   // Load visible services and service details from backend when requested
   yield fork(watchLoadServicesSaga, backendClient);
 
-  // Load messages when requested
-  // yield fork(watchMessagesLoadOrCancelSaga, backendClient.getMessages);
+  // Load messages when requested GARANZIA GIOVANI DA VEDERE
+  yield fork(watchMessagesLoadOrCancelSaga, backendClient.getMessages);
 
-  // Load messages when requested
-  // yield fork(watchMessageLoadSaga, backendClient.getMessage);
+  // Load messages when requested GARANZIA GIOVANI DA VEDERE
+  yield fork(watchMessageLoadSaga, backendClient.getMessage);
 
-  // Load message and related entities (ex. the sender service)
+  // Load message and related entities (ex. the sender service) GARANZIA GIOVANI DA VEDERE
   // yield takeEvery(
   //   getType(loadMessageWithRelations.request),
   //   loadMessageWithRelationsSaga,
