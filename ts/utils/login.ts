@@ -276,7 +276,7 @@ export const refreshSessionFromRefreshToken = async (
       throw new Error(JSON.stringify(await rawResponse.json()));
     }
     const data = await rawResponse.json();
-    console.log("RESPONSE DATA:", data);
+    console.log("[refreshToken] RESPONSE DATA:", data);
     return data;
   } catch (err) {
     if (err.name === "AbortError") {
@@ -284,6 +284,7 @@ export const refreshSessionFromRefreshToken = async (
     }
     console.log("[refreshToken] errored (string): " + err);
     console.log("[refreshToken] errored (object): " + JSON.stringify(err));
+    return;
   }
 };
 
