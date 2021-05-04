@@ -57,6 +57,7 @@ import ItemSeparatorComponent from "../../components/ItemSeparatorComponent";
 import variables from "../../theme/variables";
 import {DidSingleton} from "../../types/DID";
 import {getSsiAccessToken, setSsiAccessToken} from "../../utils/keychain";
+import { grantTokenSelector, sessionTokenSelector, tokenExpirationSelector } from "../../store/reducers/authentication";
 import {notificationsInstallationSelector} from "../../store/reducers/notifications/installation";
 import IconFont from "../../components/ui/IconFont";
 import VCstore from "./VCstore";
@@ -251,7 +252,13 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     // headers.append("authorization", "Bearer " + await getSsiAccessToken());
-    const body = JSON.stringify({verifiablePresentation: VerifiablePresentationDaCondividere});
+    const body = JSON.stringify({ 
+      verifiablePresentation: VerifiablePresentationDaCondividere,
+      apimanagerTokens: {
+        session_token: this.props.sessionToken,
+        grant_token: this.props.grantToken,
+        expires_in: this.props.tokenExpiration,
+      } });
     console.log('metodo della richiesta (preso da QR): ' + method);
     console.log('callback url: ' + callbackUrl);
     console.log('headers: ' + JSON.stringify(headers));
@@ -618,6 +625,9 @@ function mapStateToProps(state: GlobalState) {
     hasProfileEmail: hasProfileEmailSelector(state),
     optionMobilePhone: profileMobilePhoneSelector(state),
     notificationToken: notificationsInstallationSelector(state).token,
+    sessionToken: sessionTokenSelector(state),
+    grantToken: grantTokenSelector(state),
+    tokenExpiration: tokenExpirationSelector(state)
   };
 }
 
