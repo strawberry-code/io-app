@@ -4,18 +4,13 @@
 import { Millisecond } from "italia-ts-commons/lib/units";
 import {
   call,
-  Effect,
-  fork,
-  takeLatest,
   put,
   select
 } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
-import { addSeconds, isAfter } from "date-fns";
+
+import { isAfter } from "date-fns";
 import {
   tokenExpirationSelector,
-  refreshTokenSelector,
-  sessionTokenSelector,
   isRefreshingGrantTokenSelector
 } from "../../store/reducers/authentication";
 import {
@@ -27,7 +22,7 @@ import {
 import { startTimer } from "../../utils/timer";
 import { refreshSessionFromRefreshToken } from "../../utils/login";
 import { SessionToken } from "../../types/SessionToken";
-import { startApplicationInitialization } from "../../store/actions/application";
+import { getRefreshToken, setRefreshToken } from "../../utils/keychain";
 
 const CHECK_TOKEN_EXPIRATION_INTERVAL = (5 * 1000) as Millisecond;
 
@@ -60,8 +55,12 @@ function* getNewTokensInfo(refreshToken: SessionToken) {
     //   })
     // );
 
-    yield put(refreshAuthenticationTokens(response));
+    const { refresh_token, ...rest } = response;
+    yield call(setRefreshToken, refresh_token);
+
+    yield put(refreshAuthenticationTokens(rest));
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log("AN ERROR OCCURRED", error);
     yield put(sessionExpired());
   }
@@ -78,7 +77,7 @@ export function* watchTokenExpirationSaga() {
     const now = new Date();
     console.log("COMPARO", now, expirationDate);
     if (isAfter(now, expirationDate) && !isRefreshingGrantToken) {
-      const refreshToken: SessionToken = yield select(refreshTokenSelector);
+      const refreshToken: SessionToken = yield call(getRefreshToken);
 
       // change authentication State to show Grant Token Modal and retrieve it
       yield put(startRefreshingTokens());

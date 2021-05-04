@@ -35,6 +35,7 @@ import {
 import { idpContextualHelpDataFromIdSelector } from "../../store/reducers/content";
 import { GlobalState } from "../../store/reducers/types";
 import { SessionToken } from "../../types/SessionToken";
+import { setRefreshToken } from "../../utils/keychain";
 import { getIdpLoginUri, onLoginUriChanged, getToken } from "../../utils/login";
 import { getSpidErrorCodeDescription } from "../../utils/spidErrorCode";
 import { getUrlBasepath } from "../../utils/url";
@@ -155,7 +156,12 @@ class IdpLoginScreen extends React.Component<Props, State> {
   }) => {
     try {
       const tokensInfo = await getToken(authorizationCode);
-      this.props.dispatchLoginSuccess(tokensInfo);
+
+      const { refresh_token, ...rest } = tokensInfo;
+
+      const salvato = await setRefreshToken(refresh_token);
+      console.log('SALVATO REFRESH TOKEN NEL KEYCHAIN', tokensInfo, refresh_token, salvato);
+      this.props.dispatchLoginSuccess(rest);
       this.updateUrl(
         `https://api.lispa.it/lispaauthenticationendpoint/authpin.do?redirect_uri=http://localhost&friendlyName=SISSMobile&Authorization=${tokensInfo.access_token}`
       );

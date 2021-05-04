@@ -20,6 +20,11 @@ export type AccessAndRefreshToken = {
   expires_in: number;
 };
 
+export type AccessTokenWithExpiration = {
+  access_token: SessionToken;
+  expires_in: number;
+};
+
 export type LogoutOption = {
   keepUserData: boolean;
 };
@@ -91,7 +96,7 @@ export const startRefreshingTokens = createStandardAction(
 
 export const refreshAuthenticationTokens = createStandardAction(
   "REFRESH_SESSION_AND_REFRESH_TOKENS"
-)<AccessAndRefreshToken>();
+)<AccessTokenWithExpiration>();
 
 export const refreshAuthenticationGrantToken = createStandardAction(
   "REFRESH_GRANT_TOKEN"

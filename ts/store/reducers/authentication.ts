@@ -50,7 +50,6 @@ export type LoggedInWithoutGrantToken = Readonly<{
   kind: "LoggedInWithoutGrantToken";
   idp: IdentityProvider;
   sessionToken: SessionToken;
-  refreshToken: SessionToken;
   expire: Date;
 }>;
 
@@ -59,7 +58,6 @@ export type LoggedInWithoutSessionInfo = Readonly<{
   kind: "LoggedInWithoutSessionInfo";
   idp: IdentityProvider;
   sessionToken: SessionToken;
-  refreshToken: SessionToken;
   expire: Date;
   grantToken: SessionToken;
 }>;
@@ -69,7 +67,6 @@ export type LoggedInWithSessionInfo = Readonly<{
   kind: "LoggedInWithSessionInfo";
   idp: IdentityProvider;
   sessionToken: SessionToken;
-  refreshToken: SessionToken;
   expire: Date;
   grantToken: SessionToken;
   sessionInfo: PublicSession;
@@ -80,7 +77,6 @@ export type LoggedInAndRefreshingTokens = Readonly<{
   kind: "LoggedInAndRefreshingTokens";
   idp: IdentityProvider;
   sessionToken: SessionToken;
-  refreshToken: SessionToken;
   expire: Date;
   grantToken: SessionToken;
   sessionInfo?: PublicSession;
@@ -91,7 +87,6 @@ export type LoggedInAndRefreshingGrantToken = Readonly<{
   kind: "LoggedInAndRefreshingGrantToken";
   idp: IdentityProvider;
   sessionToken: SessionToken;
-  refreshToken: SessionToken;
   expire: Date;
   grantToken: SessionToken;
   sessionInfo?: PublicSession;
@@ -213,12 +208,9 @@ export const isRefreshingTokensSelector = (state: GlobalState): boolean =>
 export const isRefreshingGrantTokenSelector = (state: GlobalState): boolean =>
   isLoggedInAndRefreshingGrantToken(state.authentication);
 
-export const isSpidLoginSelector = (state: GlobalState): boolean => {
-  return isLoggedIn(state.authentication)
-    ? state.authentication.refreshToken !== "NO_SPID_LOGIN" &&
-        state.authentication.grantToken !== "NO_SPID_LOGIN"
+export const isSpidLoginSelector = (state: GlobalState): boolean => isLoggedIn(state.authentication)
+    ? state.authentication.grantToken !== "NO_SPID_LOGIN"
     : false;
-};
 
 export const sessionTokenSelector = (
   state: GlobalState
@@ -234,12 +226,6 @@ export const grantTokenSelector = (
     ? state.authentication.grantToken
     : undefined;
 
-export const refreshTokenSelector = (
-  state: GlobalState
-): SessionToken | undefined =>
-  isLoggedIn(state.authentication)
-    ? state.authentication.refreshToken
-    : undefined;
 
 export const tokenExpirationSelector = (state: GlobalState): Date | undefined =>
   isLoggedIn(state.authentication) ? state.authentication.expire : undefined;
@@ -309,7 +295,6 @@ const reducer = (
       kind: "LoggedInWithoutGrantToken",
       idp: state.idp,
       sessionToken: action.payload.access_token,
-      refreshToken: action.payload.refresh_token,
       expire: addSeconds(new Date(), action.payload.expires_in)
     };
   }
@@ -372,7 +357,6 @@ const reducer = (
       ...{
         kind: "LoggedInAndRefreshingGrantToken",
         sessionToken: action.payload.access_token,
-        refreshToken: action.payload.refresh_token,
         expire: addSeconds(new Date(), action.payload.expires_in)
       }
     };

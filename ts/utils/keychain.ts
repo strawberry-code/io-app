@@ -16,6 +16,7 @@ import NetCode from "../screens/ssi/NetCode";
 const PIN_KEY = "PIN";
 const DID_KEY = "DID";
 const ACCESS_TOKEN_KEY = "ACCESS_TOKEN_KEY";
+const ARIA_REFRESH_TOKEN = "ARIA_REFRESH_TOKEN";
 
 /**
  * Wrapper that sets default accessible option.
@@ -122,10 +123,40 @@ export async function deleteSsiAccessToken(): Promise<boolean> {
  * Returns the SSI Access Token from the Keychain
  */
 export async function getSsiAccessToken(): Promise<string | null> {
-  let credentials = await Keychain.getGenericPassword({service: ACCESS_TOKEN_KEY});
+  const credentials = await Keychain.getGenericPassword({service: ACCESS_TOKEN_KEY});
   if (typeof credentials !== "boolean" && credentials.password.length > 0) {
-    return credentials.password
+    return credentials.password;
   } else {
-    return null
+    return null;
+  }
+}
+
+
+/**
+ * Saves the provided refreshToken got from ARIA
+ */
+ export async function setRefreshToken(refreshToken: string): Promise<boolean> {
+  return await setGenericPasswordWithDefaultAccessibleOption(ARIA_REFRESH_TOKEN, refreshToken, {service: ARIA_REFRESH_TOKEN});
+}
+
+
+/**
+ * Removes the ARIA refreshToken
+ */
+ export async function deleteRefreshToken(): Promise<boolean> {
+  return await Keychain.resetGenericPassword({service: ARIA_REFRESH_TOKEN});
+}
+
+/**
+ * Returns the refreshTken from the Keychain.
+ *
+ * The promise fails when there is no valid refrehToken stored.
+ */
+ export async function getRefreshToken(): Promise<string | undefined> {
+  const credentials = await Keychain.getGenericPassword({service: ARIA_REFRESH_TOKEN});
+  if (typeof credentials !== "boolean" && credentials.password.length > 0) {
+    return credentials.password;
+  } else {
+    return undefined;
   }
 }
