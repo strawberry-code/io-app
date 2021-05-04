@@ -1,6 +1,6 @@
 import { fromNullable } from "fp-ts/lib/Option";
 import * as pot from "italia-ts-commons/lib/pot";
-import { Text, View, Button } from "native-base";
+import { Text, View } from "native-base";
 import * as React from "react";
 import { Image, StyleSheet, Modal } from "react-native";
 import { WebView } from "react-native-webview";
@@ -14,9 +14,10 @@ import { RefreshIndicator } from "../../components/ui/RefreshIndicator";
 import I18n from "../../i18n";
 import {
   loginFailure,
-  AccessAndRefreshToken,
   refreshAuthenticationGrantToken,
-  refreshAuthenticationTokens
+  refreshAuthenticationTokens,
+  logoutRequest,
+  AccessTokenWithExpiration
 } from "../../store/actions/authentication";
 import { Dispatch } from "../../store/actions/types";
 import {
@@ -213,12 +214,13 @@ class GrantTokenModal extends React.PureComponent<Props, State> {
 
           <View style={styles.errorButtonsContainer}>
             <ButtonDefaultOpacity
+              onPress={() => this.props.logout()}
               style={styles.cancelButtonStyle}
               block={true}
               light={true}
               bordered={true}
             >
-              <Text>{I18n.t("global.buttons.cancel")}</Text>
+              <Text>Logout</Text>
             </ButtonDefaultOpacity>
             <ButtonDefaultOpacity
               onPress={this.setRequestStateToLoading}
@@ -310,10 +312,11 @@ const mapStateToProps = (state: GlobalState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+  logout: () => dispatch(logoutRequest({keepUserData: false})),
   dispatchRefreshGrantToken: (token: SessionToken) =>
     dispatch(refreshAuthenticationGrantToken(token)),
-  dispatchRefreshTokens: (accessAndRefreshToken: AccessAndRefreshToken) =>
-    dispatch(refreshAuthenticationTokens(accessAndRefreshToken)),
+  dispatchRefreshTokens: (accessTokenWithExpiration: AccessTokenWithExpiration) =>
+    dispatch(refreshAuthenticationTokens(accessTokenWithExpiration)),
   dispatchLoginFailure: (error: Error) => dispatch(loginFailure(error))
 });
 
