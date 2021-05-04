@@ -138,12 +138,9 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   const previousSessionToken: ReturnType<typeof sessionTokenSelector> = yield select(
     sessionTokenSelector
   );
-  
-  // Check token expiraton date and if it's expired it will log out the session
-  const tokenExpirationDate: Date = yield select(tokenExpirationSelector);
 
   // Unless we have a valid session token already, login until we have one.
-  const sessionToken: SagaCallReturnType<typeof authenticationSaga> = previousSessionToken && !isAfter(new Date(), tokenExpirationDate)
+  const sessionToken: SagaCallReturnType<typeof authenticationSaga> = previousSessionToken
     ? previousSessionToken
     : yield call(authenticationSaga);
 
@@ -306,6 +303,9 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   // User is autenticated, session token is valid
   //
   const isSpidLogin = yield select(isSpidLoginSelector);
+
+  // Check token expiraton date
+  const tokenExpirationDate: Date = yield select(tokenExpirationSelector);
 
   if (tokenExpirationDate && isSpidLogin) {
     yield fork(watchTokenExpirationSaga);
