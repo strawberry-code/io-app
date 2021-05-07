@@ -15,28 +15,30 @@ class __NetCode {
 
   constructor() {
     if (NetCode) {
-      return NetCode
+      return NetCode;
     } else {
-      return this
+      return this;
     }
   }
 
-  public async doAuthenticatedCallbackUrlFromQr({body, method, url}) {
+  public async doAuthenticatedCallbackUrlFromQr({body, method, url}: { body: RequestInit['body']; method: RequestInit['method']; url: string}) {
+    const sessionToken = sessionTokenSelector(store.getState());
+    const grantToken = grantTokenSelector(store.getState());
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${sessionToken}`);
+    headers.append('AuthorizationGrant', `Bearer ${grantToken}`);
 
-    let headers = new Headers()
-    headers.append('Content-Type', 'application/json')
-   // headers.append('Authorization', 'Bearer ' + <string>await getSsiAccessToken())
+    let rawResponse;
 
-    let rawResponse
-
-    this.dumpPreFetch('doAuthenticatedCallbackUrlFromQr', {url, method, headers, body})
+    this.dumpPreFetch('doAuthenticatedCallbackUrlFromQr', {url, method, headers, body});
     try {
       rawResponse = await fetchWithTimeout(url, {
-        method: method.toUpperCase(),
-        headers: headers,
+        method: method?.toUpperCase(),
+        headers,
         body: JSON.stringify(body)
       });
-      console.log('response status: ', rawResponse.status)
+      console.log('response status: ', rawResponse.status);
       if (rawResponse.status !== 200) {
         throw new Error(JSON.stringify(await rawResponse.json()));
       }
@@ -47,9 +49,9 @@ class __NetCode {
         throw new Error('Network error occurred.');
       }
 
-      console.log('[doAuthenticatedCallbackUrlFromQr] errored (string): ' + err)
-      console.log('[doAuthenticatedCallbackUrlFromQr] errored (object): ' + JSON.stringify(err))
-      return false
+      console.log('[doAuthenticatedCallbackUrlFromQr] errored (string): ', err);
+      console.log('[doAuthenticatedCallbackUrlFromQr] errored (object): ' + JSON.stringify(err));
+      return false;
     }
 
   }

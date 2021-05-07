@@ -249,16 +249,17 @@ class ShareVcsWithRequesterScreen extends React.Component<Props, State> {
 
     console.log('sto per fare una fetch per condividere la Verifiable Presentation appena costruita');
 
+    const { sessionToken, grantToken, tokenExpiration } = this.props;
+
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
-    // headers.append("authorization", "Bearer " + await getSsiAccessToken());
+    headers.append('Authorization', `Bearer ${sessionToken}`);
+    headers.append('AuthorizationGrant', `Bearer ${grantToken}`);
+    
     const body = JSON.stringify({ 
       verifiablePresentation: VerifiablePresentationDaCondividere,
-      apimanagerTokens: {
-        session_token: this.props.sessionToken,
-        grant_token: this.props.grantToken,
-        expires_in: this.props.tokenExpiration,
-      } });
+      sessionExpiration: tokenExpiration 
+    });
     console.log('metodo della richiesta (preso da QR): ' + method);
     console.log('callback url: ' + callbackUrl);
     console.log('headers: ' + JSON.stringify(headers));
