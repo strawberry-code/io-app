@@ -72,7 +72,7 @@ const AssetListPicker: React.FC<AssetListProps> = ({
       // sconsole.log("data from assets from API", data);
       dispatchAssetList(data.docs);
       if (!assetSelected) {
-        dispatchAssetSelected(data.docs[0].address);
+        dispatchAssetSelected(data.docs[0].address)
       }
     } catch (e) {
       console.error(e);
@@ -131,14 +131,23 @@ const AssetListPicker: React.FC<AssetListProps> = ({
           selectedValue={assetSelected}
           onValueChange={handleChangeAssets}
         >
-          {assetList &&
-            assetList.map(asset => (
+          {assetList.length > 0 &&
+            (assetList.map(asset => (
               <Picker.Item
                 key={asset.assetName}
                 label={asset.assetName}
                 value={asset.address}
               />
-            ))}
+            )))}
+          {assetList.length == 0 &&
+            (
+              <Picker.Item
+                key={'no-asset'}
+                label={'No assets'}
+                value={'no-assets'}
+                disabled
+              />
+            )}
         </Picker>
       </Form>
     </View>

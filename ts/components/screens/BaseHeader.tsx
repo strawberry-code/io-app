@@ -278,7 +278,7 @@ class BaseHeaderComponent extends React.PureComponent<Props, State> {
             importantForAccessibility="no-hide-descendants"
           >
             <IconFont
-              name={"io-lombardia"}
+              name={"io-pwc"}
               color={iconColor}
               accessible={false}
             />

@@ -118,7 +118,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode System.getenv('CIRCLE_BUILD_NUM') ? ("100" + System.getenv('CIRCLE_BUILD_NUM')).toInteger() : 1
-        versionName "1.9.0.8"
+        versionName "0.0.0.1"
         multiDexEnabled true
         // The resConfigs attribute will remove all not required localized resources while building the application,
         // including the localized resources from libraries.
@@ -129,12 +129,21 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     signingConfigs {
+        debug {
+            if (System.getenv('SSIAPP_RELEASE_STORE_FILE')) {
+                storeFile file(System.getenv('SSIAPP_RELEASE_STORE_FILE'))
+                storePassword System.getenv('SSIAPP_RELEASE_STORE_PASSWORD')
+                keyAlias System.getenv('SSIAPP_RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('SSIAPP_RELEASE_KEY_PASSWORD')
+            }
+        }
+
         release {
-            if (System.getenv('ITALIAAPP_RELEASE_STORE_FILE')) {
-                storeFile file(System.getenv('ITALIAAPP_RELEASE_STORE_FILE'))
-                storePassword System.getenv('ITALIAAPP_RELEASE_STORE_PASSWORD')
-                keyAlias System.getenv('ITALIAAPP_RELEASE_KEY_ALIAS')
-                keyPassword System.getenv('ITALIAAPP_RELEASE_KEY_PASSWORD')
+            if (System.getenv('SSIAPP_RELEASE_STORE_FILE')) {
+                storeFile file(System.getenv('SSIAPP_RELEASE_STORE_FILE'))
+                storePassword System.getenv('SSIAPP_RELEASE_STORE_PASSWORD')
+                keyAlias System.getenv('SSIAPP_RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('SSIAPP_RELEASE_KEY_PASSWORD')
             }
         }
     }
@@ -219,7 +228,7 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
-    implementation project(':react-native-cie')
+    // implementation project(':react-native-cie')
     // compile "com.squareup.okhttp3:okhttp:4.2.1"
     // compile "com.squareup.okhttp3:logging-interceptor:4.2.1"
     // compile "com.squareup.okhttp3:okhttp-urlconnection:4.2.1"

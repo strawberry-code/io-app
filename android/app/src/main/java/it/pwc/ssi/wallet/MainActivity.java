@@ -1,4 +1,4 @@
-package it.pagopa.io.app;
+package it.pwc.ssi.wallet;
 
 import android.content.pm.ActivityInfo;
 import android.os.Build;

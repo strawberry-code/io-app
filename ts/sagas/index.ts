@@ -36,13 +36,13 @@ export default function* root() {
     // this saga is temporary removed since it seems to not work properly
     // TODO https://www.pivotaltracker.com/story/show/171597422
     // call(networkSaga, connectionMonitorParameters),
-    call(backendStatusSaga),
-    call(backendInfoSaga),
-    call(unreadInstabugMessagesSaga),
+    // call(backendStatusSaga),
+    // call(backendInfoSaga),
+    // call(unreadInstabugMessagesSaga),
     call(watchNavigateToDeepLinkSaga),
     call(loadSystemPreferencesSaga),
     call(watchContentSaga),
-    call(watchPaymentInitializeSaga),
-    call(watchBackToEntrypointPaymentSaga)
+    // call(watchPaymentInitializeSaga),
+    // call(watchBackToEntrypointPaymentSaga)
   ]);
 }

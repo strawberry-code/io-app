@@ -31,7 +31,9 @@ const DEFAULT_TOT_MESSAGE_FETCH_WORKERS = 5;
 
 export const environment: string = Config.ENVIRONMENT;
 export const apiUrlPrefix: string = Config.API_URL_PREFIX;
-export const apiSSIPrefix: string = Config.API_SSI_PREFIX;
+// export const apiSSIPrefix: string = 'https://ssi-backend.bcclabit.com';
+export const apiSSIPrefix: string = 'http://192.168.1.6:3000';
+// export const apiSSIPrefix: string = Config.API_SSI_PREFIX;
 export const apiTokenizationPrefix: string = Config.API_TOKENIZATION_PREFIX;
 export const pagoPaApiUrlPrefix: string = Config.PAGOPA_API_URL_PREFIX;
 export const pagoPaApiUrlPrefixTest: string = Config.PAGOPA_API_URL_PREFIX_TEST;

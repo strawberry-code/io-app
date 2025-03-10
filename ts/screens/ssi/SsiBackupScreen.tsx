@@ -223,10 +223,13 @@ const SsiBackupScreen = () => {
 
   const signIn = async () => {
     try {
+      console.log('step 1')
       await configureGoogleSignIn();
+      console.log('step 2')
       await GoogleSignin.hasPlayServices();
-
+      console.log('step 3')
       setIsSigningInProgress(true);
+      console.log('step 4')
       const userInfo = await GoogleSignin.signIn();
       console.log("userInfo:\t", userInfo);
       setUserInfo(userInfo);

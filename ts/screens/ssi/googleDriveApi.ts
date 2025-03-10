@@ -16,7 +16,7 @@ export const configureGoogleSignIn = async () =>
     scopes: ["https://www.googleapis.com/auth/drive.appdata"], // what API you want to access on behalf of the user, default is email and profile
     webClientId:
       "232797350942-cq2qma60j8jre8jnk15l6t972edjkbhc.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
-    offlineAccess: true
+    offlineAccess: true,
   });
 
 // eslint-disable-next-line functional/no-let
@@ -26,6 +26,8 @@ export function setApiToken(apiToken: string) {
   GDrive.setAccessToken(apiToken);
   GDrive.init();
   googleAccessToken = apiToken;
+
+  console.log('access token', googleAccessToken)
 }
 
 function parseAndHandleErrors(response) {

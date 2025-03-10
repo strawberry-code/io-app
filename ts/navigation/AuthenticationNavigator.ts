@@ -5,7 +5,7 @@ import {
 import { environment } from "../config";
 import CardSelectionScreen from "../screens/authentication/CardSelectionScreen";
 import CieAuthorizeDataUsageScreen from "../screens/authentication/cie/CieAuthorizeDataUsageScreen";
-import CieCardReaderScreen from "../screens/authentication/cie/CieCardReaderScreen";
+// import CieCardReaderScreen from "../screens/authentication/cie/CieCardReaderScreen";
 import CieConsentDataUsageScreen from "../screens/authentication/cie/CieConsentDataUsageScreen";
 import CieExpiredOrInvalidScreen from "../screens/authentication/cie/CieExpiredOrInvalidScreen";
 import CiePinLockedTemporarilyScreen from "../screens/authentication/cie/CiePinLockedTemporarilyScreen";
@@ -60,9 +60,9 @@ const productionRouteConfigMap: NavigationRouteConfigMap = {
   [ROUTES.CIE_AUTHORIZE_USAGE_SCREEN]: {
     screen: CieAuthorizeDataUsageScreen
   },
-  [ROUTES.CIE_CARD_READER_SCREEN]: {
-    screen: CieCardReaderScreen
-  },
+  // [ROUTES.CIE_CARD_READER_SCREEN]: {
+  //   screen: CieCardReaderScreen
+  // },
   [ROUTES.CIE_CONSENT_DATA_USAGE]: {
     screen: CieConsentDataUsageScreen
   },

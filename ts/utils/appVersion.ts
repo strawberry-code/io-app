@@ -7,7 +7,7 @@ import { ioWebSiteUrl } from "./global";
 import { NumberFromString } from "./number";
 export const storeUrl = Platform.select({
   ios: "itms-apps://itunes.apple.com/it/app/io/id1501681835",
-  android: "market://details?id=it.pagopa.io.app",
+  android: "market://details?id=it.pwc.ssi.wallet",
   default: ioWebSiteUrl
 });
 

@@ -131,6 +131,7 @@ export class DID {
     this.setPublicKey(hdnode.publicKey)
     this.setRecoverKey(hdnode.extendedKey);
     this.setMnemonic(hdnode.mnemonic);
+    console.log('PRIVATKEY', hdnode.privateKey)
 
     let potPrivateKey = hdnode.privateKey
     if(potPrivateKey.startsWith('0x')) {
@@ -164,6 +165,7 @@ export class DID {
     this.setPublicKey(hdnode.publicKey)
     this.setRecoverKey(hdnode.extendedKey);
     this.setMnemonic(hdnode.mnemonic);
+    console.log('PRIVATKEY', hdnode.privateKey)
     let potPrivateKey = hdnode.privateKey
     if(potPrivateKey.startsWith('0x')) {
       potPrivateKey = potPrivateKey.replace('0x', '')

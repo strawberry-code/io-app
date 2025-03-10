@@ -36,7 +36,7 @@ const SsiBalanceAndTransctionScreen: React.FC<Props> = ({
   grantToken
 }) => {
   const [transactionList, setTransactionList] = useState<Array<Transaction>>([]); // prettier-ignore
-  const [isLoading, setisLoading] = useState<boolean>(true);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const userAddress = DidSingleton.getEthAddress().toLowerCase();
 
@@ -67,8 +67,9 @@ const SsiBalanceAndTransctionScreen: React.FC<Props> = ({
       setTransactionList(data.docs);
     } catch (e) {
       console.error("Error:", e);
+    } finally {
+      setisLoading(false);
     }
-    setisLoading(false);
   };
 
   useEffect(() => {
@@ -124,9 +125,8 @@ const SsiBalanceAndTransctionScreen: React.FC<Props> = ({
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "space-around",
+          // justifyContent: "space-around",
           padding: 10,
-          backgroundColor: "#D3EAD8"
         }}
       >
         <TouchableHighlight
@@ -167,22 +167,25 @@ const loading = StyleSheet.create({
 
 const button = StyleSheet.create({
   container: {
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
     paddingVertical: 10,
-    borderRadius: 5
+    flex: 1,
+    borderRadius: 5,
+    alignItems: "center",
   },
   send: {
     backgroundColor: variables.brandPrimary,
     borderColor: variables.brandPrimary,
-    borderWidth: 1
+    borderWidth: 1,
+    marginRight: 10,
   },
   receive: {
     backgroundColor: variables.colorWhite,
     borderColor: variables.brandPrimary,
-    borderWidth: 1
+    borderWidth: 1,
   },
   sendText: {
-    color: variables.colorWhite
+    color: variables.colorWhite,
   },
   receiveText: {
     color: variables.brandPrimary

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet, Platform } from "react-native"
 import { NavigationComponent } from 'react-navigation'
+import _ from 'lodash'
 
 import { JwtCredentialPayload } from "did-jwt-vc/src/types"
 import I18n from "../../i18n";
@@ -442,7 +443,7 @@ const Header = ({ title }) => (
     fontFamily: Platform.OS === 'ios'? 'Titillium Web': 'TitilliumWeb-Bold',
     textAlign: 'center',
     fontSize: variables.h3FontSize,
-  }}>{title[1]}</Text>
+  }}>{_.startCase(title[1])}</Text>
 )
 
 const HeaderOld: React.FC<{ title: string }> = ({ title }) => (
@@ -494,7 +495,7 @@ const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, bac
         <View style={vcItem.container}>
         { 
           onPress && (
-        <View style={{paddingRight: 10, justifyContent: 'center'}}>
+        <View style={{paddingRight: 10, justifyContent: 'flex-start'}}>
               <IconFont
                 name={vCredential.selected ? 'io-checkbox-on' : 'io-checkbox-off'}
                 color={variables.brandPrimary}
@@ -503,7 +504,11 @@ const VCCartaIdentita: React.FC<Props> = ({ vCredential, onPress, isSigning, bac
           </View>
           )
         }
-            <Header title={vCredential.vc.type} />
+        <View>
+        <Header title={vCredential.vc.type} />
+            {vCredential.vc.type.includes('PartecipazioneCorso') ?
+              (<Text>Titolo Corso: {vCredential.vc.credentialSubject.courseTitle}</Text>) : null}
+        </View>
             <TouchableOpacity 
               onPress={() => setModalVisible(!modalVisibile)}
             >

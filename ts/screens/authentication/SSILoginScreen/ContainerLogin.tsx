@@ -23,7 +23,7 @@ const ContainerLogin = (props: Props) => (
       barStyle="light-content"
       backgroundColor={variables.brandPrimaryLight}
     />
-    <LoginHeader title={I18n.t("ssi.login.title")} icon="io-lombardia" />
+    <LoginHeader title={I18n.t("ssi.login.title")} icon="io-pwc" />
 
     <View style={{ flex: 1 }}>
       <View style={styles.absoluteFillObject} />

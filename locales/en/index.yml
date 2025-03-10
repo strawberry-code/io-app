@@ -162,17 +162,17 @@ profile:
     spid: SPID PROFILE
   unknown: UNKNOWN
   logout:
-    menulabel: Logout from Wallet App
+    menulabel: Logout from SSI Wallet
     alertMessage: Are you sure you want to quit? The next time you log in you will need a new login with CIE or SPID.
     exit: Exit
     cta:
       header: How do you want to quit the app?
       keepData:
         title: Quit keeping all data
-        description: In order to use Wallet, you will log in with you digital identity again, but any settings data will be conserved  and will be immediately available at next launch. This choise does not concern in a cancellation of the personal data concerning you by the App.
+        description: In order to use SSI Wallet, you will log in with you digital identity again, but any settings data will be conserved  and will be immediately available at next launch. This choise does not concern in a cancellation of the personal data concerning you by the App.
       resetData:
         title: Quit and reset this app
-        description: "Wallet app will be restored to its initial state, as if it would just be installed. This option does not concern in a cancellation of the personal data concerning you by the App."
+        description: "SSI Wallet app will be restored to its initial state, as if it would just be installed. This option does not concern in a cancellation of the personal data concerning you by the App."
   errors:
     load: Error loading the profile
     upsert: Error creating or updating the profile
@@ -196,7 +196,7 @@ profile:
       description: Manage app internal preferences
     privacy:
       title: Information and conditions of use
-      description: Your rights and obligations when using Wallet App
+      description: Your rights and obligations when using SSI Wallet
       subtitle: Here you find information on the legal conditions and on the processing of your personal data.
       loading: Wait few seconds, we're checking your profile..
       removeAccount:
@@ -252,7 +252,7 @@ profile:
     showroom: UI Showroom
   preferences:
     title: Preferences
-    subtitle: This settings will be used by all services of the Public Amministration.
+    subtitle: This settings will be applied globally to SSI Wallet app.
     contextualHelpTitle: Your preferences
     contextualHelpContent: !include profile/profile_preferences_home.md
     list:
@@ -302,14 +302,14 @@ ssi:
   landing:
     title: Everything you need in your pocket
   login: 
-    title: "Welcome to\nWallet App"
+    title: "Welcome to\nSSI Wallet"
     subtitle: Login into Wallet
     loadingMessage: "Logging in..."
     success: "Login successful"
     loginError: "Error during login"
     fieldError: "You must fill in all fields before logging in."
     fieldErrorTitle: "Missing fields" 
-  title: WALLET
+  title: SSI WALLET
   scanQr: Scan a QR code
   linkText: Visit
   signing: Signing the VC, please wait...
@@ -372,6 +372,16 @@ ssi:
       placeOfBirth: Place of Birth
       ragioneFiscale: Tax reason
       piva: VAT number
+      name: Nome
+      tradeName: Trade Name
+      postalAddress: Indirizzo
+      eletronicAddress: Email
+      courseTitle: Course Title
+      startDate: Start date
+      endDate: End date
+      level: level
+      courseId: Course ID
+      phone: phone
       indirizzoSedeLegale: Registered office address
       eleggibilita: Eligibility
       expirationDate: Expiration Date
@@ -425,7 +435,7 @@ ssi:
     recoverIdentityTitle: Type in your Recovery Key
     recoverIdentitySubtitle: Enter private key to regain access to your DID
     recoverIdenityLabel: Key
-    recoveringIdentity: Recovering Identity
+    recoveringIdentity: I'm recovering your Identity
     recoveringIdentityCompleted: Identity recovery was successful
     recoveringError: Identity retrieval failed
     yourRecoverKey: This is your Pass Phrase
@@ -524,7 +534,7 @@ authentication:
     card4-title: You can use the app by SPID only
     card4-content: The access is allowed only by SPID (Public Service of Digital Identity)
       to guarantee your online safety
-    card5-title: Welcome to the first version of Wallet App!
+    card5-title: Welcome to the first version of SSI Wallet!
     card5-content: In this version you can find in the upper-right corner
       the icons to report bugs or start a chat with the development team.
       We're waiting for your feedback!
@@ -1062,8 +1072,7 @@ wallet:
     chooser: Pick image from gallery
     wrongQrCode: Not a SSI QR Code!
     byCameraTitle: Notice QR Code
-    cameraUsageInfo: Capture the QR Code on the payment notice with the camera, or
-      manually insert the transaction-related data (IUV and the entity/company code).
+    cameraUsageInfo: Capture the QR Code on the payment notice with the camera to access to the main features of SSI Wallet.
     setManually: Enter the data
     enroll_cta: Camera usage is available on this device, but it is not enrolled. Please go to settings menu and enroll it to enable this feature in this app.
     cameraUsagePermissionInfobox:

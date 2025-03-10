@@ -119,7 +119,7 @@ const RecoverIdentityModal: React.FC<Props> = ({
             <IconFont name="io-back" size={35} color={variables.colorWhite} />
           </TouchableOpacity>
           <IconFont
-            name="io-lombardia"
+            name="io-pwc"
             size={30}
             color={variables.colorWhite}
             style={{ marginRight: 15 }}

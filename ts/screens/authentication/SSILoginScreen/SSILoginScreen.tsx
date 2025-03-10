@@ -75,6 +75,7 @@ const SSILoginScreen: React.FC<Props> = ({ navigateToIdpSelection }) => {
         }
         buttonSecondary={
           <ButtonDefaultOpacity
+            disabled
             block
             lightText
             icon
@@ -89,14 +90,14 @@ const SSILoginScreen: React.FC<Props> = ({ navigateToIdpSelection }) => {
         <View spacer />
         <LabelledItem
           type={"text"}
-          label={I18n.t("profile.fiscalCode.fiscalCode")}
-          icon="io-carta"
+          label="username"
+          icon="io-profilo"
           isValid={
             username.length > 0 ? checkUsernameValid(username) : undefined
           }
           inputProps={{
             value: username,
-            placeholder: I18n.t("profile.fiscalCode.fiscalCode"),
+            placeholder: "Username",
             returnKeyType: "done",
             onChangeText: setUsername
           }}

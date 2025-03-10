@@ -1,0 +1,1793 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Proxy API
+  description: Mobile and web proxy API gateway.
+host: localhost
+basePath: /api/v1
+schemes:
+  - https
+security:
+  - Bearer: []
+paths:
+  "/updateServiceSubscription":
+    put:
+      operationId: updateServiceSubscription
+      summary: Update Service Subscription
+      description: |-
+        Return the updated profile for the serviceId
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/UpdateServiceSubscription"
+          required: true
+          x-examples:
+            application/json:
+              - service_id: "01CFAGRMGB9XCA8B2CQ4QA7K76"
+                unsubscribe: true
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: "#/definitions/Profile"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the message.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/services/{service_id}":
+    x-swagger-router-controller: ServicesController
+    parameters:
+      - name: service_id
+        in: path
+        type: string
+        required: true
+        description: The ID of an existing Service.
+    get:
+      operationId: getService
+      summary: Get Service
+      description: A previously created service with the provided service ID is returned.
+      responses:
+        "200":
+          description: Service found.
+          schema:
+            "$ref": "#/definitions/ServicePublic"
+          examples:
+            application/json:
+              department_name: "IO"
+              organization_fiscal_code: "00000000000"
+              organization_name: "IO"
+              service_id: "5a563817fcc896087002ea46c49a"
+              service_name: "App IO"
+              version: 1
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No service found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the service.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+      parameters: []
+  "/services":
+    x-swagger-router-controller: ServicesController
+    get:
+      operationId: getVisibleServices
+      summary: Get all visible services
+      description: |-
+        Returns the description of all visible services.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/PaginatedServiceTupleCollection"
+          examples:
+            application/json:
+              items:
+                - service_id: "AzureDeployc49a"
+                  version: 1
+                - service_id: "5a25abf4fcc89605c082f042c49a"
+                  version: 0
+              page_size: 1
+        "401":
+          description: Bearer token null or expired.
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the services.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+      parameters:
+        - $ref: "#/parameters/PaginationRequest"
+  "/messages":
+    x-swagger-router-controller: MessagesController
+    parameters:
+      - $ref: "#/parameters/PaginationRequest"
+    get:
+      operationId: getUserMessages
+      summary: Get user's messages
+      description: |-
+        Returns the messages for the user identified by the provided fiscal code.
+        Messages will be returned in inverse acceptance order (from last to first).
+        The "next" field, when present, contains an URL pointing to the next page of results.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/PaginatedCreatedMessageWithoutContentCollection"
+          examples:
+            application/json:
+              items:
+                - created_at: "2018-05-21T07:36:41.209Z"
+                  fiscal_code: "LSSLCU79B24L219P"
+                  id: "01CE0T1Z18T3NT9ECK5NJ09YR3"
+                  sender_service_id: "5a563817fcc896087002ea46c49a"
+                  time_to_live: 3600
+                - created_at: "2018-05-21T07:41:01.361Z"
+                  fiscal_code: "LSSLCU79B24L219P"
+                  id: "01CE0T9X1HT595GEF8FH9NRSW7"
+                  sender_service_id: "5a563817fcc896087002ea46c49a"
+                  time_to_live: 3600
+              page_size: 2
+              next: https://example.com/next
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the messages.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/messages/{id}":
+    x-swagger-router-controller: MessagesController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of the message.
+    get:
+      operationId: getUserMessage
+      summary: Get message
+      description: |-
+        Returns the message with the provided message ID.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/CreatedMessageWithContentAndAttachments"
+          examples:
+            application/json: |
+              content: {
+                markdown: "hey hey !! <a style=\"color: red\" href=\"http://example.com\"> some content here ..... this is a link with a style applied, some other content</a>",
+                subject: "my subject ............",
+                attachments: [{name:"attachment", content:"aBase64Encoding", mime_type: "image/png"}]
+              },
+              created_at: "2018-06-06T12:22:24.523Z",
+              fiscal_code: "LSSLCU79B24L219P",
+              id: "01CFAGRMGB9XCA8B2CQ4QA7K76",
+              sender_service_id: "5a25abf4fcc89605c082f042c49a",
+              time_to_live: 3600
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the message.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    put:
+      operationId: putUserMessage
+      summary: Put message
+      description: |-
+        Returns the message with the provided message ID.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/CreatedMessageWithContent"
+          required: true
+          x-examples:
+            application/json:
+              - created_at: "2018-05-21T07:36:41.209Z"
+                fiscal_code: "LSSLCU79B24L219P"
+                id: "01CE0T1Z18T3NT9ECK5NJ09YR3"
+                sender_service_id: "5a563817fcc896087002ea46c49a"
+                time_to_live: 3600
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: "#/definitions/CreatedMessageWithContent"
+          examples:
+            application/json: |
+              content: {
+                markdown: "hey hey !! <a style=\"color: red\" href=\"http://example.com\"> some content here ..... this is a link with a style applied, some other content</a>",
+                subject: "my subject ............",
+                attachments: [{name:"attachment", content:"aBase64Encoding", mime_type: "image/png"}]
+              },
+              created_at: "2018-06-06T12:22:24.523Z",
+              fiscal_code: "LSSLCU79B24L219P",
+              id: "01CFAGRMGB9XCA8B2CQ4QA7K76",
+              sender_service_id: "5a25abf4fcc89605c082f042c49a",
+              time_to_live: 3600
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the message.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/messages/{id}/archive":
+    x-swagger-router-controller: MessagesController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of the message.
+    put:
+      operationId: archiveUserMessage
+      summary: Archive message
+      description: |-
+        Archive the message and saves the data on DB.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/ArchiveMessageRequestObject"
+          required: true
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: "#/definitions/CreatedMessageWithContent"
+          examples:
+            application/json: |
+              content: {
+                markdown: "hey hey !! <a style=\"color: red\" href=\"http://example.com\"> some content here ..... this is a link with a style applied, some other content</a>",
+                subject: "my subject ............",
+                attachments: [{name:"attachment", content:"aBase64Encoding", mime_type: "image/png"}]
+              },
+              created_at: "2018-06-06T12:22:24.523Z",
+              fiscal_code: "LSSLCU79B24L219P",
+              id: "01CFAGRMGB9XCA8B2CQ4QA7K76",
+              sender_service_id: "5a25abf4fcc89605c082f042c49a",
+              time_to_live: 3600
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ArchiveProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found for the provided ID.
+          schema:
+            $ref: "#/definitions/ArchiveProblemJson"
+        "422":
+          description: Orchestratore error
+          schema:
+            $ref: "#/definitions/ArchiveProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ArchiveProblemJson"
+        "500":
+          description: There was an error in retrieving the message.
+          schema:
+            $ref: "#/definitions/ArchiveProblemJson"
+  "/documents/dossier":
+    x-swagger-router-controller: DocumentsController
+    get:
+      operationId: getUserDossierDocuments
+      summary: Get user's documents
+      description: |-
+        Returns the documents for the user identified by the provided fiscal code.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/DocumentsCollection"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the document.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/documents/dossier/{id}":
+    x-swagger-router-controller: DocumentsController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of the document.
+    put:
+      operationId: putUserDossierDocument
+      summary: Put document
+      description: |-
+        Updates the document with the provided document ID.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/DossierDocumentPutObject"
+          required: true
+      responses:
+        "200":
+          description: Updated.
+          schema:
+            $ref: "#/definitions/DossierDocument"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No document found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the document.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/documents/occupation":
+    x-swagger-router-controller: DocumentsController
+    get:
+      operationId: getUserOccupationDocuments
+      summary: Get user's occupation documents
+      description: |-
+        Returns the occupation documents for the user identified by the provided fiscal code.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/OccupationDocumentsCollection"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No message found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the document.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/documents/occupation/{id}":
+    x-swagger-router-controller: DocumentsController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of the document.
+    get:
+      operationId: getUserOccupationDocument
+      summary: Get user's occupation document details
+      description: |-
+        Returns the occupation document details for the user identified by the provided fiscal code.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/OccupationDocumentDetails"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Document not found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the document.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/documents/occupational-status":
+    x-swagger-router-controller: DocumentsController
+    post:
+      operationId: postOccupationalStatus
+      summary: Request the occupational status
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/OccupationalStatusRequestObject"
+          required: true
+      responses:
+        "201":
+          description: Occupational status requested.
+          schema:
+            $ref: "#/definitions/OccupationalStatusRequestObject"
+        "400":
+          description: Invalid payload.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: User not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "409":
+          description: Conflict.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Occupational status can not be required.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/retrieve_doc/{id}":
+    x-swagger-router-controller: DocumentsController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of the attachment.
+    get:
+      operationId: getUserDocumentFile
+      summary: Get attachment
+      description: |-
+        Returns the attachment with the provided attachment ID.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/MessageAttachmentFile"
+          examples:
+            application/json: |
+              {id: "01CFAGRMGB9XCA8B2CQ4QA7K76", name:"attachment", content:"aBase64Encoding", mime_type: "image/png"}
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No attachment found for the provided ID.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the attachment.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/book_doc/{id}":
+    x-swagger-router-controller: DocumentsController
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+        description: The ID of an existing DossierDocument.
+    post:
+      operationId: postBookDocument
+      summary: Book a User's document
+      description: Book the document by the document id.
+      responses:
+        "200":
+          description: Document booked.
+          schema:
+            $ref: "#/definitions/InstanceId"
+        "400":
+          description: Invalid payload.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: User not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "409":
+          description: Conflict.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Document cannot be booked.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/profile":
+    x-swagger-router-controller: ProfileController
+    get:
+      operationId: getUserProfile
+      summary: Get user's profile
+      description: Returns the profile for the user identified by the provided fiscal code.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/InitializedProfile"
+          examples:
+            application/json:
+              email: "email@example.com"
+              family_name: "Rossi"
+              fiscal_code: "TMMEXQ60A10Y526X"
+              has_profile: true
+              is_email_set: true
+              is_inbox_enabled: true
+              is_webhook_enabled: true
+              name: "Mario"
+              spid_email: "preferred@example.com"
+              spid_mobile_phone: "1234567890"
+              version: 1
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the user profile.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    post:
+      operationId: updateProfile
+      summary: Update the User's profile
+      description: Update the profile for the user identified by the provided fiscal code.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/Profile"
+          required: true
+          x-examples:
+            application/json:
+              email: foobar@example.com
+              preferred_languages: [it_IT]
+              is_inbox_enabled: true
+              is_webhook_enabled: false
+              version: 1
+      responses:
+        "200":
+          description: Profile updated.
+          schema:
+            $ref: "#/definitions/InitializedProfile"
+          examples:
+            application/json:
+              email: "email@example.com"
+              family_name: "Rossi"
+              fiscal_code: "TMMEXQ60A10Y526X"
+              has_profile: true
+              is_email_set: true
+              is_inbox_enabled: true
+              is_webhook_enabled: true
+              name: "Mario"
+              spid_email: "preferred@example.com"
+              spid_mobile_phone: "1234567890"
+              version: 1
+        "400":
+          description: Invalid payload.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: User not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "409":
+          description: Conflict.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Profile cannot be updated.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/api-profile":
+    x-swagger-router-controller: ProfileController
+    get:
+      operationId: getApiUserProfile
+      summary: Get user's profile stored into the API
+      description: Returns the profile for the user identified by the provided fiscal code.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/ExtendedProfile"
+          examples:
+            application/json:
+              email: "email@example.com"
+              preferred_languages: ["it_IT"]
+              is_inbox_enabled: true
+              accepted_tos_version: 1
+              accepted_privacy_version: 2
+              is_webhook_enabled: true
+              is_email_enabled: true
+              version: 1
+              sender_allowed: true
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Profile not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error in retrieving the user profile.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/email-validation-process":
+    x-swagger-router-controller: ProfileController
+    post:
+      operationId: startEmailValidationProcess
+      summary: Start the Email Validation Process
+      description: |-
+        Start the email validation process that create the validation token
+        and send the validation email
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Profile not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error starting email validation process
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/user-identity":
+    x-swagger-router-controller: ProfileController
+    get:
+      operationId: getUserIdentity
+      summary: Get stored user identity
+      description: Returns the user identity stored during the login phase
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/UserIdentity"
+          examples:
+            application/json:
+              family_name: "Rossi"
+              fiscal_code: "TMMEXQ60A10Y526X"
+              name: "Mario"
+              spid_email: "preferred@example.com"
+              spid_mobile_phone: "1234567890"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: There was an error in retrieving the user profile.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/user-metadata":
+    x-swagger-router-controller: userMetadataController
+    get:
+      operationId: getUserMetadata
+      summary: Get user's metadata
+      description: Returns metadata for the current authenticated user.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/UserMetadata"
+        "204":
+          description: No Content.
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: There was an error in retrieving the user metadata.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    post:
+      operationId: upsertUserMetadata
+      summary: Set User's metadata
+      description: Create or update metadata for the current authenticated user.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/UserMetadata"
+          required: true
+      responses:
+        "200":
+          description: User Metadata updated.
+          schema:
+            $ref: "#/definitions/UserMetadata"
+        "400":
+          description: Invalid payload.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "409":
+          description: Conflict.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Profile cannot be updated.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/installations/{installationID}":
+    x-swagger-router-controller: NotificationController
+    parameters:
+      - name: installationID
+        in: path
+        required: true
+        description: The ID of the message.
+        type: string
+    put:
+      operationId: createOrUpdateInstallation
+      summary: Create or update an Installation
+      description: Create or update an Installation to the Azure Notification hub.
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/Installation"
+          required: true
+          x-examples:
+            application/json:
+              platform: "gcm"
+              pushChannel: "fLKP3EATnBI:APA91bEy4go681jeSEpLkNqhtIrdPnEKu6Dfi-STtUiEnQn8RwMfBiPGYaqdWrmzJyXIh5Yms4017MYRS9O1LGPZwA4sOLCNIoKl4Fwg7cSeOkliAAtlQ0rVg71Kr5QmQiLlDJyxcq3p"
+              bundleId: "com.mycompany.myapp"
+      responses:
+        "200":
+          description: Success.
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+          examples:
+            application/json:
+              "message": "ok"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: There was an error in registering the device to the Notification Hub.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/session":
+    x-swagger-router-controller: AuthenticationController
+    get:
+      operationId: getSessionState
+      summary: Get the user current session
+      description: Return the session state for the current authenticated user.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/PublicSession"
+          examples:
+            application/json:
+              spidLevel: "https://www.spid.gov.it/SpidL2"
+              walletToken: "c77de47586c841adbd1a1caeb90dce25dcecebed620488a4f932a6280b10ee99a77b6c494a8a6e6884ccbeb6d3fe736b"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: Internal server error
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/sessions":
+    x-swagger-router-controller: AuthenticationController
+    get:
+      operationId: listUserSessions
+      summary: List sessions of a User
+      description: Return all the active sessions for an authenticated User.
+      responses:
+        "200":
+          description: Found.
+          schema:
+            $ref: "#/definitions/SessionsList"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/payment-requests/{rptId}":
+    x-swagger-router-controller: PagoPAProxyController
+    parameters:
+      - name: rptId
+        in: path
+        required: true
+        description: Unique identifier for payments.
+        type: string
+      - name: test
+        in: query
+        description: Use test environment of PagoPAClient
+        type: boolean
+        required: false
+    get:
+      operationId: getPaymentInfo
+      summary: Get Payment Info
+      description: Retrieve information about a payment
+      responses:
+        "200":
+          description: Payment information retrieved
+          schema:
+            "$ref": "#/definitions/PaymentRequestsGetResponse"
+          examples:
+            application/json:
+              importoSingoloVersamento: 200,
+              codiceContestoPagamento: "ABC123"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: PagoPA services are not available or request is rejected
+          schema:
+            $ref: "#/definitions/PaymentProblemJson"
+  "/payment-activations":
+    x-swagger-router-controller: PagoPAProxyController
+    parameters:
+      - name: test
+        in: query
+        description: Use test environment of PagoPAClient
+        type: boolean
+        required: false
+    post:
+      operationId: activatePayment
+      summary: Activate Payment
+      description: Require a lock (activation) for a payment
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/PaymentActivationsPostRequest"
+          required: true
+          x-examples:
+            application/json:
+              rptId: "12345678901012123456789012345"
+              importoSingoloVersamento: 200
+              codiceContestoPagamento: "ABC123"
+      responses:
+        "200":
+          description: Payment activation process started
+          schema:
+            "$ref": "#/definitions/PaymentActivationsPostResponse"
+          examples:
+            application/json:
+              importoSingoloVersamento: 200
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: PagoPA services are not available or request is rejected
+          schema:
+            $ref: "#/definitions/PaymentProblemJson"
+  "/payment-activations/{codiceContestoPagamento}":
+    x-swagger-router-controller: PagoPAProxyController
+    parameters:
+      - name: codiceContestoPagamento
+        in: path
+        required: true
+        description: Transaction Id used to identify the communication flow.
+        type: string
+      - name: test
+        in: query
+        description: Use test environment of PagoPAClient
+        type: boolean
+        required: false
+    get:
+      operationId: getActivationStatus
+      summary: Get Activation status
+      description: Check the activation status to retrieve the paymentId
+      responses:
+        "200":
+          description: Payment information
+          schema:
+            $ref: "#/definitions/PaymentActivationsGetResponse"
+          examples:
+            application/json:
+              idPagamento: "123455"
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/user-data-processing":
+    x-swagger-router-controller: UserDataProcessingController
+    post:
+      operationId: upsertUserDataProcessing
+      summary: Set User's data processing choices
+      description: Let the authenticated user express his will to retrieve or delete his stored data.
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/UserDataProcessingChoiceRequest"
+          required: true
+      responses:
+        "200":
+          description: User Data processing created / updated.
+          schema:
+            $ref: "#/definitions/UserDataProcessing"
+        "400":
+          description: Invalid payload.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "409":
+          description: Conflict.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too may requests
+        "500":
+          description: User Data processing choice cannot be taken in charge.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/user-data-processing/{choice}":
+    x-swagger-router-controller: UserDataProcessingController
+    get:
+      operationId: getUserDataProcessing
+      summary: Get User's data processing
+      description: Get the user's request to delete or download his stored data by providing a kind of choice.
+      parameters:
+        - $ref: "#/parameters/UserDataProcessingChoiceParam"
+      responses:
+        "200":
+          description: User data processing retrieved
+          schema:
+            $ref: "#/definitions/UserDataProcessing"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Not found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+  "/settings/{key}":
+    x-swagger-router-controller: UserSettingsController
+    parameters:
+      - name: key
+        in: path
+        required: true
+        description: Key used to identify a specific setting.
+        type: string
+    get:
+      operationId: getUserSetting
+      summary: Get user setting
+      description: Request user settings to activate specific features
+      responses:
+        "200":
+          description: Setting information
+          schema:
+            $ref: "#/definitions/UserSetting"
+          examples:
+            application/json:
+              key: "dossier"
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/entities/cities":
+    x-swagger-router-controller: EntitiesController
+    get:
+      operationId: getCities
+      summary: Get all available cities for CPI and accredited organizations entities
+      responses:
+        "200":
+          description: List of available cities
+          schema:
+            $ref: "#/definitions/Cities"
+          examples:
+            application/json:
+              {items: ["Bergamo", "Brescia", "Milano"], page_size: 3}
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/entities/cpi":
+    x-swagger-router-controller: EntitiesController
+    parameters:
+      - name: city
+        in: query
+        required: false
+        description: Key used to filter the list by a specific city.
+        type: string
+    get:
+      operationId: getCPIs
+      summary: Get CPI entities
+      responses:
+        "200":
+          description: CPI entities
+          schema:
+            $ref: "#/definitions/CPIs"
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/entities/accredited-organizations":
+    x-swagger-router-controller: EntitiesController
+    parameters:
+      - name: city
+        in: query
+        required: false
+        description: Key used to filter the list by a specific city.
+        type: string
+    get:
+      operationId: getAccreditedOrganizations
+      summary: Get accredited organizations
+      responses:
+        "200":
+          description: List of accredited organizations
+          schema:
+            $ref: "#/definitions/AccreditedOrganizations"
+          examples:
+            application/json:
+              [{ id: "123", description: "Ente accreditato ASD", city: "Milano"}]
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/entities/accredited-organizations/{id}":
+    x-swagger-router-controller: EntitiesController
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Key used to request the offices list of a specific accredited organization.
+        type: string
+      - name: city
+        in: query
+        required: false
+        description: Key used to filter the list by a specific city.
+        type: string
+    get:
+      operationId: getAccreditedOrganizationOffices
+      summary: Get accredited organization offices list
+      responses:
+        "200":
+          description: List of offices of an accredited organization
+          schema:
+            $ref: "#/definitions/AccreditedOrganizationOffices"
+          examples:
+            application/json:
+              [{ id: "123", address: "via Raffaello 2, Milano"}]
+        "400":
+          description: Invalid input
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Activation status not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: Unavailable service
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/appointment":
+    x-swagger-router-controller: AppointmentController
+    post:
+      operationId: sendAppointmentRequest
+      summary: Request an appointment
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/Appointment"
+          required: true
+      responses:
+        "201":
+          description: Appointment is requested
+          schema:
+            $ref: "#/definitions/Appointment"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Profile not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error sendint the email
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/errorlogs":
+    x-swagger-router-controller: ErrorReportController
+    post:
+      operationId: sendErrorReportByEmail
+      summary: Send the error report by email
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: "#/definitions/ErrorReport"
+          required: true
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: "#/definitions/ErrorReport"
+        "400":
+          description: Bad request
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Profile not found
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "500":
+          description: There was an error sendint the email
+          schema:
+            $ref: "#/definitions/ProblemJson"
+  "/informative/latest/{type}":
+    x-swagger-router-controller: ProfileController
+    parameters:
+      - name: type
+        in: path
+        required: true
+        description: The type of the informative (privacy or tos).
+        type: string
+    get:
+      operationId: getLatestInformative
+      summary: Get latest informative data
+      responses:
+        "200":
+          description: Latest informative data retrieved
+          schema:
+            $ref: "#/definitions/Informative"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Not found.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "429":
+          description: Too many requests
+definitions:
+  # Definitions from the digital citizenship APIs
+  AcceptedTosVersion:
+    $ref: "definitions.yaml#/AcceptedTosVersion"
+  AccreditedOrganizations:
+    $ref: "definitions.yaml#/AccreditedOrganizations"
+  AccreditedOrganizationOffices:
+    $ref: "definitions.yaml#/AccreditedOrganizationOffices"
+  Appointment:
+    $ref: "definitions.yaml#/Appointment"
+  BlockedInboxOrChannels:
+    $ref: "definitions.yaml#/BlockedInboxOrChannels"
+  Cities:
+    $ref: "definitions.yaml#/Cities"
+  CPIs:
+    $ref: "definitions.yaml#/CPIs"
+  Credential:
+    $ref: "definitions.yaml#/Credential"
+  DepartmentName:
+    $ref: "definitions.yaml#/DepartmentName"
+  DocumentsCollection:
+    $ref: "definitions.yaml#/DocumentsCollection"
+  DossierDocument:
+    $ref: "definitions.yaml#/DossierDocument"
+  DossierDocumentPutObject:
+    $ref: "definitions.yaml#/DossierDocumentPutObject"
+  EmailAddress:
+    $ref: "definitions.yaml#/EmailAddress"
+  ErrorReport:
+    $ref: "definitions.yaml#/ErrorReport"
+  Profile:
+    $ref: "definitions.yaml#/Profile"
+  ExtendedProfile:
+    $ref: "definitions.yaml#/ExtendedProfile"
+  FiscalCode:
+    $ref: "definitions.yaml#/FiscalCode"
+  InstanceId:
+    $ref: "index.yaml#/definitions/InstanceId"
+  IsEmailEnabled:
+    $ref: "definitions.yaml#/IsEmailEnabled"
+  IsInboxEnabled:
+    $ref: "definitions.yaml#/IsInboxEnabled"
+  IsEmailValidated:
+    $ref: "definitions.yaml#/IsEmailValidated"
+  IsTestProfile:
+    $ref: "definitions.yaml#/IsTestProfile"
+  IsWebhookEnabled:
+    $ref: "definitions.yaml#/IsWebhookEnabled"
+  Informative:
+    $ref: "definitions.yaml#/Informative"
+  LimitedProfile:
+    $ref: "definitions.yaml#/LimitedProfile"
+  MessageAttachmentFile:
+    $ref: "definitions.yaml#/MessageAttachmentFile"
+  MessageBodyMarkdown:
+    $ref: "definitions.yaml#/MessageBodyMarkdown"
+  MessageContent:
+    $ref: "definitions.yaml#/MessageContent"
+  MessageResponseNotificationStatus:
+    $ref: "definitions.yaml#/MessageResponseNotificationStatus"
+  NotificationChannelStatusValue:
+    $ref: "definitions.yaml#/NotificationChannelStatusValue"
+  NotificationChannel:
+    $ref: "definitions.yaml#/NotificationChannel"
+  MessageSubject:
+    $ref: "definitions.yaml#/MessageSubject"
+  OccupationalStatusRequestObject:
+    $ref: "definitions.yaml#/OccupationalStatusRequestObject"
+  OrganizationName:
+    $ref: "definitions.yaml#/OrganizationName"
+  OccupationDocumentsCollection:
+    $ref: "definitions.yaml#/OccupationDocumentsCollection"
+  OccupationDocument:
+    $ref: "definitions.yaml#/OccupationDocument"
+  OccupationDocumentDetails:
+    $ref: "definitions.yaml#/OccupationDocumentDetails"
+  PaginationResponse:
+    $ref: "definitions.yaml#/PaginationResponse"
+  PreferredLanguage:
+    $ref: "definitions.yaml#/PreferredLanguage"
+  PreferredLanguages:
+    $ref: "definitions.yaml#/PreferredLanguages"
+  PrescriptionData:
+    $ref: "definitions.yaml#/PrescriptionData"
+  ArchiveProblemJson:
+    $ref: "definitions.yaml#/ArchiveProblemJson"
+  ProblemJson:
+    $ref: "definitions.yaml#/ProblemJson"
+  ServiceId:
+    $ref: "definitions.yaml#/ServiceId"
+  ServiceName:
+    $ref: "definitions.yaml#/ServiceName"
+  ServicePublic:
+    $ref: "definitions.yaml#/ServicePublic"
+  ServiceTuple:
+    $ref: "definitions.yaml#/ServiceTuple"
+  ServiceScope:
+    $ref: "definitions.yaml#/ServiceScope"
+  PaginatedServiceTupleCollection:
+    $ref: "definitions.yaml#/PaginatedServiceTupleCollection"
+  Timestamp:
+    $ref: "definitions.yaml#/Timestamp"
+  PaymentNoticeNumber:
+    $ref: "definitions.yaml#/PaymentNoticeNumber"
+  PaymentAmount:
+    $ref: "definitions.yaml#/PaymentAmount"
+  PaymentData:
+    $ref: "definitions.yaml#/PaymentData"
+  TimeToLiveSeconds:
+    $ref: "definitions.yaml#/TimeToLiveSeconds"
+  CreatedMessageWithContent:
+    $ref: "definitions.yaml#/CreatedMessageWithContent"
+  CreatedMessageWithoutContent:
+    $ref: "definitions.yaml#/CreatedMessageWithoutContent"
+  CreatedMessageWithoutContentCollection:
+    $ref: "definitions.yaml#/CreatedMessageWithoutContentCollection"
+  ArchiveMessageRequestObject:
+    $ref: "definitions.yaml#/ArchiveMessageRequestObject"
+  PaginatedCreatedMessageWithoutContentCollection:
+    $ref: "definitions.yaml#/PaginatedCreatedMessageWithoutContentCollection"
+  UserDataProcessingStatus:
+    $ref: "definitions.yaml#/UserDataProcessingStatus"
+  UserDataProcessingChoice:
+    $ref: "definitions.yaml#/UserDataProcessingChoice"
+  UserDataProcessingChoiceRequest:
+    $ref: "definitions.yaml#/UserDataProcessingChoiceRequest"
+  UserDataProcessing:
+    $ref: "definitions.yaml#/UserDataProcessing"
+  MessageResponseWithContent:
+    $ref: "definitions.yaml#/MessageResponseWithContent"
+  UpdateServiceSubscription: 
+    $ref: "definitions.yaml#/UpdateServiceSubscription"
+  UserSetting:
+    $ref: "definitions.yaml#/UserSetting"
+
+  # Definitions from pagopa-proxy
+  PaymentProblemJson:
+    $ref: "api_pagopa.yaml#/definitions/PaymentProblemJson"
+  CodiceContestoPagamento:
+    $ref: "api_pagopa.yaml#/definitions/CodiceContestoPagamento"
+  EnteBeneficiario:
+    $ref: "api_pagopa.yaml#/definitions/EnteBeneficiario"
+  Iban:
+    $ref: "api_pagopa.yaml#/definitions/Iban"
+  ImportoEuroCents:
+    $ref: "api_pagopa.yaml#/definitions/ImportoEuroCents"
+  PaymentActivationsGetResponse:
+    $ref: "api_pagopa.yaml#/definitions/PaymentActivationsGetResponse"
+  PaymentActivationsPostRequest:
+    $ref: "api_pagopa.yaml#/definitions/PaymentActivationsPostRequest"
+  PaymentActivationsPostResponse:
+    $ref: "api_pagopa.yaml#/definitions/PaymentActivationsPostResponse"
+  PaymentRequestsGetResponse:
+    $ref: "api_pagopa.yaml#/definitions/PaymentRequestsGetResponse"
+  RptId:
+    $ref: "api_pagopa.yaml#/definitions/RptId"
+  SpezzoneStrutturatoCausaleVersamento:
+    $ref: "api_pagopa.yaml#/definitions/SpezzoneStrutturatoCausaleVersamento"
+  SpezzoniCausaleVersamento:
+    $ref: "api_pagopa.yaml#/definitions/SpezzoniCausaleVersamento"
+  SpezzoniCausaleVersamentoItem:
+    $ref: "api_pagopa.yaml#/definitions/SpezzoniCausaleVersamentoItem"
+
+  MessageContentWithAttachments:
+    allOf:
+      - type: object
+        properties:
+          attachments:
+            type: array
+            items:
+              $ref: "#/definitions/MessageAttachmentFile"
+      - $ref: "#/definitions/MessageContent"
+  CreatedMessageWithContentAndAttachments:
+    allOf:
+      - type: object
+        properties:
+          content:
+            $ref: "#/definitions/MessageContentWithAttachments"
+          status:
+            type: string
+            enum:
+              - ACCEPTED
+              - ADDED_TO_CAL
+              - BOOKED_DOC
+              - DOWNLOADED_DOC
+              - DOWNLOADED_CRED
+              - EXPIRED
+              - PENDING
+              - REJECTED
+              - VIEWED_INFORMATIVE
+        required:
+          - content
+      - $ref: "#/definitions/CreatedMessageWithoutContent"
+  Installation:
+    type: object
+    title: Installation
+    description: Describes an app installation.
+    properties:
+      platform:
+        $ref: "#/definitions/Platform"
+      pushChannel:
+        $ref: "#/definitions/PushChannel"
+      bundleId:
+        $ref: "#/definitions/BundleId"
+    required:
+      - platform
+      - pushChannel
+  InitializedProfile:
+    type: object
+    title: Initialized profile
+    description: Describes the user's profile after it has been stored in the Profile API.
+    properties:
+      registered_services:
+        type: array
+        items:
+          type: string
+      accepted_tos_version:
+        $ref: "#/definitions/AcceptedTosVersion"
+      accepted_privacy_version:
+        $ref: "#/definitions/AcceptedTosVersion"
+      email:
+        $ref: "#/definitions/EmailAddress"
+      blocked_inbox_or_channels:
+        $ref: "#/definitions/BlockedInboxOrChannels"
+      preferred_languages:
+        $ref: "#/definitions/PreferredLanguages"
+      is_inbox_enabled:
+        $ref: "#/definitions/IsInboxEnabled"
+      is_email_validated:
+        $ref: "#/definitions/IsEmailValidated"
+      is_email_enabled:
+        $ref: "#/definitions/IsEmailEnabled"
+      is_webhook_enabled:
+        $ref: "#/definitions/IsWebhookEnabled"
+      family_name:
+        type: string
+      fiscal_code:
+        $ref: "#/definitions/FiscalCode"
+      has_profile:
+        $ref: "#/definitions/HasProfile"
+      name:
+        type: string
+      spid_email:
+        $ref: "#/definitions/EmailAddress"
+      spid_mobile_phone:
+        type: string
+        minLength: 1
+      date_of_birth:
+        type: string
+        format: date
+      version:
+        $ref: "#/definitions/Version"
+    required:
+      - family_name
+      - fiscal_code
+      - has_profile
+      - is_inbox_enabled
+      - is_email_enabled
+      - is_webhook_enabled
+      - name
+      - version
+  UserMetadata:
+    type: object
+    title: User Metadata information
+    properties:
+      version:
+        type: number
+      metadata:
+        type: string
+    required:
+      - version
+      - metadata
+  PublicSession:
+    type: object
+    title: User session data
+    description: Describe the current session of an authenticated user.
+    properties:
+      spidLevel:
+        $ref: "#/definitions/SpidLevel"
+      walletToken:
+        type: string
+      myPortalToken:
+        type: string
+      bpdToken:
+        type: string
+    required:
+      - spidLevel
+      - walletToken
+      - myPortalToken
+      - bpdToken
+  SessionInfo:
+    type: object
+    title: Session info of a user
+    description: Decribe a session of an authenticated user.
+    properties:
+      createdAt:
+        $ref: "#/definitions/Timestamp"
+      sessionToken:
+        type: string
+    required:
+      - createdAt
+      - sessionToken
+  SessionsList:
+    description: Contains all active sessions for an authenticated user.
+    type: object
+    properties:
+      sessions:
+        type: array
+        items:
+          $ref: "#/definitions/SessionInfo"
+    required:
+      - sessions
+  InstallationID:
+    type: string
+    description: |-
+      The sixteen octets of an Installation ID are represented as 32 hexadecimal (base 16) digits, displayed in five groups
+      separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 alphanumeric characters and four
+      hyphens).
+      See https://en.wikipedia.org/wiki/Universally_unique_identifier
+    minLength: 1
+  HasProfile:
+    type: boolean
+    default: false
+    description: True if the user has a remote profile.
+  IsEmailSet:
+    type: boolean
+    default: false
+    description: True if the user has presonalized the email.
+  Version:
+    type: integer
+    description: The entity version.
+  PageSize:
+    type: integer
+    minimum: 0
+    description: Number of items returned for each page.
+  Platform:
+    type: string
+    description: The platform type where the installation happened.
+    x-extensible-enum:
+      - apns
+      - gcm
+      - hms
+  PushChannel:
+    type: string
+    description: |-
+      The Push Notification Service handle for this Installation.
+      See https://docs.microsoft.com/en-us/azure/notification-hubs/notification-hubs-push-notification-registration-management
+  BundleId:
+    type: string
+    description: |-
+      The Bundle ID used by the Mobile app
+  SpidLevel:
+    type: string
+    description: A SPID level.
+    x-extensible-enum:
+      - https://www.spid.gov.it/SpidL1
+      - https://www.spid.gov.it/SpidL2
+      - https://www.spid.gov.it/SpidL3
+  SpidUserIdentity:
+    type: object
+    title: SPID User Identity
+    description: Describes the user's profile while it's authenticated with Spid.
+    properties:
+      family_name:
+        type: string
+      fiscal_code:
+        $ref: "#/definitions/FiscalCode"
+      name:
+        type: string
+      spid_email:
+        $ref: "#/definitions/EmailAddress"
+      spid_mobile_phone:
+        type: string
+        minLength: 1
+    required:
+      - family_name
+      - fiscal_code
+      - name
+      - spid_email
+      - spid_mobile_phone
+  CieUserIdentity:
+    type: object
+    title: CIE User Identity
+    description: Describes the user's profile while it's authenticated with CIE.
+    properties:
+      family_name:
+        type: string
+      fiscal_code:
+        $ref: "#/definitions/FiscalCode"
+      name:
+        type: string
+      date_of_birth:
+        type: string
+        format: date
+    required:
+      - family_name
+      - fiscal_code
+      - name
+      - date_of_birth
+  UserIdentity:
+    x-one-of: true
+    allOf:
+      - $ref: "#/definitions/SpidUserIdentity"
+      - $ref: "#/definitions/CieUserIdentity"
+  SuccessResponse:
+    type: object
+    properties:
+      message:
+        type: string
+  LimitedFederatedUser:
+    title: Federated user
+    description: User data needed by federated applications.
+    type: object
+    properties:
+      fiscal_code:
+        $ref: "#/definitions/FiscalCode"
+    required:
+      - fiscal_code
+  FederatedUser:
+    title: Federated user
+    description: User data needed by federated applications.
+    allOf:
+      - type: object
+        properties:
+          name:
+            type: string
+          family_name:
+            type: string
+        required:
+          - name
+          - family_name
+      - $ref: "#/definitions/LimitedFederatedUser"
+responses: {}
+parameters:
+  PaginationRequest:
+    type: string
+    name: cursor
+    in: query
+    minimum: 1
+    description: An opaque identifier that points to the next item in the collection.
+  UserDataProcessingChoiceParam:
+    name: choice
+    in: path
+    type: string
+    enum: [DOWNLOAD, DELETE]
+    description: A representation of a user data processing choice
+    required: true
+    x-example: DOWNLOAD
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header

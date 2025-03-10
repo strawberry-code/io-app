@@ -116,7 +116,7 @@ class LanguagesPreferencesScreen extends React.PureComponent<Props, State> {
   public render() {
     const ContainerComponent = withLoadingSpinner(() => (
       <TopScreenComponent
-        contextualHelpMarkdown={contextualHelpMarkdown}
+        // contextualHelpMarkdown={contextualHelpMarkdown}
         headerTitle={I18n.t("profile.preferences.title")}
         goBack={true}
       >

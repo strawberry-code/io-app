@@ -7,7 +7,7 @@ import {
 } from "react-navigation";
 import { ActionType, createStandardAction } from "typesafe-actions";
 import ROUTES from "../../navigation/routes";
-import CieCardReaderScreen from "../../screens/authentication/cie/CieCardReaderScreen";
+// import CieCardReaderScreen from "../../screens/authentication/cie/CieCardReaderScreen";
 import { MessageDetailScreen } from "../../screens/messages/MessageDetailScreen";
 import FingerprintScreen from "../../screens/onboarding/FingerprintScreen";
 import ServiceDetailsScreen from "../../screens/services/ServiceDetailsScreen";
@@ -334,13 +334,13 @@ export const navigateToCiePinScreen = () =>
     routeName: ROUTES.CIE_PIN_SCREEN
   });
 
-export const navigateToCieCardReaderScreen = (
-  params?: InferNavigationParams<typeof CieCardReaderScreen>
-) =>
-  NavigationActions.navigate({
-    routeName: ROUTES.CIE_CARD_READER_SCREEN,
-    params
-  });
+// export const navigateToCieCardReaderScreen = (
+//   params?: InferNavigationParams<typeof CieCardReaderScreen>
+// ) =>
+//   NavigationActions.navigate({
+//     routeName: ROUTES.CIE_CARD_READER_SCREEN,
+//     params
+//   });
 
 /**
  * SSI

@@ -195,7 +195,7 @@ class PreferencesScreen extends React.Component<Props, State> {
 
     return (
       <TopScreenComponent
-        contextualHelpMarkdown={contextualHelpMarkdown}
+        // contextualHelpMarkdown={contextualHelpMarkdown}
         faqCategories={["profile", "privacy", "authentication_SPID"]}
         headerTitle={I18n.t("profile.preferences.title")}
         goBack={true}
@@ -221,7 +221,7 @@ class PreferencesScreen extends React.Component<Props, State> {
                 }
               />
             )}
-            <ListItemComponent
+            {/* <ListItemComponent
               onPress={this.checkPermissionThenGoCalendar}
               title={I18n.t(
                 "profile.preferences.list.preferred_calendar.title"
@@ -233,9 +233,9 @@ class PreferencesScreen extends React.Component<Props, State> {
                       "profile.preferences.list.preferred_calendar.not_selected"
                     )
               }
-            />
+            /> */}
 
-            <ListItemComponent
+            {/* <ListItemComponent
               title={I18n.t("profile.preferences.list.email")}
               subTitle={maybeEmail.getOrElse(notAvailable)}
               titleBadge={
@@ -244,14 +244,14 @@ class PreferencesScreen extends React.Component<Props, State> {
                   : undefined
               }
               onPress={this.handleEmailOnPress}
-            />
+            /> */}
 
-            <ListItemComponent
+            {/* <ListItemComponent
               title={I18n.t("send_email_messages.title")}
               subTitle={this.getEmailForwardPreferencesSubtitle()}
               onPress={this.props.navigateToEmailForwardingPreferenceScreen}
-            />
-
+            /> */}
+{/* 
             {
               // Check if spid email exists
               maybeSpidEmail.isSome() && (
@@ -261,9 +261,9 @@ class PreferencesScreen extends React.Component<Props, State> {
                   onPress={showSpidEmailModal}
                 />
               )
-            }
+            } */}
 
-            {
+            {/* {
               // Check if mobile phone exists
               maybePhoneNumber.isSome() && (
                 <ListItemComponent
@@ -272,7 +272,7 @@ class PreferencesScreen extends React.Component<Props, State> {
                   onPress={showSpidEmailModal}
                 />
               )
-            }
+            } */}
 
             <ListItemComponent
               title={I18n.t("profile.preferences.list.language")}

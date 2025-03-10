@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="splash_io_name">l\'app dei servizi pubblici</string>
+    <string name="splash_io_name">Self Sovereign Identity Wallet App</string>
     <string name="notification_channel_name">Messaggi</string>
     <string name="notification_channel_description">Ricevi la notifica per i nuovi messaggi</string>
     <string name="alert_device_rooted_title">Dispositivo rootato</string>
     <string name="alert_device_rooted_desc">Questo dispositivo dispone di permessi di root, non puoi usare questa app per motivi di sicurezza</string>
     <string name="dialog_attention">Attenzione</string>
     <string name="tablet_not_supported">I dispositivi tablet non sono al momento supportati</string>
-    <string name="ssi_title">SSI Lombardia</string>
+    <string name="ssi_title">SSI Wallet</string>
 </resources>

@@ -104,12 +104,12 @@ const DebugSection = (props: Props) => {
         </>
       )}
 
-      <DeveloperListItem
+      {/* <DeveloperListItem
         title={I18n.t("profile.main.pagoPaEnvironment.pagoPaEnv")}
         switchValue={props.isPagoPATestEnabled}
         onSwitchValueChange={onPagoPAEnvironmentToggle}
         description={I18n.t("profile.main.pagoPaEnvironment.pagoPAEnvAlert")}
-      />
+      /> */}
 
       <DeveloperListItem
         title={I18n.t("profile.main.debugMode")}

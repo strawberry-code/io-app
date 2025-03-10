@@ -1,1 +1,1 @@
-export { default } from "./SSILandingScreen";
+export { default } from "./SSILoginScreen";

@@ -8,7 +8,7 @@ import {
 import { loginSuccessWithoutGrantToken } from "../../store/actions/authentication";
 import { resetToAuthenticationRoute } from "../../store/actions/navigation";
 import { SessionToken } from "../../types/SessionToken";
-import { stopCieManager, watchCieAuthenticationSaga } from "../cie";
+// import { stopCieManager, watchCieAuthenticationSaga } from "../cie";
 import { watchTestLoginRequestSaga } from "../testLoginSaga";
 
 /**
@@ -21,7 +21,7 @@ export function* authenticationSaga(): Generator<Effect, SessionToken, any> {
   // Watch for the test login
   const watchTestLogin = yield fork(watchTestLoginRequestSaga);
   // Watch for login by CIE
-  const watchCieAuthentication = yield fork(watchCieAuthenticationSaga);
+  // const watchCieAuthentication = yield fork(watchCieAuthenticationSaga);
 
   // Reset the navigation stack and navigate to the authentication screen
   yield put(resetToAuthenticationRoute);
@@ -32,11 +32,11 @@ export function* authenticationSaga(): Generator<Effect, SessionToken, any> {
     getType(loginSuccessWithoutGrantToken)
   );
 
-  yield cancel(watchCieAuthentication);
+  // yield cancel(watchCieAuthentication);
   yield cancel(watchTestLogin);
 
-  // stop cie manager from listening nfc
-  yield call(stopCieManager);
+  // // stop cie manager from listening nfc
+  // yield call(stopCieManager);
 
   // User logged in successfully, remove all the scheduled local notifications
   // to remind the user to authenticate with spid
@@ -45,7 +45,7 @@ export function* authenticationSaga(): Generator<Effect, SessionToken, any> {
   // User logged in successfully dispatch an AUTHENTICATION_COMPLETED action.
   // FIXME: what's the difference between AUTHENTICATION_COMPLETED and
   //        LOGIN_SUCCESS?
-  yield put(analyticsAuthenticationCompleted());
+  yield put(analyticsAuthenticationCompleted()); 
 
   return action.payload;
 }

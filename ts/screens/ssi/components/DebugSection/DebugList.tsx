@@ -180,7 +180,7 @@ const DebugList: React.FC<Props> = ({ isActive, ...props }) => {
       isDanger: false
     },
     {
-      title: `DID Recovery KEY ${DidSingleton.getMnemonicToBeExported().slice(
+      title: `DID Recovery KEY ${DidSingleton.getMnemonicToBeExported()?.slice(
         0,
         6
       )}***`,

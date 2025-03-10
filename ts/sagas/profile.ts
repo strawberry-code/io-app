@@ -39,27 +39,38 @@ export function* loadProfile(
   SagaCallReturnType<typeof getProfile>
 > {
   try {
-    const response = yield call(getProfile, {});
-    // we got an error, throw it
-    if (response.isLeft()) {
-      throw Error(readableReport(response.value));
-    }
-    if (response.value.status === 200) {
-      // Ok we got a valid response, send a SESSION_LOAD_SUCCESS action
-      // BEWARE: we need to cast to UserProfileUnion to make UserProfile a
-      // discriminated union!
-      // eslint-disable-next-line
-      yield put(profileLoadSuccess(response.value.value as InitializedProfile));
-      return some(response.value.value);
-    }
-    if (response.value.status === 401) {
-      // in case we got an expired session while loading the profile, we reset
-      // the session
-      yield put(sessionExpired());
-    }
-    throw response
-      ? Error(`response status ${response.value.status}`)
-      : Error(I18n.t("profile.errors.load"));
+    // const response = yield call(getProfile, {});
+    // // we got an error, throw it
+    // if (response.isLeft()) {
+    //   throw Error(readableReport(response.value));
+    // }
+    // if (response.value.status === 200) {
+    //   // Ok we got a valid response, send a SESSION_LOAD_SUCCESS action
+    //   // BEWARE: we need to cast to UserProfileUnion to make UserProfile a
+    //   // discriminated union!
+    //   // eslint-disable-next-line
+    //   yield put(profileLoadSuccess(response.value.value as InitializedProfile));
+    //   return some(response.value.value);
+    // }
+    // if (response.value.status === 401) {
+    //   // in case we got an expired session while loading the profile, we reset
+    //   // the session
+    //   yield put(sessionExpired());
+    // }
+    // throw response
+    //   ? Error(`response status ${response.value.status}`)
+    //   : Error(I18n.t("profile.errors.load"));
+    const mockProfile = {
+      is_inbox_enabled: true,
+      is_email_enabled: true,
+      is_webhook_enabled: true,
+      family_name: 'Rossi',
+      fiscal_code: 'MDRPRV91D20Z602U',
+      has_profile: true,
+      name: 'Mario',
+      version: 1,
+    };
+    yield put(profileLoadSuccess(mockProfile as InitializedProfile));
   } catch (error) {
     yield put(profileLoadFailure(error));
   }

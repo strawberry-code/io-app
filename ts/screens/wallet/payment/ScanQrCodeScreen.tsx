@@ -381,8 +381,8 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
         <BaseScreenComponent
           headerTitle={I18n.t("wallet.QRtoPay.byCameraTitle")}
           goBack={this.goBack}
-          contextualHelpMarkdown={contextualHelpMarkdown}
-          faqCategories={["wallet"]}
+          // contextualHelpMarkdown={contextualHelpMarkdown}
+          // faqCategories={["wallet"]}
         >
           <ScrollView bounces={false}>
             {this.state.isFocused && (
@@ -468,9 +468,8 @@ class ScanQrCodeScreen extends React.Component<Props, State> {
         {
           !isFromWallet &&
           <FooterWithButtons
-            type="TwoButtonsInlineThird"
+            type="SingleButton"
             leftButton={secondaryButtonProps}
-            rightButton={primaryButtonProps}
           />
         }
       </Container>

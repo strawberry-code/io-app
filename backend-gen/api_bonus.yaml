@@ -1,0 +1,228 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Bonus vacanze API
+host: localhost
+basePath: /api/v1
+schemes:
+  - https
+security:
+  - Bearer: []
+paths:
+  "/bonus/vacanze/eligibility":
+    post:
+      operationId: startBonusEligibilityCheck
+      summary: Start bonus eligibility check (ISEE)
+      responses:
+        "201":
+          description: Request created.
+          schema:
+            $ref: "#/definitions/InstanceId"
+          headers:
+            Location:
+              type: string
+              description: |-
+                Location (URL) of created request resource.
+                A GET request to this URL returns the request status and details.
+        "202":
+          description: Processing request.
+        "401":
+          description: Bearer token null or expired.
+        "403":
+          description: |
+            Cannot request a new check since there's already
+            an active bonus related to this user
+        "409":
+          description: "Conflict: pending request found."
+          schema:
+            $ref: "#/definitions/ProblemJson"
+        "451":
+          description: Unauthorized for legal reason.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+    get:
+      operationId: getBonusEligibilityCheck
+      summary: Get eligibility (ISEE) check information for user's bonus
+      responses:
+        "200":
+          description: Eligibility (ISEE) check information for user's bonus
+          schema:
+            $ref: "#/definitions/EligibilityCheck"
+        "202":
+          description: Processing request.
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: Request not found.
+        "410":
+          description: Request expired
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  ## BONUS ACTIVATIONS
+
+  "/bonus/vacanze/activations":
+    post:
+      operationId: startBonusActivationProcedure
+      summary: Start bonus activation request procedure
+      responses:
+        "201":
+          description: Request created.
+          schema:
+            $ref: "#/definitions/InstanceId"
+          headers:
+            Location:
+              type: string
+              description: |-
+                Location (URL) of created request resource.
+                A GET request to this URL returns the request status and details.
+        "202":
+          description: Processing request.
+          schema:
+            $ref: "#/definitions/InstanceId"
+        "401":
+          description: Bearer token null or expired.
+        "403":
+          description: |
+            Cannot activate a new bonus because the eligibility data has expired
+            or the user is ineligible to get the bonus.
+            She must re-initiate the eligibility procedure to refresh her data
+            and retry to activate the bonus within 24h since she got the result.
+        "409":
+          description: |
+            Cannot activate a new bonus because another active or redeemed
+            bonus related to this user was found.
+        "410":
+          description: |
+            Cannot activate a new bonus because DSU request is expired.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+    get:
+      operationId: getAllBonusActivations
+      summary: |
+        Get all IDs of the bonus activations requested by
+        the authenticated user or by any between his family member
+      responses:
+        "200":
+          description: |
+            List of bonus activations ID belonging to the authenticated user
+            or to any member of her family (former and actual)
+          schema:
+            $ref: "#/definitions/PaginatedBonusActivationsCollection"
+        "401":
+          description: Bearer token null or expired.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+  "/bonus/vacanze/activations/{bonus_id}":
+    get:
+      operationId: getLatestBonusActivationById
+      summary: |
+        Get the activation details for the latest version
+        of the bonus entity identified by the provided id
+      parameters:
+        - name: bonus_id
+          in: path
+          required: true
+          description: Bonus activation ID.
+          type: string
+      responses:
+        "200":
+          description: Bonus activation details.
+          schema:
+            $ref: "#/definitions/BonusActivationWithQrCode"
+        "202":
+          description: Processing request.
+          schema:
+            $ref: "#/definitions/InstanceId"
+        "401":
+          description: Bearer token null or expired.
+        "404":
+          description: No bonus found.
+        "500":
+          description: Service unavailable.
+          schema:
+            $ref: "#/definitions/ProblemJson"
+
+definitions:
+  FiscalCode:
+    $ref: "definitions_bonus.yaml#/FiscalCode"
+  InstanceId:
+    $ref: "index.yaml#/definitions/InstanceId"
+  ProblemJson:
+    $ref: "definitions_bonus.yaml#/ProblemJson"
+  FamilyMember:
+    $ref: "index.yaml#/definitions/FamilyMember"
+  FamilyMembers:
+    $ref: "index.yaml#/definitions/FamilyMembers"
+  Dsu:
+    $ref: "index.yaml#/definitions/Dsu"
+  EligibilityCheckSuccess:
+    $ref: "index.yaml#/definitions/EligibilityCheckSuccess"
+  EligibilityCheckSuccessEligible:
+    $ref: "index.yaml#/definitions/EligibilityCheckSuccessEligible"
+  EligibilityCheckSuccessIneligible:
+    $ref: "index.yaml#/definitions/EligibilityCheckSuccessIneligible"
+  EligibilityCheckSuccessConflict:
+    $ref: "index.yaml#/definitions/EligibilityCheckSuccessConflict"
+  EligibilityCheckFailure:
+    $ref: "index.yaml#/definitions/EligibilityCheckFailure"
+  EligibilityCheck:
+    $ref: "index.yaml#/definitions/EligibilityCheck"
+  BonusActivationStatus:
+    $ref: "index.yaml#/definitions/BonusActivationStatus"
+  BonusCode:
+    $ref: "index.yaml#/definitions/BonusCode"
+  BonusActivation:
+    $ref: "index.yaml#/definitions/BonusActivation"
+  Timestamp:
+    $ref: "definitions_bonus.yaml#/Timestamp"
+  BonusActivationItem:
+    $ref: "index.yaml#/definitions/BonusActivationItem"
+  BonusActivationCollection:
+    $ref: "index.yaml#/definitions/BonusActivationCollection"
+  PaginationResponse:
+    $ref: "definitions_bonus.yaml#/PaginationResponse"
+  PaginatedBonusActivationsCollection:
+    $ref: "index.yaml#/definitions/PaginatedBonusActivationsCollection"
+
+  QrCodeImage:
+    type: object
+    properties:
+      content:
+        type: string
+      mime_type:
+        type: string
+    required:
+      - content
+      - mime_type
+  QrCode:
+    type: object
+    properties:
+      qr_code:
+        type: array
+        items:
+          $ref: "#/definitions/QrCodeImage"
+        required:
+          - items
+    required:
+      - qr_code
+
+  BonusActivationWithQrCode:
+    allOf:
+      - $ref: "#/definitions/BonusActivation"
+      - $ref: "#/definitions/QrCode"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header

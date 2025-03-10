@@ -22,7 +22,7 @@ const ContainerLanding = (props: Props) => (
       barStyle="light-content"
       backgroundColor={variables.brandPrimaryLight}
     />
-    <LandingHeader title={I18n.t("ssi.login.title")} icon="io-lombardia" />
+    <LandingHeader title={I18n.t("ssi.login.title")} icon="io-pwc" />
 
     <View style={{ flex: 1 }}>
       <View style={styles.absoluteFillObject} />

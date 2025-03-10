@@ -22,7 +22,7 @@ global:
         label: Aiuto contestuale
         hint: Accedi alle informazioni sul contenuto della schermata corrente
     chat:
-      description: "Messaggi assistenza IO"
+      description: "Messaggi assistenza SSI Wallet"
       unread_singular: "{{messages}} nuovo messaggio"
       unread_plural: "{{messages}} nuovi messaggi"
   ioWebSite: https://io.italia.it
@@ -91,10 +91,10 @@ global:
     noResultsTitle: Nessun risultato.
   localNotifications:
     spidLogin:
-      title: Ricordati di accedere ad Wallet App!
-      message: Accedi con la tua identità digitale su Wallet App, l’app dei servizi pubblici
+      title: Ricordati di accedere ad SSI Wallet!
+      message: Accedi con la tua identità digitale su SSI Wallet, l’app dei servizi pubblici
 tablet:
-  message: L’interfaccia di IO è ottimizzata per smartphone, ma tutte le funzioni compatibili con il tuo dispositivo sono comunque disponibili.
+  message: L’interfaccia di SSI Wallet è ottimizzata per smartphone, ma tutte le funzioni compatibili con il tuo dispositivo sono comunque disponibili.
 rooted:
   title: Sembra che la sicurezza del tuo dispositivo sia compromessa!
   bodyiOS: !include jailbroken_body.md
@@ -115,7 +115,7 @@ clipboard:
   copyFeedback: Copiato negli appunti
   copyText: copia
 betaBanner:
-  title: "L’app IO è in versione beta."
+  title: "L’app SSI Wallet è in versione beta."
   description: Le tue segnalazioni ci aiutano a migliorare giorno dopo giorno.
 connection:
   status:
@@ -135,7 +135,7 @@ login:
   welcome:
     line1: benvenuto nella tua
     line2: Cittadinanza Digitale
-  expiration_info: Per ragioni di sicurezza, dopo 30 giorni dall'ultimo accesso dovrai effettuare un nuovo login per continuare a utilizzare IO.
+  expiration_info: Per ragioni di sicurezza, dopo 30 giorni dall'ultimo accesso dovrai effettuare un nuovo login per continuare a utilizzare SSI Wallet.
 inbox:
   enableButton: Abilita Inbox
   disableButton: Disabilita Inbox
@@ -162,14 +162,14 @@ profile:
     spid: PROFILO SPID
   unknown: SCONOSCIUTO
   logout:
-    menulabel: Esci da Wallet App
+    menulabel: Esci da SSI Wallet
     alertMessage: Sei sicuro di voler uscire? Al prossimo accesso sarà necessario un nuovo login con CIE o SPID.
     exit: Esci
     cta:
       header: Come vuoi uscire dall'app?
       keepData:
         title: Esci ma conserva i miei dati
-        description: "Per poter usare Wallet App dovrai nuovamente accedere con la tua identità digitale ma tutte le impostazioni saranno disponibili quando lanci l'App. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
+        description: "Per poter usare SSI Wallet dovrai nuovamente accedere con la tua identità digitale ma tutte le impostazioni saranno disponibili quando lanci l'App. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
       resetData:
         title: Esci e resetta l'applicazione
         description: "Le impostazioni e i dati salvati sul tuo dispositivo saranno resettati. Questa funzione non comporta una cancellazione dei dati personali che ti riguardano da parte dell'App."
@@ -196,24 +196,24 @@ profile:
       description: Gestisci le preferenze dell'applicazione
     privacy:
       title: Privacy e condizioni d'uso
-      description: I tuoi diritti e obblighi nell’uso di Wallet App
+      description: I tuoi diritti e obblighi nell’uso di SSI Wallet
       subtitle: Qui trovi informazioni sulle condizioni legali e sul trattamento dei tuoi dati personali.
       loading: Attendi qualche secondo, stiamo verificando il tuo profilo...
       removeAccount:
         title: Cancella il tuo profilo
-        description: Richiedi cancellazione delle informazioni relative al tuo profilo IO
+        description: Richiedi cancellazione delle informazioni relative al tuo profilo SSI Wallet
         alert:
           requestTitle: Sei sicuro di voler richiedere la cancellazione del tuo account?
-          requestSubtitle: Per usare IO dovrai registrarti nuovamente. La cancellazione non riguarda i dati trattati per conto degli Enti Erogatori.
+          requestSubtitle: Per usare SSI Wallet dovrai registrarti nuovamente. La cancellazione non riguarda i dati trattati per conto degli Enti Erogatori.
           oldRequest: Abbiamo già preso in carico una richiesta di eliminazione del tuo profilo.
           confirmSubtitle: Al termine dell'elaborazione, riceverai una email di conferma dell'avvenuta eliminazione.
         error: Si è verificato un errore nella richiesta di rimozione dell'account, riprova.
       exportData:
         cta: Richiedi copia dei tuoi dati
         title: Accedi ai tuoi dati
-        description: Ricevi una copia dei dati associati al tuo profilo IO
+        description: Ricevi una copia dei dati associati al tuo profilo SSI Wallet
         info:
-          title: Puoi scaricare le informazioni relative al tuo profilo IO in qualsiasi momento.
+          title: Puoi scaricare le informazioni relative al tuo profilo SSI Wallet in qualsiasi momento.
           body: !include profile/profile_download_data.md
         alert:
           requestTitle: Vuoi davvero esportare tutti i tuoi dati?
@@ -222,8 +222,8 @@ profile:
         error: Si è verificato un errore nella richiesta di esportazione dei dati, riprova.
       privacyPolicy:
         title: Informativa e condizioni d'uso
-        description: Consulta l’Informativa Privacy e le condizioni d’uso di IO
-        header: Informativa sul trattamento dei dati personali degli utenti dell'app IO
+        description: Consulta l’Informativa Privacy e le condizioni d’uso di SSI Wallet
+        header: Informativa sul trattamento dei dati personali degli utenti dell'app SSI Wallet
         updated: Abbiamo aggiornato la nostra Informativa e i Termini e condizioni d'uso
         infobox: È necessario prendere visione e accettare l'Informativa ed i Termini e condizioni d'uso
         contextualHelpTitlePolicy: Informativa sul trattamento dei dati personali e condizioni d'uso del servizio
@@ -231,8 +231,8 @@ profile:
         contextualHelpTitle: Le tue impostazioni di privacy
         contextualHelpContent: !include profile/profile_privacy_main.md
     appInfo:
-      title: Informazioni su IO beta
-      description: Per saperne di più sull'app IO
+      title: Informazioni su SSI Wallet beta
+      description: Per saperne di più sull'app SSI Wallet
       contextualHelpContent: !include profile/profile_appinfo_main.md
     developersSectionHeader: Sviluppatori
     experimentalFeatures:
@@ -253,8 +253,7 @@ profile:
   preferences:
     title: Preferenze
     subtitle:
-      Queste impostazioni verranno utilizzate da tutti i servizi della Pubblica
-      Amministrazione.
+      Queste impostazioni verranno applicate a tutta SSI Wallet app.
     contextualHelpTitle: Le tue preferenze
     contextualHelpContent: !include profile/profile_preferences_home.md
     list:
@@ -284,7 +283,7 @@ profile:
     unavailable:
       title: Questa preferenza è impostata nel tuo profilo SPID
     language:
-      contextualHelpTitle: Come gestire la lingua su IO
+      contextualHelpTitle: Come gestire la lingua su SSI Wallet
       contextualHelpContent: !include profile/profile_preferences_language.md
     spid_email:
       contextualHelpTitle: Questa preferenza è impostata nel tuo profilo SPID
@@ -304,7 +303,7 @@ ssi:
   landing:
     title: Tutto quello che ti serve in una tasca
   login: 
-    title: "Benvenuto su\nWallet App"
+    title: "Benvenuto su\nSSI Wallet"
     subtitle: Accedi al Wallet
     loadingMessage: "Effettuando il login..."
     success: "Login effettuato con successo"
@@ -357,7 +356,7 @@ ssi:
       tradeName: Nome Depositato
       postalAddress: Indirizzo Postale
       electronicAddress: Indirizzo elettronico
-      informationUri: URI della informazioni
+      informationUri: URI delle informazioni
   vcslist:
     title: Credenziali Verificate
     subtitle: Queste sono le tue Credenziali Verificate associate al tuo SPID
@@ -378,6 +377,16 @@ ssi:
       eleggibilita: eleggibilita
       expirationDate: Scadenza
       dateOfAchievement: Data di conseguimento
+      tradeName: Ragione Sociale
+      name: Nome
+      postalAddress: Indirizzo
+      eletronicAddress: Email
+      courseTitle: Titolo Corso
+      startDate: Data inizio
+      endDate: Data fine
+      level: Livello
+      courseId: ID Corso
+      phone: Telefono
       type: Tipologia
       iat: Data Emissione
       exp: Scadenza
@@ -420,24 +429,24 @@ ssi:
     subtitle: Prendi il controllo della tua identità
     createIdentity: Crea nuova Identità
     recoverIdentity: Recupera Identità
-    generatingIdentity: Generando Identità
+    generatingIdentity: Sto generando Identità
     generatingIdentityCompleted: Identità creata con successo
     savingIdentity: Salvando Identità
     generatingError: Creazione Identità non riuscita
     recoverIdentityTitle: Digita la tua chiave di recupero
     recoverIdentitySubtitle: Inserisci chiave privata per recuperare accesso al tuo DID
     recoverIdenityLabel: Chiave
-    recoveringIdentity: Recuperando Identità
+    recoveringIdentity: Sto recuperando la tua Identità
     recoveringIdentityCompleted: Recupero Identità avvenuto con successo
     recoveringError: Recupero Identità non riuscito
     yourRecoverKey: Questa è la tua frase d'accesso
     saveYourRecoverKey: "Copiala in un posto sicuro,\n come un foglio di carta."
     retry: Riprova
-    generatingVC: Generando la tua VID
-    generatingVCCompleted: Generazione VID avvenuta con succeesso
+    generatingVC: Sto generando la tua VID
+    generatingVCCompleted: Generazione VID avvenuta con successo
     generatingVCError: Generazione VID non riuscita
-    recoveringVC: Recuperando la tua VID
-    recoveringVCCompleted: Recupero VID avvenuto con succeesso
+    recoveringVC: Sto recuperando la tua VID
+    recoveringVCCompleted: Recupero VID avvenuto con successo
     recoveringVCError: Recupero VID non riuscito
   copyDID:
     title: Copia DID
@@ -494,11 +503,11 @@ authentication:
   landing:
     accessibility:
       carousel:
-        label: Presentazione di IO
-        hint: Carosello contenente una guida introduttiva alle funzionalità di IO. Seleziona per consultarne il contenuto
+        label: Presentazione di SSI Wallet
+        hint: Carosello contenente una guida introduttiva alle funzionalità di SSI Wallet. Seleziona per consultarne il contenuto
     session_expired:
       title: La tua sessione è scaduta
-      body: Per ragioni di sicurezza, dopo 30 giorni dall'ultimo accesso, ti chiediamo di effettuare una nuova login con SPID o CIE per utilizzare IO.
+      body: Per ragioni di sicurezza, dopo 30 giorni dall'ultimo accesso, ti chiediamo di effettuare una nuova login con SPID o CIE per utilizzare SSI Wallet.
     cie_unsupported:
       title: Accesso con CIE non disponibile
       body: !include cie/cieNotSupported.md
@@ -507,10 +516,10 @@ authentication:
       nfc_incompatible: una antenna NFC compatibile con l'autenticazione tramite CIE
     contentTitleCie: Non hai SPID o la CIE?
     cie_information_request: !include cie.md
-    spid_or_cie: Per utilizzare IO devi dotarti di uno di questi strumenti digitali, che certificano in maniera certa la tua identità.
+    spid_or_cie: Per utilizzare SSI Wallet devi dotarti di uno di questi strumenti digitali, che certificano in maniera certa la tua identità.
     request_cie: Richiedi CIE
     request_spid: Ottieni SPID
-    contextualHelpTitle: Come accedere all'app IO
+    contextualHelpTitle: Come accedere all'app SSI Wallet
     contextualHelpContent: !include authentication/authentication_landing.md
     loginSpid: Entra con SPID
     loginCie: Entra con CIE
@@ -535,18 +544,18 @@ authentication:
     card4-content:
       L'accesso è consentito solo tramite SPID (Sistema Pubblico di Identità
       Digitale) per garantire la tua sicurezza online
-    card5-title: Benvenuto nella prima versione della Wallet App!
+    card5-title: Benvenuto nella prima versione della SSI Wallet!
     card5-content: In questa versione trovi in alto a destra
-      le icone per segnalare bug e aprire una chat con il team di IO.
+      le icone per segnalare bug e aprire una chat con il team di SSI Wallet.
       Aspettiamo i tuoi feedback!
     expiredCardTitle: Carta scaduta o non più valida
     expiredCardHeaderTitle: Entra con CIE
-    expiredCardContent: "La carta utilizzata non è più valida oppure è scaduta.\nSe vuoi autenticarti ed accedere ad IO devi usare SPID."
+    expiredCardContent: "La carta utilizzata non è più valida oppure è scaduta.\nSe vuoi autenticarti ed accedere ad SSI Wallet devi usare SPID."
     expiredCardHelp: Come rinnovare la propria Carta di Identità Elettronica?
   cie:
     genericTitle: Entra con CIE
     cie: CIE
-    noDataTitle: Per usare IO è necessario autorizzare l'invio dei dati
+    noDataTitle: Per usare SSI Wallet è necessario autorizzare l'invio dei dati
     authToSendData: !include cie/auth_to_send_data.md
     nfc:
       retry: Riprova
@@ -667,9 +676,9 @@ authentication:
     spid:
       unknown: Errore sconosciuto
       error_19: "Hai inserito troppe volte un nome utente o una password non corretti: riprova fra qualche minuto o contatta il tuo fornitore di identità SPID per cambiare le tue credenziali."
-      error_20: "Per motivi di sicurezza IO richiede un login con un secondo fattore di autenticazione: contatta il tuo fornitore di identità SPID per capire come si usa."
+      error_20: "Per motivi di sicurezza SSI Wallet richiede un login con un secondo fattore di autenticazione: contatta il tuo fornitore di identità SPID per capire come si usa."
       error_21: "È passato troppo tempo da quando hai iniziato l'accesso: per piacere riparti dall'inizio."
-      error_22: "Per usare IO è necessario consentire l'accesso ad alcuni dei tuoi dati: accedi nuovamente e dai il tuo consenso al passaggio di dati."
+      error_22: "Per usare SSI Wallet è necessario consentire l'accesso ad alcuni dei tuoi dati: accedi nuovamente e dai il tuo consenso al passaggio di dati."
       error_23: "La tua identità SPID risulta sospesa o revocata. Per riattivare il tuo account, contatta il tuo fornitore di identità SPID."
       error_25: "Hai annullato l'operazione di login: puoi riprovare quando vuoi."
   expiredSessionBanner:
@@ -679,23 +688,23 @@ email:
   read:
     title: Il tuo indirizzo email
     info: Questo è l'indirizzo email che hai associato all'account SPID. Puoi
-      usare in IO un indirizzo email diverso, se preferisci. Per rendere operativo
+      usare in SSI Wallet un indirizzo email diverso, se preferisci. Per rendere operativo
       il nuovo indirizzo, dovrai validarlo cliccando sul link che riceverai nella tua
       casella di posta elettronica.
     details:
       Puoi modificare questo indirizzo, che dovrai validare cliccando su un
-      link che spediremo alla tua casella di posta. Nel frattempo, le funzioni di IO che
+      link che spediremo alla tua casella di posta. Nel frattempo, le funzioni di SSI Wallet che
       dipendono dalla email (pagamenti, inoltro messaggi, etc.) saranno disattivate.
     alert: "Attenzione: il tuo account pagoPA è associato alla tua email,
       quindi se la modifichi non troverai più elencati
       nell'applicazione le tue transazioni ed i tuoi metodi di pagamento."
-    help: Il tuo profilo SPID trasferisce ad IO il tuo indirizzo email. Se è un
+    help: Il tuo profilo SPID trasferisce ad SSI Wallet il tuo indirizzo email. Se è un
       indirizzo sbagliato o che non utilizzi più, puoi modificarlo direttamente dal
       tuo provider di servizi SPID.
   insert:
     header: Attivazione
     title: Inserisci la tua email
-    subtitle: Alcune funzioni di IO hanno bisogno della tua email
+    subtitle: Alcune funzioni di SSI Wallet hanno bisogno della tua email
     label: Indirizzo email personale
     alert: Stai già usando questa email
     help:
@@ -718,16 +727,16 @@ email:
       inoltro dei messaggi via mail, ecc.) non potranno essere utilizzate, ma potrai
       usare comunque altre funzioni (es. servizi, messaggi, ecc.)."
     content2:
-      "Per usare alcune funzioni di IO devi validare il tuo indirizzo email.<br/>Ti abbiamo inviato una email a <b>{{email}}</b>:
+      "Per usare alcune funzioni di SSI Wallet devi validare il tuo indirizzo email.<br/>Ti abbiamo inviato una email a <b>{{email}}</b>:
       apri il tuo client di posta e clicca semplicemente sul link."
     cta: Invia una nuova email di validazione
     sent: Email inviata
     send_validation_ok: Email di validazione inviata
     send_validation_ko: Errore nell'invio della email di validazione. Riprova.
-    help: Il tuo profilo SPID trasferisce ad IO il tuo indirizzo email. Se è un
+    help: Il tuo profilo SPID trasferisce ad SSI Wallet il tuo indirizzo email. Se è un
       indirizzo sbagliato o che non utilizzi più, puoi modificarlo direttamente dal
       tuo provider di servizi SPID.
-    validation_ok: La mail è stata validata. Ora puoi accedere a tutte le funzionalità di IO.
+    validation_ok: La mail è stata validata. Ora puoi accedere a tutte le funzionalità di SSI Wallet.
     validated: Email validata!
     validated_ok: Grazie, ora puoi usare le funzionalità legate ai pagamenti, all’inoltro dei messaggi, etc.
 onboarding:
@@ -752,7 +761,7 @@ onboarding:
     contextualHelpTitle: Qual è il tuo codice di sblocco
     contextualHelpContent: !include onboarding/onboarding_pin.md
   alert:
-    title: Vuoi davvero uscire da IO?
+    title: Vuoi davvero uscire da SSI Wallet?
     description: Dovrai fare nuovamente il login per continuare ad usare l'app
   fingerprint:
     headerTitle: Attivazione
@@ -813,7 +822,7 @@ payment:
     list:
       empty:
         title: Nessun tentativo di pagamento
-        description: IO non ha memorizzato tentativi di pagamento. Qui troverai i tentativi di pagamento più recenti
+        description: SSI Wallet non ha memorizzato tentativi di pagamento. Qui troverai i tentativi di pagamento più recenti
       title: Tentativi di pagamento
       iuv: Codice IUV {{iuv}}
 wallet:
@@ -868,8 +877,8 @@ wallet:
   alert:
     msgErrorUpdateApp: "Si è verificato un errore durante l'apertura dello store delle app"
     titlePagoPaUpdateApp: Aggiornamento richiesto
-    messagePagoPaUpdateApp: "IO introduce spesso piccole migliorie e nuove funzioni: per continuare ad usare il portafoglio è necessario aggiornare l'applicazione all'ultima versione."
-    btnUpdateApp: Aggiorna l'app IO
+    messagePagoPaUpdateApp: "SSI Wallet introduce spesso piccole migliorie e nuove funzioni: per continuare ad usare il portafoglio è necessario aggiornare l'applicazione all'ultima versione."
+    btnUpdateApp: Aggiorna l'app SSI Wallet
     favourite: Non è possibile rimuovere un metodo di pagamento preferito, per modificarlo selezionane un altro
   contextualHelpTitle: Cosa puoi fare nel tuo Portafoglio
   contextualHelpContent: !include wallet/wallet_home.md
@@ -898,8 +907,8 @@ wallet:
   newPaymentMethod:
     add: aggiungi
     addButton: Aggiungi un metodo
-    addDescription: Aggiungi un metodo di pagamento per pagare da IO in pochi secondi, oppure richiedi l’attivazione di un bonus o di una carta sconto.
-    walletAlert: "Nel tuo portafoglio sono registrati dei metodi di pagamento ma nessuno di questi è compatibile con IO"
+    addDescription: Aggiungi un metodo di pagamento per pagare da SSI Wallet in pochi secondi, oppure richiedi l’attivazione di un bonus o di una carta sconto.
+    walletAlert: "Nel tuo portafoglio sono registrati dei metodi di pagamento ma nessuno di questi è compatibile con SSI Wallet"
     successful: Carta aggiunta con successo
     failed: Impossibile aggiungere la carta
     failedCardAlreadyExists: La carta che stai inserendo è già presente
@@ -920,7 +929,7 @@ wallet:
   detailsTransaction:
     contextualHelpContent: !include wallet/wallet_transaction_details.md
   saveCard:
-    contextualHelpTitle: Salvare una carta su IO
+    contextualHelpTitle: Salvare una carta su Wallet
     contextualHelpContent: !include wallet/wallet_card.md
     header: Salva la carta
     title: Vuoi salvare questa carta?
@@ -1089,16 +1098,15 @@ wallet:
     wrongQrCode: Non è un QR Code SSI!
     byCameraTitle: QR Code avviso
     cameraUsageInfo:
-      Inquadra il QR Code che trovi nell'avviso con la fotocamera, oppure
-      inserisci manualmente i dati identificativi (IUV e codice ente/azienda).
+      Inquadra il QR Code che trovi di fronte a per accedere funzionalità di SSI Wallet.
     setManually: Inserisci tu i dati
     enroll_cta: L'uso della fotocamera è presente su questo dispositivo, ma non è configurato. Vai nel menu impostazioni di questo dispositivo e configuralo per abilitare questa feature.
     cameraUsagePermissionInfobox:
-      title: "Permesso per utilizzare la fotocamera da parte di IO"
-      message: "IO richiede di poter utilizzare la fotocamera ed inquadrare il QR code"
+      title: "Permesso per utilizzare la fotocamera da parte di SSI Wallet"
+      message: "SSI Wallet richiede di poter utilizzare la fotocamera ed inquadrare il QR code"
     settingsAlert:
       title: Sembra che l'accesso alle foto sia stato negato
-      message: IO ha bisogno di accedere alle foto per scansionare i codici QR
+      message: SSI Wallet ha bisogno di accedere alle foto per scansionare i codici QR
       buttonText:
         settings: Abilita permessi
         cancel: Annulla
@@ -1194,7 +1202,7 @@ messages:
           block1: Il pagamento è scaduto alle ore
           block2: del
         unexpirable:
-          block: Il pagamento è scaduto. Puoi ancora pagare; se previsto, l'app IO provvederà ad attualizzare l'importo.
+          block: Il pagamento è scaduto. Puoi ancora pagare; se previsto, l'app SSI Wallet provvederà ad attualizzare l'importo.
     presctiption:
       addMemo: Questa ricetta scade il
       expiringAlert: Questa ricetta scade oggi
@@ -1228,7 +1236,7 @@ messages:
       cancel: "Annulla"
     errors:
       fetchCalendars: Errore durante il recupero dei calendari
-    helper: "IO ricorderà d'ora in poi questa scelta: potrai modificarla dalle preferenze dell'app."
+    helper: "SSI Wallet ricorderà d'ora in poi questa scelta: potrai modificarla dalle preferenze dell'app."
   badge:
     expired: Scaduto
     paid: Pagato
@@ -1301,7 +1309,7 @@ biometric_recognition:
   needed_to_disable: Riconoscimento richiesto per disabilitare
 send_email_messages:
   title: Inoltro dei messaggi via email
-  subtitle: Vuoi che IO inoltri il contenuto dei messaggi anche a
+  subtitle: Vuoi che SSI Wallet inoltri il contenuto dei messaggi anche a
   options:
     disable_all:
       label: Disabilita per tutti i servizi
@@ -1336,7 +1344,7 @@ services:
     selectMessageEmptyOrgs: Al momento non è possibile aggiungere una località. Per favore trascina in basso per aggiornare i dati e riprova a selezionare un'area.
     addButton: Aggiungi le tue aree di interesse
     editButton: Modifica le aree di interesse
-    searchEmpty: Se non trovi la tua area di interesse, significa che gli enti di quel territorio non espongono ancora servizi su IO.
+    searchEmpty: Se non trovi la tua area di interesse, significa che gli enti di quel territorio non espongono ancora servizi su SSI Wallet.
   tab:
     locals: Locali
     national: Nazionali
@@ -1347,7 +1355,7 @@ services:
   enableAll: Attiva tutti
   disableAll: Disattiva tutti
   disableAllTitle: Vuoi davvero disattivare tutti i servizi?
-  disableAllMsg: "Ricorda che su IO ti scriveranno solo i servizi che effettivamente hanno qualche informazione personalizzata da comunicarti. Non riceverai messaggi di spam. Se disattivi tutti i servizi, questi non potranno più contattarti tramite IO (finché non li riattiverai). Potrai continuare a fruire i servizi attraverso altri canali (sportello, sito, etc.)"
+  disableAllMsg: "Ricorda che su SSI Wallet ti scriveranno solo i servizi che effettivamente hanno qualche informazione personalizzata da comunicarti. Non riceverai messaggi di spam. Se disattivi tutti i servizi, questi non potranno più contattarti tramite SSI Wallet (finché non li riattiverai). Potrai continuare a fruire i servizi attraverso altri canali (sportello, sito, etc.)"
   close: Chiudi
   emptyListMessage: Non ci sono servizi disponibili al momento, trascina in basso per aggiornare
 serviceDetail:
@@ -1355,7 +1363,7 @@ serviceDetail:
   contextualHelpContent: !include services/service_detail.md
   onUpdateEnabledChannelsFailure: "Si è verificato un errore temporaneo nel salvataggio delle preferenze, riprova per piacere."
   disableTitle: "Vuoi davvero disattivare il servizio?"
-  disableMsg: "Ricorda che su IO ti scriveranno solo i servizi che effettivamente hanno qualche informazione personalizzata da comunicarti. Non riceverai messaggi di spam. Se disattivi il servizio, questo non potrà più contattarti tramite IO (finché non lo riattiverai). Potrai continuare a fruire il servizio attraverso altri canali (sportello, sito, etc.)"
+  disableMsg: "Ricorda che su SSI Wallet ti scriveranno solo i servizi che effettivamente hanno qualche informazione personalizzata da comunicarti. Non riceverai messaggi di spam. Se disattivi il servizio, questo non potrà più contattarti tramite SSI Wallet (finché non lo riattiverai). Potrai continuare a fruire il servizio attraverso altri canali (sportello, sito, etc.)"
   lockedMailAlert: "L'inoltro dei messaggi via email è {{enabled}} globalmente:"
   updatePreferences: Modifica le preferenze
   goTo: Vai alle preferenze
@@ -1416,29 +1424,29 @@ reminders:
 openMaps:
   genericError: Si è verificato un errore durante l'apertura della mappa
 genericError: Si è verificato un errore
-titleUpdateApp: Aggiorna IO!
+titleUpdateApp: Aggiorna SSI Wallet!
 msgErrorUpdateApp: "Si è verificato un errore durante l'apertura dello store delle app"
-messageUpdateApp: "IO introduce spesso piccole migliorie e nuove funzioni: per continuare ad usare l'app è necessario aggiornarla all'ultima versione."
-titleUpdateAppAlert: Per continuare, aggiorna IO
-messageUpdateAppAlert: È disponibile una nuova versione di IO su {{storeName}}, scaricala subito per utilizzare questa funzionalità.
+messageUpdateApp: "SSI Wallet introduce spesso piccole migliorie e nuove funzioni: per continuare ad usare l'app è necessario aggiornarla all'ultima versione."
+titleUpdateAppAlert: Per continuare, aggiorna SSI Wallet
+messageUpdateAppAlert: È disponibile una nuova versione di SSI Wallet su {{storeName}}, scaricala subito per utilizzare questa funzionalità.
 openStore: Apri {{storeName}}
-btnUpdateApp: Aggiorna l'app IO
+btnUpdateApp: Aggiorna l'app SSI Wallet
 systemsOff:
-  title: Impossibile usare IO
+  title: Impossibile usare SSI Wallet
   closeApp: chiudi l'applicazione e riprova
 contextualHelp:
-  title: IO ti aiuto
+  title: SSI Wallet ti aiuta
 instabug:
   contextualHelp:
     title1: Hai bisogno di aiuto?
     description: "Ricorda che se hai dubbi sul contenuto di un messaggio, ti consigliamo di contattare direttamente l'ente che te lo ha inviato: troverai i recapiti in fondo al messaggio o nella scheda del relativo servizio."
     buttonChat: Inviaci un messaggio
-    descriptionChat: "Se invece hai trovato un errore o qualcosa che non funziona nell’app, segnala un bug agli sviluppatori: si prenderanno carico del problema al più presto e ti risponderanno direttamente tramite IO."
+    descriptionChat: "Se invece hai trovato un errore o qualcosa che non funziona nell’app, segnala un bug agli sviluppatori: si prenderanno carico del problema al più presto e ti risponderanno direttamente tramite SSI Wallet."
     buttonBug: Segnala un bug
-    descriptionBug: Se vuoi suggerirci un miglioramento o un nuovo servizio che vorresti avere su IO, puoi inviare un messaggio al team direttamente da qui.
-    title2: Sei nuovo in IO?
-    descriptionLink: Scopri di più sul progetto IO, sulla sua storia e su quali novità ti attendono, visitando il sito
-    assistanceWorkHours: L'assistenza di IO è disponibile nei giorni feriali dalle ore 8.00 alle 20.00 e nei festivi dalle ore 8.00 alle 12.00
+    descriptionBug: Se vuoi suggerirci un miglioramento o un nuovo servizio che vorresti avere su SSI Wallet, puoi inviare un messaggio al team direttamente da qui.
+    title2: Sei nuovo in SSI Wallet?
+    descriptionLink: Scopri di più sul progetto SSI Wallet, sulla sua storia e su quali novità ti attendono, visitando il sito
+    assistanceWorkHours: L'assistenza di SSI Wallet è disponibile nei giorni feriali dalle ore 8.00 alle 20.00 e nei festivi dalle ore 8.00 alle 12.00
 faq:
   1:
     title: "Cos'è SPID?"
@@ -1535,7 +1543,7 @@ faq:
     title: "Cos'è il codice identificativo del messaggio?"
     content: !include faq/faq32.md
   33:
-    title: "È possibile pagare un avviso che non hai ricevuto tramite l'app IO?"
+    title: "È possibile pagare un avviso che non hai ricevuto tramite l'app SSI Wallet?"
     content: !include faq/faq33.md
   34:
     title: "Che cos'è un QR code?"
@@ -1577,13 +1585,13 @@ faq:
     title: "Puoi scegliere un gestore diverso a ogni pagamento?"
     content: !include faq/faq46.md
   47:
-    title: "Come gestire i servizi su IO?"
+    title: "Come gestire i servizi su SSI Wallet?"
     content: !include faq/faq7.md
   48:
     title: "Cosa sono le tue aree di interesse?"
     content: !include faq/faq48.md
   49:
-    title: "Puoi contattare gli enti tramite IO?"
+    title: "Puoi contattare gli enti tramite SSI Wallet?"
     content: !include faq/faq49.md
   50:
     title: "Cosa succede se disattivi un servizio?"
@@ -1604,7 +1612,7 @@ faq:
     title: "Come sarà tutelata la tua privacy?"
     content: !include faq/faq55.md
   56:
-    title: "Come cancellare tutti i tuoi dati da IO?"
+    title: "Come cancellare tutti i tuoi dati da SSI Wallet?"
     content: !include faq/faq56.md
   57:
     title: "Hai avuto problemi durante un pagamento?"
@@ -1637,16 +1645,16 @@ faq:
     title: "Quali bonus o carte sconto posso aggiungere?"
     content: !include bonus/faq/faq66.md
   67:
-    title: "Devo caricare il mio ISEE in versione PDF sull’app IO?"
+    title: "Devo caricare il mio ISEE in versione PDF sull’app SSI Wallet?"
     content: !include bonus/faq/faq67.md
   68:
-    title: "Nell’app IO trovo l’elenco delle strutture turistiche che accettano il “Bonus Vacanze”?"
+    title: "Nell’app SSI Wallet trovo l’elenco delle strutture turistiche che accettano il “Bonus Vacanze”?"
     content: !include bonus/faq/faq68.md
   69:
-    title: "Quanto tempo passa dal momento della richiesta al momento dell’attivazione del Bonus su IO?"
+    title: "Quanto tempo passa dal momento della richiesta al momento dell’attivazione del Bonus su SSI Wallet?"
     content: !include bonus/faq/faq69.md
   70:
-    title: "Devo necessariamente aggiungere una carta di credito sull’app IO per richiedere e spendere il bonus?"
+    title: "Devo necessariamente aggiungere una carta di credito sull’app SSI Wallet per richiedere e spendere il bonus?"
     content: !include bonus/faq/faq70.md
   71:
     title: "Ho intenzione di richiedere il Bonus Vacanze ma non lo userò personalmente. Posso cederlo a un altro componente del mio nucleo familiare?"
@@ -1655,10 +1663,10 @@ faq:
     title: "Come potrò condividere il Bonus con i miei familiari?"
     content: !include bonus/faq/faq72.md
   73:
-    title: "Come fa l’app IO a conoscere la composizione del mio nucleo familiare?"
+    title: "Come fa l’app SSI Wallet a conoscere la composizione del mio nucleo familiare?"
     content: !include bonus/faq/faq73.md
   74:
-    title: "Sull’app IO potrò richiedere anche il Bonus Bici?"
+    title: "Sull’app SSI Wallet potrò richiedere anche il Bonus Bici?"
     content: !include bonus/faq/faq74.md
   75:
     title: "Dopo aver fatto la richiesta, ho trovato un errore nel riepilogo dei dati relativi al mio nucleo familiare che l’app mi mostra prima di confermare l’attivazione del Bonus. Come risolvo?"
@@ -1667,7 +1675,7 @@ faq:
     title: "L’app mi dice che l’importo massimo del mio Bonus Vacanze è di 500 euro. Cosa succede se il costo del mio soggiorno è inferiore?"
     content: !include bonus/faq/faq76.md
   77:
-    title: "Qualsiasi tipo di ISEE è valido per richiedere il Bonus Vacanze tramite l’app IO?"
+    title: "Qualsiasi tipo di ISEE è valido per richiedere il Bonus Vacanze tramite l’app SSI Wallet?"
     content: !include bonus/faq/faq77.md
 bonus:
   bonusVacanze:
@@ -1826,12 +1834,12 @@ bonus:
         body: "Ti preghiamo di attendere."
       noPaymentMethod:
         title: "Aggiungi almeno un metodo di pagamento"
-        body: "Per inziare a raccogliere punti devi aggiungere su IO i tuoi metodi di pagamento elettronico preferiti: oggi sono supportate carte di credito, prepagate, ricaricabili, carte di debito, Bancomat e app e altri strumenti digitali.\n\n
-        In futuro il cashback supporterà altri strumenti: potrai aggiungere quando vuoi nuovi metodi di pagamento su IO e attivare su ciascuno la raccolta dei punti!"
+        body: "Per inziare a raccogliere punti devi aggiungere su SSI Wallet i tuoi metodi di pagamento elettronico preferiti: oggi sono supportate carte di credito, prepagate, ricaricabili, carte di debito, Bancomat e app e altri strumenti digitali.\n\n
+        In futuro il cashback supporterà altri strumenti: potrai aggiungere quando vuoi nuovi metodi di pagamento su SSI Wallet e attivare su ciascuno la raccolta dei punti!"
       enrollPaymentMethod:
         title: "Scegli quali metodi di pagamento attivare"
         body1: "I pagamenti che farai con questi metodi riceveranno il cashback concorreranno alla tua posizione in classifica"
-        body2: "Potrai aggiungere in ogni momento altri metodi di pagamento su IO e attivare il cashback."
+        body2: "Potrai aggiungere in ogni momento altri metodi di pagamento su SSI Wallet e attivare il cashback."
     iban:
       iban: "IBAN"
       edit: "Modifica IBAN"
@@ -1864,7 +1872,7 @@ bonus:
           of: "su"
           closedPeriodKOBody: "Non hai raggiunto le {{transactions}} transazioni necessarie per ottenere un rimborso: avresti ricevuto € {{amount}}. Provaci nel prossimo periodo!"
           currentPeriodKOBody: "Devi aver fatto almeno {{transactions}} transazioni per sbloccare il cashback che hai accumulato!"
-          gracePeriodBody: "Questo periodo del cashback si è chiuso il {{date}}. Stiamo aspettando di ricevere dalle banche le ultime transazioni. Ancora un po’ di pazienza. TI avviseremo con un messaggio su IO!"
+          gracePeriodBody: "Questo periodo del cashback si è chiuso il {{date}}. Stiamo aspettando di ricevere dalle banche le ultime transazioni. Ancora un po’ di pazienza. TI avviseremo con un messaggio su SSI Wallet!"
           closedPeriodOKBody: "Complimenti {{name}}! \nHai diritto a € {{amount}} di Cashback"
           closedPeriodMaxAmount: "è il massimo del rimborso possibile!"
           inactivePeriodBody: "Potrai iniziare ad accumulare transazioni valide a partire dal {{date}}"

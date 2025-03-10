@@ -271,7 +271,7 @@ const reducer = (
   state: AuthenticationState = INITIAL_STATE,
   action: Action
 ): AuthenticationState => {
-  console.log("AUTHENTICATION", state, "\n", "ACTION", action);
+  // console.log("AUTHENTICATION", state, "\n", "ACTION", action);
 
   if (
     isActionOf(idpSelected, action) &&

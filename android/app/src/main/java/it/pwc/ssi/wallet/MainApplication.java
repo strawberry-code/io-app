@@ -1,4 +1,4 @@
-package it.pagopa.io.app;
+package it.pwc.ssi.wallet;
 
 import androidx.multidex.MultiDexApplication;
 
@@ -41,7 +41,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import it.ipzs.cieidsdk.native_bridge.CiePackage;
+// import it.ipzs.cieidsdk.native_bridge.CiePackage;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 import io.github.elyx0.reactnativedocumentpicker.DocumentPickerPackage;
 
@@ -86,7 +86,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           new FingerprintAuthPackage(), new BackgroundTimerPackage(), new SvgPackage(),
           new SplashScreenReactPackage(), new ReactNativeExceptionHandlerPackage(), new RNCameraPackage(),
           new ReactNativePushNotificationPackage(), new KeychainPackage(), new RNI18nPackage(), new Sha256Package(),
-          new RNMixpanel(), new RNDeviceInfo(), new ReactNativeConfigPackage(),new CiePackage(),new RNPermissionsPackage(),
+          new RNMixpanel(), new RNDeviceInfo(), new ReactNativeConfigPackage(),new RNPermissionsPackage(),
           new DocumentPickerPackage(), new RNGoogleSigninPackage(),
           new RNInstabugReactnativePackage.Builder(BuildConfig.INSTABUG_TOKEN, MainApplication.this)
               .setInvocationEvent("none").setPrimaryColor("#0073E6").build());
@@ -123,7 +123,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           We use reflection here to pick up the class that initializes Flipper,
          since Flipper library is not available in release mode
          */
-         Class<?> aClass = Class.forName("it.pagopa.io.app");
+         Class<?> aClass = Class.forName("it.pwc.ssi.wallet");
          aClass
            .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
            .invoke(null, context, reactInstanceManager);

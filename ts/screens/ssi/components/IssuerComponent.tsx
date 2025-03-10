@@ -56,7 +56,7 @@ const IssuerComponent: React.FC<Props> = ({
       try {
         const issuerAddress = id.replace("did:ethr:", "");
         const response = await fetch(
-          `${apiSSIPrefix}/issuers/${issuerAddress}`,
+          `${apiSSIPrefix}/issuers/${id}`,
           {
             method: "GET",
             headers: {

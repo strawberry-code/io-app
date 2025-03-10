@@ -101,6 +101,7 @@ import { checkConfiguredDIDSaga } from "./startup/checkConfiguredDIDSaga";
 import { watchTokenExpirationSaga } from "./startup/watchTokenExpirationSaga";
 
 const WAIT_INITIALIZE_SAGA = 3000 as Millisecond;
+
 /**
  * Handles the application startup and the main application logic loop
  */
@@ -180,29 +181,29 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   let maybeSessionInformation: ReturnType<typeof sessionInfoSelector> = yield select(
     sessionInfoSelector
   );
-  if (isSessionRefreshed || maybeSessionInformation.isNone()) {
-    // let's try to load the session information from the backend.
-    maybeSessionInformation = yield call(
-      loadSessionInformationSaga,
-      backendClient.getSession
-    );
-    if (maybeSessionInformation.isNone()) {
-      // we can't go further without session info, let's restart
-      // the initialization process
-      yield put(startApplicationInitialization());
-      return;
-    }
-  }
+  // if (isSessionRefreshed || maybeSessionInformation.isNone()) {
+  //   // let's try to load the session information from the backend.
+  //   maybeSessionInformation = yield call(
+  //     loadSessionInformationSaga,
+  //     backendClient.getSession
+  //   );
+  //   if (maybeSessionInformation.isNone()) {
+  //     // we can't go further without session info, let's restart
+  //     // the initialization process
+  //     yield put(startApplicationInitialization());
+  //     return;
+  //   }
+  // }
 
   // Start watching for profile update requests as the checkProfileEnabledSaga
   // may need to update the profile.
-  yield fork(
-    watchProfileUpsertRequestsSaga,
-    backendClient.createOrUpdateProfile
-  );
+  // yield fork(
+  //   watchProfileUpsertRequestsSaga,
+  //   backendClient.createOrUpdateProfile
+  // );
 
   // Start watching when profile is successfully loaded
-  yield fork(watchProfile, backendClient.startEmailValidationProcess);
+  // yield fork(watchProfile, backendClient.startEmailValidationProcess);
 
   // If we are here the user is logged in and the session info is
   // loaded and valid
@@ -213,14 +214,39 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
     backendClient.getProfile
   );
 
-  if (isNone(maybeUserProfile)) {
-    // Start again if we can't load the profile but wait a while
-    yield call(startTimer, WAIT_INITIALIZE_SAGA);
-    yield put(startApplicationInitialization());
-    return;
-  }
+  console.log('SONO QUIIIIIIIIIIIIIIII 1')
+  
+  // const maybeUserProfile = pot.some({
+    //   is_inbox_enabled: true,
+    //   is_email_enabled: true,
+    //   is_webhook_enabled: true,
+    //   family_name: 'Rossi',
+    //   fiscal_code: 'MDRPRV91D20Z602U',
+    //   has_profile: true,
+    //   name: 'Mario',
+    //   version: 1,
+    // });
+    
+  //   if (isNone(maybeUserProfile)) {
+  //   console.log('SONO QUIIIIIIIIIIIIIIII 1.1')
+  //   // Start again if we can't load the profile but wait a while
+  //   yield call(startTimer, WAIT_INITIALIZE_SAGA);
+  //   yield put(startApplicationInitialization());
+  //   return;
+  // }
 
-  const userProfile = maybeUserProfile.value;
+  const userProfile = {
+      is_inbox_enabled: true,
+      is_email_enabled: true,
+      is_webhook_enabled: true,
+      family_name: 'Rossi',
+      fiscal_code: 'MDRPRV91D20Z602U',
+      has_profile: true,
+      name: 'Mario',
+      version: 1,
+    };
+
+    console.log('SONO QUIIIIIIIIIIIIIIII 2')
 
   // If user logged in with different credentials, but this device still has
   // user data loaded, then delete data keeping current session (user already
@@ -238,9 +264,11 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
     yield put(clearCache());
   }
 
+  console.log('SONO QUIIIIIIIIIIIIIIII 3')
+
   const maybeIdp: Option<IdentityProvider> = yield select(idpSelector);
 
-  setInstabugProfileAttributes(maybeIdp);
+  // setInstabugProfileAttributes(maybeIdp);
 
   // Retrieve the configured unlock code from the keychain
   const maybeStoredPin: SagaCallReturnType<typeof getPin> = yield call(getPin);
@@ -249,21 +277,22 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   let storedPin: PinString;
 
   // Start watching for requests of refresh the profile
-  yield fork(watchProfileRefreshRequestsSaga, backendClient.getProfile);
+  // yield fork(watchProfileRefreshRequestsSaga, backendClient.getProfile);
 
   // Start watching for requests of checkSession
-  yield fork(watchCheckSessionSaga, backendClient.getSession);
+  // yield fork(watchCheckSessionSaga, backendClient.getSession);
 
   // Start watching for requests of abort the onboarding
   const watchAbortOnboardingSagaTask = yield fork(watchAbortOnboardingSaga);
 
-  if (!previousSessionToken || isNone(maybeStoredPin)) {
+
+  if (isNone(maybeStoredPin)) {
     // The user wasn't logged in when the application started or, for some
     // reason, he was logged in but there is no unlock code set, thus we need
     // to pass through the onboarding process.
 
     // Ask to accept ToS if it is the first access on IO or if there is a new available version of ToS
-    yield call(checkAcceptedTosSaga, userProfile);
+    // yield call(checkAcceptedTosSaga, userProfile);
 
     // CONFIGURA L'IDENTITA' ALL'INIZIO DI UNA NUOVA SESSIONE
     yield call(checkConfiguredDIDSaga);
@@ -272,7 +301,7 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
 
     yield call(checkAcknowledgedFingerprintSaga);
 
-    yield call(checkAcknowledgedEmailSaga, userProfile);
+    // yield call(checkAcknowledgedEmailSaga, userProfile);
 
     // Stop the watchAbortOnboardingSaga
     yield cancel(watchAbortOnboardingSagaTask);
@@ -286,13 +315,16 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
         startAndReturnIdentificationResult,
         storedPin
       );
+
+      console.log('SONO QUIIIIIIIIIIIIIIII 4', identificationResult);
       if (identificationResult === IdentificationResult.pinreset) {
         // If we are here the user had chosen to reset the unlock code
         yield put(startApplicationInitialization());
         return;
       }
       // Ask to accept ToS if there is a new available version
-      yield call(checkAcceptedTosSaga, userProfile);
+      // yield call(checkAcceptedTosSaga, userProfile);
+      console.log('SONO QUIIIIIIIIIIIIIIII 5');
 
       // Stop the watchAbortOnboardingSaga
       yield cancel(watchAbortOnboardingSagaTask);
@@ -303,6 +335,7 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
   // User is autenticated, session token is valid
   //
   const isSpidLogin = yield select(isSpidLoginSelector);
+  
 
   // Check token expiraton date
   const tokenExpirationDate: Date = yield select(tokenExpirationSelector);
@@ -311,50 +344,50 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
     yield fork(watchTokenExpirationSaga);
   }
 
-  if (bonusVacanzeEnabled) {
-    // Start watching for requests about bonus
-    yield fork(watchBonusSaga, sessionToken);
-  }
+  // if (bonusVacanzeEnabled) {
+  //   // Start watching for requests about bonus
+  //   yield fork(watchBonusSaga, sessionToken);
+  // }
 
-  if (bpdEnabled) {
-    // Start watching for actions about bonus bpd
-    yield fork(watchBonusBpdSaga, maybeSessionInformation.value.bpdToken);
-  }
+  // if (bpdEnabled) {
+  //   // Start watching for actions about bonus bpd
+  //   yield fork(watchBonusBpdSaga, maybeSessionInformation.value.bpdToken);
+  // }
 
   // Load the user metadata
-  yield call(loadUserMetadata, backendClient.getUserMetadata, true);
+  // yield call(loadUserMetadata, backendClient.getUserMetadata, true);
 
   // the wallet token is available,
   // proceed with starting the "watch wallet" saga
-  const walletToken = maybeSessionInformation.value.walletToken;
+  // const walletToken = maybeSessionInformation.value.walletToken;
 
-  const isPagoPATestEnabled: ReturnType<typeof isPagoPATestEnabledSelector> = yield select(
-    isPagoPATestEnabledSelector
-  );
+  // const isPagoPATestEnabled: ReturnType<typeof isPagoPATestEnabledSelector> = yield select(
+  //   isPagoPATestEnabledSelector
+  // );
 
-  yield fork(
-    watchWalletSaga,
-    sessionToken,
-    walletToken,
-    isPagoPATestEnabled ? pagoPaApiUrlPrefixTest : pagoPaApiUrlPrefix
-  );
+  // yield fork(
+  //   watchWalletSaga,
+  //   sessionToken,
+  //   walletToken,
+  //   isPagoPATestEnabled ? pagoPaApiUrlPrefixTest : pagoPaApiUrlPrefix
+  // );
 
   // Check that profile is up to date (e.g. inbox enabled)
-  yield call(checkProfileEnabledSaga, userProfile);
+  // yield call(checkProfileEnabledSaga, userProfile);
 
   // Now we fork the tasks that will handle the async requests coming from the
   // UI of the application.
   // Note that the following sagas will be automatically cancelled each time
   // this parent saga gets restarted.
 
-  yield fork(watchLoadUserMetadata, backendClient.getUserMetadata);
-  yield fork(watchUpserUserMetadata, backendClient.createOrUpdateUserMetadata);
+  // yield fork(watchLoadUserMetadata, backendClient.getUserMetadata);
+  // yield fork(watchUpserUserMetadata, backendClient.createOrUpdateUserMetadata);
 
-  yield fork(
-    watchUserDataProcessingSaga,
-    backendClient.getUserDataProcessingRequest,
-    backendClient.postUserDataProcessingRequest
-  );
+  // yield fork(
+  //   watchUserDataProcessingSaga,
+  //   backendClient.getUserDataProcessingRequest,
+  //   backendClient.postUserDataProcessingRequest
+  // );
 
   // Load Notifications when requested
   yield fork(loadSsiNotificationsSaga);
@@ -391,7 +424,7 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
     pendingMessageStateSelector
   );
 
-  if (pendingMessageState) {
+  if (false) {
     // We have a pending notification message to handle
     const messageId = pendingMessageState.id;
 
@@ -413,6 +446,7 @@ export function* initializeApplicationSaga(): Generator<Effect, void, any> {
       )
     );
   } else {
+    console.log('NAVIGATE TO MAIN NAVIGATOR ACTION')
     yield put(navigateToMainNavigatorAction);
   }
 }

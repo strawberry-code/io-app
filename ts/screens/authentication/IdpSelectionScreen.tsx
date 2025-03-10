@@ -150,8 +150,8 @@ class IdpSelectionScreen extends React.PureComponent<Props, State> {
   public render() {
     return (
       <BaseScreenComponent
-        contextualHelpMarkdown={contextualHelpMarkdown}
-        faqCategories={["authentication_IPD_selection"]}
+        // contextualHelpMarkdown={contextualHelpMarkdown}
+        // faqCategories={["authentication_IPD_selection"]}
         goBack={this.props.navigation.goBack}
         headerTitle={I18n.t("authentication.idp_selection.headerTitle")}
       >

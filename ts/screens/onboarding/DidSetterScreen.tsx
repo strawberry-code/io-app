@@ -244,7 +244,7 @@ const DidSetterScreen: React.FC<Props> = ({
       <View style={main.container}>
         <View style={logoBox.container}>
           <IconFont
-            name="io-lombardia"
+            name="io-pwc"
             size={100}
             color={variables.colorWhite}
           />

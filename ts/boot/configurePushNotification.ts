@@ -40,6 +40,7 @@ const handleNotification = (notification: typeof PushNotification) => {
   console.log('🎈 notifica push arrivata! ('+Platform.OS+')');
   console.log('dettagli della push: ' + JSON.stringify(notification));
   console.log('dettagli della push object: ', notification);
+  console.log('notification type', typeof notification);
 
   if (debugRemotePushNotification) {
     Alert.alert("Notification", JSON.stringify(notification));
@@ -47,9 +48,10 @@ const handleNotification = (notification: typeof PushNotification) => {
   
   const ssiNotificationPayload = Platform.OS === 'ios'
     ? notification.data.payload
-    : JSON.parse(notification.payload);
+    : JSON.parse(notification.data.payload);
   
   console.log('ssiNotificationPayload: ' + JSON.stringify(ssiNotificationPayload));
+  console.log('ssiNotificationPayload: ', typeof ssiNotificationPayload);
 
   const ssiPushType = ssiNotificationPayload.type;
 

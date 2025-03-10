@@ -9,6 +9,7 @@ import {
   Platform
 } from "react-native";
 import { format, parse } from "date-fns";
+import _ from 'lodash'
 
 import { TranslationKeys } from "../../../../locales/locales";
 import I18n from "../../../i18n";
@@ -172,7 +173,7 @@ const SingleVCModalHeader: React.FC<HeaderProps> = ({ type }) => {
     case "DimensioneImpresa":
       return <Text style={vcItem.modalTitle}>Dimensione Impresa</Text>;
     default:
-      return <Text style={vcItem.modalTitle}>{type[1]}</Text>;
+      return <Text style={vcItem.modalTitle}>{_.startCase(type[1])}</Text>;
   }
 };
 

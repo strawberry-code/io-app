@@ -570,7 +570,7 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
             />
 
             {SsiMainScreen.versionListItem(
-              `${I18n.t("profile.main.appVersion")} ${getAppVersion()}`,
+              `${I18n.t("profile.main.appVersion")} 0.0.0.1`,
               this.onTapAppVersion
             )}
 
@@ -591,8 +591,8 @@ class SsiMainScreen extends React.PureComponent<Props, State> {
         notificationBell={true}
         accessibilityLabel={I18n.t("profile.main.title")}
         appLogo={true}
-        contextualHelpMarkdown={contextualHelpMarkdown}
-        faqCategories={["profile"]}
+        // contextualHelpMarkdown={contextualHelpMarkdown}
+        // faqCategories={["profile"]}
       >
         <React.Fragment>
           <AnimatedScreenContentHeader
