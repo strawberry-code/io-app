@@ -114,7 +114,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "it.pagopa.io.app"
+        applicationId "it.pwc.ssi.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode System.getenv('CIRCLE_BUILD_NUM') ? ("100" + System.getenv('CIRCLE_BUILD_NUM')).toInteger() : 1
